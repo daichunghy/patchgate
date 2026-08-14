@@ -14,6 +14,7 @@ import type { RecordedExchange } from "./github/mock-transport.js";
 import type { GitHubSnapshotRequest } from "./github/identity.js";
 import { loadPatchgatePolicy, loadPatchgatePolicyFromGitRef } from "./policy.js";
 import { discoverGuidance, discoverGuidanceFromGitRef } from "./discovery.js";
+import { EVALUATOR_VERSION } from "./version.js";
 import {
   CliDiagnosticError,
   doctor,
@@ -24,6 +25,37 @@ import {
   renderPreflightHuman,
   renderValidationHuman,
 } from "./cli/ux.js";
+
+function renderRootHelp(): string {
+  return [
+    `PatchGate CLI (v${EVALUATOR_VERSION})`,
+    "Deterministic GitHub pull-request review-readiness evaluator and governance gate.",
+    "",
+    "Usage:",
+    "  patchgate <command> [options]",
+    "",
+    "Commands:",
+    "  preflight        Preflight check repository guidance and trusted policy",
+    "  doctor           Diagnose local environment, Git metadata, and policy status",
+    "  init             Initialize a safe draft patchgate.yml policy in a directory",
+    "  validate         Validate a patchgate.yml policy contract and compute its digest",
+    "  evaluate         Pure deterministic evaluation of a normalized snapshot",
+    "  github snapshot  Build a normalized snapshot from live GitHub API or recorded fixture",
+    "  support-bundle   Generate a redacted support and debug bundle from a receipt/report",
+    "",
+    "Flags:",
+    "  -h, --help       Show help for PatchGate or a specific subcommand",
+    "  -v, --version    Show current PatchGate evaluator version",
+    "",
+    "Examples:",
+    "  patchgate preflight --base .",
+    "  patchgate preflight --base main --repo .",
+    "  patchgate doctor --base .",
+    "  patchgate init --path .",
+    "  patchgate validate --policy patchgate.yml",
+    "  patchgate evaluate --event snapshot.json --report receipt.json",
+  ].join("\n");
+}
 
 function argument(name: string): string | undefined {
   const index = process.argv.indexOf(name);
@@ -193,6 +225,50 @@ async function policyCommand(path: string, command: "preflight" | "validate", re
 
 async function main(): Promise<void> {
   const command = process.argv[2];
+
+  if (command === undefined || command === "--help" || command === "-h" || command === "help") {
+    process.stdout.write(renderRootHelp() + "\n");
+    return;
+  }
+
+  if (command === "--version" || command === "-v") {
+    process.stdout.write(`patchgate v${EVALUATOR_VERSION}\n`);
+    return;
+  }
+
+  if (hasFlag("--help") || hasFlag("-h")) {
+    if (command === "github" && process.argv[3] === "snapshot") {
+      process.stdout.write("Usage: patchgate github snapshot (--mock-fixture <path> | --live --repo <owner/name> --pull <number> [--target <head|merge>]) [--output <path>]\n");
+      return;
+    }
+    if (command === "support-bundle") {
+      process.stdout.write("Usage: patchgate support-bundle --input <report-or-receipt.json> [--output <path>]\n");
+      return;
+    }
+    if (command === "init") {
+      process.stdout.write("Usage: patchgate init [--path <directory-or-file>] [--json]\n");
+      return;
+    }
+    if (command === "validate") {
+      process.stdout.write("Usage: patchgate validate --policy <policy-file-or-directory> [--json]\n");
+      return;
+    }
+    if (command === "doctor") {
+      process.stdout.write("Usage: patchgate doctor [--base <path>] [--json]\n");
+      return;
+    }
+    if (command === "preflight") {
+      process.stdout.write("Usage: patchgate preflight --base <policy-file-or-git-ref> [--repo <local-repository>] [--json]\n");
+      return;
+    }
+    if (command === "evaluate") {
+      process.stdout.write("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json>]\n");
+      return;
+    }
+    process.stdout.write(renderRootHelp() + "\n");
+    return;
+  }
+
   if (command === "github" && process.argv[3] === "snapshot") {
     await githubSnapshotCommand();
     return;
@@ -237,7 +313,7 @@ async function main(): Promise<void> {
   const eventPath = argument("--event");
   const reportPath = argument("--report");
   if (command !== "evaluate" || eventPath === undefined) {
-    console.error("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json>]");
+    console.error("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json>]\nRun 'patchgate --help' to see all available commands.");
     process.exitCode = 2;
     return;
   }

@@ -25,6 +25,29 @@ const TARGET_SUITE: TargetPR[] = [
   },
 ];
 
+function parseCliTargets(): TargetPR[] {
+  const args = process.argv.slice(2);
+  const repoIdx = args.indexOf("--repo");
+  const pullIdx = args.indexOf("--pull");
+  if (repoIdx !== -1 && pullIdx !== -1 && args[repoIdx + 1] && args[pullIdx + 1]) {
+    const repoArg = args[repoIdx + 1]!;
+    const pullArg = Number(args[pullIdx + 1]!);
+    const parts = repoArg.split("/");
+    if (parts.length === 2 && Number.isInteger(pullArg) && pullArg > 0) {
+      return [
+        {
+          name: `Custom Target (${repoArg}#${pullArg})`,
+          owner: parts[0]!,
+          repo: parts[1]!,
+          pullNumber: pullArg,
+          allowConfirmedAbsence: false,
+        },
+      ];
+    }
+  }
+  return TARGET_SUITE;
+}
+
 async function runLiveSmoke(): Promise<void> {
   console.log("==========================================================");
   console.log("   PatchGate G3 Live Read-Only Smoke Test Harness");
@@ -49,8 +72,9 @@ async function runLiveSmoke(): Promise<void> {
 
   let totalPassed = 0;
   let totalFailed = 0;
+  const targets = parseCliTargets();
 
-  for (const target of TARGET_SUITE) {
+  for (const target of targets) {
     console.log(`▶ Testing Target: ${target.name} (${target.owner}/${target.repo}#${target.pullNumber})`);
 
     const request: GitHubSnapshotRequest = {

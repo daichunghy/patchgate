@@ -37,6 +37,7 @@
     "verify:fixtures": "vitest run test/integration/github-adapter.test.ts",
     "check:fixture-budgets": "node scripts/check-fixture-budgets.mjs",
     "smoke:live": "npm run build && node dist/scripts/live-smoke-harness.js",
+    "usability:session": "npm run build && node dist/scripts/run-usability-session.js",
     "lint": "node scripts/lint.mjs",
     "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm test && npm run test:security && npm run test:github && npm run test:cli"
   },

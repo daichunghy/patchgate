@@ -48,6 +48,20 @@ describe("CLI process smoke contract", () => {
   it("provides safe init, validate, preflight and doctor UX", async () => {
     const directory = mkdtempSync("/tmp/patchgate-cli-ux-");
     tempDirectories.push(directory);
+    const rootHelp = runCommand(["--help"]);
+    expect(rootHelp.exit).toBe(0);
+    expect(rootHelp.stdout).toContain("PatchGate CLI");
+    expect(rootHelp.stdout).toContain("preflight");
+    expect(rootHelp.stdout).toContain("doctor");
+
+    const rootVersion = runCommand(["--version"]);
+    expect(rootVersion.exit).toBe(0);
+    expect(rootVersion.stdout).toContain("patchgate v0.1.0-dev");
+
+    const preflightHelp = runCommand(["preflight", "--help"]);
+    expect(preflightHelp.exit).toBe(0);
+    expect(preflightHelp.stdout).toContain("Usage: patchgate preflight");
+
     const initialized = runCommand(["init", "--path", directory, "--json"]);
     expect(initialized.exit).toBe(0);
     expect(JSON.parse(initialized.stdout)).toMatchObject({ status: "created", enforcement: "not_enabled" });
