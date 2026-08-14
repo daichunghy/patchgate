@@ -1,0 +1,41 @@
+version: 1
+
+# This file is illustrative. In a real PR, PatchGate must read the file from
+# the trusted base revision, not from the proposed head.
+issue_linkage:
+  required: true
+
+required_checks:
+  - id: unit
+    name: unit
+    target: head
+    acceptable_conclusions: [success]
+    # This is GitHub Actions workflow evidence, not a distinct PatchGate App.
+    expected_source:
+      kind: github_actions_workflow
+      app_slug: github-actions
+      app_id: 15368
+      workflow_path: .github/workflows/ci.yml
+      event: pull_request
+
+ownership:
+  require_code_owner_approval: true
+
+sensitive_paths:
+  - id: auth-owner
+    patterns: ["src/auth/**", ".github/workflows/**"]
+    required_reviewers: ["@example/security"]
+    required_count: 1
+    human_gate: true
+
+policy_changes:
+  mode: human_review
+  paths: ["patchgate.yml"]
+
+reviewability:
+  mode: advisory
+  budgets:
+    max_files: 50
+    max_ownership_domains: 3
+    max_generated_files: 10
+    max_boundaries: 2

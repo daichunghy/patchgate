@@ -1,0 +1,8 @@
+{
+  "caseId": "github-repository-permission-denied",
+  "description": "A repository-level 403 is insufficient capability, not an empty repository.",
+  "request": { "owner": "example", "name": "private-service", "pullNumber": 8, "eventKind": "pull_request", "targetKind": "head" },
+  "exchanges": [
+    { "request": { "method": "GET", "path": "/repos/example/private-service" }, "response": { "status": 403, "headers": {}, "body": { "message": "Forbidden" }, "bytes": 24 } }
+  ]
+}

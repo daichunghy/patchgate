@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://patchgate.dev/schemas/patchgate-policy/0.1",
+  "title": "PatchGate policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version"],
+  "properties": {
+    "version": { "const": 1 },
+    "issueLinkage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "properties": { "required": { "type": "boolean" } }
+    },
+    "requiredChecks": {
+      "type": "array", "maxItems": 3000,
+      "items": { "$ref": "#/$defs/requiredCheck" },
+      "uniqueItems": true
+    },
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requireCodeOwnerApproval"],
+      "properties": { "requireCodeOwnerApproval": { "type": "boolean" } }
+    },
+    "sensitivePaths": {
+      "type": "array", "maxItems": 3000,
+      "items": { "$ref": "#/$defs/sensitivePathRule" },
+      "uniqueItems": true
+    },
+    "policyChanges": { "$ref": "#/$defs/policyChanges" },
+    "reviewability": { "$ref": "#/$defs/reviewability" }
+  },
+  "$defs": {
+    "expectedSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["github_app_expected", "github_actions_workflow"] },
+        "appSlug": { "type": "string", "minLength": 1, "pattern": ".*\\S.*" },
+        "appId": { "type": "integer", "minimum": 1 },
+        "workflowId": { "type": "integer", "minimum": 1 },
+        "workflowPath": { "type": "string", "minLength": 1, "pattern": ".*\\S.*" },
+        "event": { "type": "string", "minLength": 1, "pattern": ".*\\S.*" }
+      }
+    },
+    "requiredCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "target", "acceptableConclusions", "expectedSource"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "target": { "enum": ["head", "merge", "merge_group"] },
+        "acceptableConclusions": {
+          "type": "array", "maxItems": 3000,
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "expectedSource": { "$ref": "#/$defs/expectedSource" }
+      }
+    },
+    "sensitivePathRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "patterns", "requiredReviewers", "requiredCount", "humanGate"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "patterns": {
+          "type": "array", "maxItems": 3000,
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "requiredReviewers": {
+          "type": "array", "maxItems": 3000,
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "requiredCount": { "type": "integer", "minimum": 1 },
+        "humanGate": { "type": "boolean" }
+      }
+    },
+    "policyChanges": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "paths"],
+      "properties": {
+        "mode": { "enum": ["advisory", "human_review", "blocked"] },
+        "paths": {
+          "type": "array", "maxItems": 3000,
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "reviewability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "budgets"],
+      "properties": {
+        "mode": { "enum": ["advisory", "blocking"] },
+        "budgets": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maxFiles": { "type": "integer", "minimum": 0 },
+            "maxOwnershipDomains": { "type": "integer", "minimum": 0 },
+            "maxGeneratedFiles": { "type": "integer", "minimum": 0 },
+            "maxBoundaries": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    }
+  }
+}

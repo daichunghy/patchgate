@@ -1,0 +1,741 @@
+version: 2
+project: PatchGate
+authority:
+  - PROJECT_CONSTITUTION.md
+  - AGENTS.md
+human_plan: docs/agent-execution-plan.md
+product_requirements: docs/product/user-requirements.md
+status: local_core_verified_publication_pending
+status_note: G1 is locally technically verified. G0 publication authority is pending maintainer decisions; live GitHub and user-flow evidence remain absent.
+
+rules:
+  - Read PROJECT_CONSTITUTION.md completely before substantive work.
+  - Do not mark live or integration work complete from static tests alone.
+  - Do not execute pull-request code in the trusted metadata or decision lane.
+  - Do not infer enforceable rules from prose discovery sources.
+  - Do not hand-edit generated dist artifacts; rebuild them from source.
+  - Record commands, outputs, residual gaps, and handoff IDs.
+  - Map user-facing work to UR IDs and report its validation level.
+  - Default rollout to local or shadow mode before maintainer-authorized enforcement.
+  - Do not report static QA as a native user flow, shadow pilot, or enforcement pilot.
+  - External recruitment contact installation enforcement and publication require explicit maintainer authorization.
+
+gates:
+  G0:
+    name: Public project foundation
+    requires_human_decision: true
+    work_packages: [PG-001, PG-002, PG-003, PG-004, PG-005, PG-006, PG-007, PG-008, PG-009]
+    exit:
+      - public repository exists
+      - OSI license is detected
+      - community health files exist
+      - CI passes on a pull request
+      - secret scan passes
+      - public feedback and private security routes are usable
+      - early-user research protocol and consent-safe evidence log exist
+  G1:
+    name: Deterministic runtime contract
+    work_packages: [PG-101, PG-102, PG-103, PG-104, PG-105, PG-106, PG-107, PG-108, PG-109, PG-110]
+    exit:
+      - malformed input cannot reach the evaluator
+      - decision digest excludes audit and delivery timestamps
+      - receipt validates against the complete schema
+      - duplicate stale and foreign evidence cannot pass
+      - incomplete decision-bearing observations cannot create a ready result
+      - compatibility fixture manifest has no orphan or unasserted fixture
+    technical_status: locally_verified
+  G2:
+    name: Useful local preflight
+    depends_on: [G1]
+    work_packages: [PG-201, PG-202, PG-203, PG-204, PG-205, PG-206, PG-207, PG-208, PG-209, PG-210, PG-211, PG-212]
+    exit:
+      - git-ref preflight works on fixture repositories
+      - discovery cannot silently become enforcement
+      - ambiguity and conflicts have remediation
+      - safe draft initialization and configuration diagnosis work
+      - text and JSON views remain semantically aligned
+      - at least three task-based usability sessions map findings to backlog decisions
+  G3:
+    name: Authenticated GitHub adapter
+    depends_on: [G1]
+    work_packages: [PG-301, PG-302, PG-303, PG-304, PG-305, PG-306, PG-307, PG-308, PG-309, PG-310, PG-311, PG-312, PG-313, PG-314, PG-315]
+    exit:
+      - mocked API integration suite passes
+      - pagination and permission gaps fail closed
+      - read-only live smoke test passes
+      - TOCTOU identity changes discard the result
+      - capability doctor explains permission and unsupported-state impact by requirement
+      - request page retry and rate-limit budgets are recorded and bounded
+  G4:
+    name: Safe shadow-mode GitHub Action
+    depends_on: [G0, G2, G3]
+    work_packages: [PG-401, PG-402, PG-403, PG-404, PG-405, PG-406, PG-407, PG-408, PG-409, PG-410, PG-411, PG-412, PG-413, PG-414]
+    exit:
+      - clean consumer repository runs the bundled Action
+      - fork and merge-group E2E cases pass
+      - privileged lanes never execute pull-request code
+      - delivery updates one check without default comment spam
+      - two consenting repositories complete non-blocking shadow evaluation
+  G5:
+    name: Adversarial hardening and opt-in enforcement
+    depends_on: [G4]
+    work_packages: [PG-501, PG-502, PG-503, PG-504, PG-505, PG-506, PG-507, PG-508, PG-509, PG-510, PG-511, PG-512, PG-513, PG-514]
+    exit:
+      - TG-01 through TG-16 map to passing tests
+      - no P0 or P1 security waiver remains
+      - performance and abuse budgets pass
+      - maintainers review shadow evidence before authorizing required-check enforcement
+  G6:
+    name: Public beta
+    depends_on: [G5]
+    work_packages: [PG-601, PG-602, PG-603, PG-604, PG-605, PG-606, PG-607, PG-608, PG-609, PG-610, PG-611, PG-612]
+    exit:
+      - v0.1.0-beta.1 immutable release exists
+      - clean install and rollback pass
+      - known limitations and permissions are documented
+      - compatibility upgrade rollback and redacted support paths pass clean-room tests
+  G7:
+    name: External pilots
+    depends_on: [G6]
+    work_packages: [PG-701, PG-702, PG-703, PG-704, PG-705, PG-706]
+    exit:
+      - two external public repositories complete the pilot protocol
+      - feedback maps to issues fixtures or documentation
+      - no false green is observed
+      - pilot repositories are materially different and enforcement was explicitly consented
+      - usefulness and usability outcomes are reported with raw counts and context
+  G8:
+    name: v0.1 and Codex for Open Source dossier
+    depends_on: [G7]
+    work_packages: [PG-801, PG-802, PG-803, PG-804]
+    exit:
+      - v0.1.0 satisfies PROJECT_CONSTITUTION.md
+      - application evidence index contains only verifiable claims
+      - maintainer reviews and submits the application manually
+
+work_packages:
+  PG-001:
+    title: Confirm owner repository slug and publishing authority
+    lane: maintainer
+    human_only: true
+    outputs: [recorded owner decision]
+  PG-002:
+    title: Initialize Git history and baseline main branch
+    lane: release
+    depends_on: [PG-001]
+    paths: [.gitignore, package.json, README.md]
+    acceptance: [git status --short --branch]
+  PG-003:
+    title: Select and add an OSI license
+    lane: maintainer
+    human_only: true
+    outputs: [LICENSE]
+  PG-004:
+    title: Add community health and contribution surfaces
+    lane: release
+    depends_on: [PG-003]
+    paths: [CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, SUPPORT.md, .github]
+  PG-005:
+    title: Add baseline CI and package smoke test
+    lane: release
+    paths: [.github/workflows/ci.yml, package.json]
+    acceptance: [npm run verify, npm run build]
+  PG-006:
+    title: Configure default branch ruleset after CI stabilization
+    lane: maintainer
+    human_only: true
+    depends_on: [PG-005]
+  PG-007:
+    title: Publish the reviewed repository to a public remote
+    lane: maintainer
+    human_only: true
+    depends_on: [PG-002, PG-003, PG-004, PG-005]
+  PG-008:
+    title: Create a consent-safe user research protocol
+    lane: product
+    paths: [docs/product, docs/pilots]
+    acceptance:
+      - no participant identity or quote is published without consent
+      - task evidence distinguishes invitation session shadow and enforcement
+  PG-009:
+    title: Recruit candidate maintainers for preflight tasks and later shadow pilots
+    lane: pilot
+    human_only: true
+    depends_on: [PG-008]
+    paths: [docs/pilots]
+    acceptance:
+      - candidate log distinguishes invitation consent session shadow and enforcement states
+      - recruitment does not claim adoption or active use
+
+  PG-101:
+    title: Complete policy input and receipt schemas
+    lane: contract
+    paths: [schemas, src/contract, test/unit, test/fixture]
+  PG-102:
+    title: Enforce runtime validation at current CLI and reusable snapshot boundaries
+    lane: contract
+    depends_on: [PG-101]
+    paths: [src/cli.ts, src/contract, test]
+    acceptance:
+      - every current external CLI input validates before pure evaluation
+      - one reusable validation boundary is exposed for future adapters
+      - Action boundary remains owned by PG-403 and cannot be claimed before it exists
+  PG-103:
+    title: Separate semantic decision input from audit envelope
+    lane: contract
+    paths: [src/evidence, src/types.ts, test/unit]
+  PG-104:
+    title: Add deterministic receipt digest
+    lane: contract
+    depends_on: [PG-103]
+    paths: [src/evidence, src/contract, schemas, test/unit]
+  PG-105:
+    title: Formalize final status precedence
+    lane: contract
+    paths: [src/contract/status-precedence.ts, src/evaluator, test/unit]
+  PG-106:
+    title: Reject invalid policy counts IDs conclusions and unknown fields
+    lane: policy
+    depends_on: [PG-101]
+    paths: [src/policy, schemas, test/unit]
+  PG-107:
+    title: Resolve duplicate check candidates without first-match behavior
+    lane: contract
+    paths: [src/evidence/source-verifier.ts, src/evaluator, test/unit]
+  PG-108:
+    title: Add observation completeness permission and provenance metadata
+    lane: contract
+    depends_on: [PG-101, PG-102, PG-103, PG-104]
+    paths: [src/types.ts, src/contract, src/evidence, schemas, fixtures, test]
+    acceptance:
+      - complete sufficient unavailable and permission-limited states are distinct
+      - normalized observation digests bind metadata to their item collections
+      - incomplete collections cannot be hidden by a passing item
+    implementation_evidence:
+      - src/types.ts
+      - src/contract/validation.ts
+      - test/fixture.test.ts
+      - test/evaluator.test.ts
+  PG-109:
+    title: Distinguish confirmed failure from missing evidence by rule dependency
+    lane: contract
+    depends_on: [PG-108]
+    paths: [src/evaluator.ts, src/contract, src/evidence, fixtures/evaluator, test]
+    acceptance:
+      - linked issue check review ownership and reviewability states follow the behavior matrix
+      - unused incomplete observations do not create blocking requirements
+      - mixed result precedence and reason IDs are table tested
+    implementation_evidence:
+      - src/evaluator-core.ts
+      - src/contract/status-precedence.ts
+      - test/evaluator.test.ts
+      - test/status-precedence.test.ts
+  PG-110:
+    title: Add schema compatibility and deterministic replay fixtures
+    lane: contract
+    depends_on: [PG-101, PG-103, PG-104, PG-105, PG-108, PG-109]
+    paths: [schemas, src/contract, src/evidence, fixtures, test, docs]
+    acceptance:
+      - input receipt and evaluator versions have separate documented namespaces
+      - executable fixture manifest asserts validation status reasons exits and digest relations
+      - fixture manifest and fixture files have a tested one-to-one mapping
+    implementation_evidence:
+      - fixtures/manifest.json
+      - test/fixture.test.ts
+      - test/cli-smoke.test.ts
+      - docs/receipt-contract.md
+
+  PG-201:
+    title: Add explicit git-ref and local-file preflight modes
+    lane: policy
+    paths: [src/cli, src/policy, test/fixture]
+    acceptance:
+      - JSON identifies local_file and git_ref modes separately
+      - Git-ref mode requires an explicit repository path and ref
+    implementation_evidence:
+      - src/cli.ts
+      - src/cli/ux.ts
+      - test/cli-smoke.test.ts
+  PG-202:
+    title: Load policy bytes from the trusted base ref
+    lane: policy
+    depends_on: [PG-201]
+    paths: [src/policy, test/fixture]
+    acceptance:
+      - policy bytes are read with Git object commands without checkout or shell interpolation
+      - raw and normalized policy digests retain the resolved commit identity
+    implementation_evidence:
+      - src/policy.ts
+      - test/cli-smoke.test.ts
+  PG-203:
+    title: Discover prose guidance without enforcement
+    lane: policy
+    paths: [src/discovery, test/fixture]
+    acceptance:
+      - fixed guidance paths are reported with presence, authority and bounded read behavior
+      - discovery results cannot create evaluator requirements or a blocking exit
+    implementation_evidence:
+      - src/discovery.ts
+      - src/cli/ux.ts
+      - test/cli-smoke.test.ts
+  PG-204:
+    title: Classify enforced advisory needs-confirmation and unsupported findings
+    lane: policy
+    depends_on: [PG-203]
+    paths: [src/discovery, src/contract, schemas, test/fixture]
+    acceptance:
+      - prose candidates use stable diagnostic IDs and remediation
+      - unsupported platform/product claims remain discovery-only and non-blocking
+    implementation_evidence:
+      - src/discovery.ts
+      - src/cli/ux.ts
+      - test/cli-smoke.test.ts
+  PG-205:
+    title: Detect prose and structured-policy conflicts
+    lane: policy
+    depends_on: [PG-202, PG-204]
+    paths: [src/discovery, test/fixture]
+    acceptance:
+      - a prose governance candidate absent from trusted structured policy is needs_confirmation
+      - conflict remediation points to patchgate.yml or a native GitHub control
+      - conflict detection never changes evaluator enforcement on its own
+    implementation_evidence:
+      - src/discovery.ts
+      - src/cli/ux.ts
+      - test/cli-smoke.test.ts
+  PG-206:
+    title: Produce aligned human-readable and JSON preflight output
+    lane: policy
+    depends_on: [PG-205]
+    paths: [src/cli, test/fixture]
+  PG-207:
+    title: Build preflight fixture repositories
+    lane: policy
+    paths: [fixtures/repositories, test/fixture]
+    acceptance:
+      - fixtures cover missing policy, head-only policy, conflicting prose and unsupported guidance
+      - CLI tests enumerate every fixture and assert non-green or discovery-only outcomes
+    implementation_evidence:
+      - fixtures/repositories
+      - test/cli-smoke.test.ts
+  PG-208:
+    title: Add safe draft policy initialization and explicit validation
+    lane: product
+    depends_on: [PG-201, PG-204]
+    paths: [src/cli, src/policy, schemas, docs, test/fixture]
+    acceptance:
+      - init creates a draft and never enables enforcement
+      - validate reports stable schema and semantic diagnostics
+    implementation_evidence:
+      - src/cli/ux.ts
+      - src/cli.ts
+      - test/cli-smoke.test.ts
+  PG-209:
+    title: Add capability and configuration doctor
+    lane: product
+    depends_on: [PG-201, PG-202, PG-204]
+    paths: [src/cli, src/policy, docs, test/fixture]
+    acceptance:
+      - doctor explains base identity source capability and unsupported states
+      - no token is required for local-only checks
+    implementation_evidence:
+      - src/cli/ux.ts
+      - test/cli-smoke.test.ts
+  PG-210:
+    title: Make text JSON and remediation views semantically equivalent
+    lane: product
+    depends_on: [PG-206, PG-208, PG-209]
+    paths: [src/cli, src/contract, docs, test]
+    acceptance:
+      - every human result maps to stable machine requirement and diagnostic IDs
+      - output meaning does not depend on color emoji or icons
+    implementation_evidence:
+      - src/cli/ux.ts
+      - test/cli-smoke.test.ts
+  PG-211:
+    title: Run three task-based preflight and configuration usability sessions
+    lane: pilot
+    depends_on: [PG-009, PG-210]
+    paths: [docs/pilots, docs/product]
+    acceptance:
+      - raw task completion time comprehension and assistance are recorded
+      - each finding maps to a fix documentation decision or explicit non-goal
+    preparation_evidence:
+      - docs/pilots/g2-usability-session-protocol.md
+    status: protocol_prepared_sessions_not_run
+  PG-212:
+    title: Close preflight usability blockers before Action interface freeze
+    lane: product
+    depends_on: [PG-211]
+    paths: [src/cli, src/policy, docs, fixtures, test]
+    acceptance:
+      - no P0 or P1 onboarding or explanation finding remains
+      - UR-001 through UR-107 have validation-level evidence
+
+  PG-301:
+    title: Resolve repository PR and target revision identity
+    lane: github
+    paths: [src/github, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/identity.ts, test/integration/github-adapter.test.ts, docs/github-adapter-contract.md]
+  PG-302:
+    title: Fetch and digest trusted base policy
+    lane: github
+    depends_on: [PG-301]
+    paths: [src/github/contents.ts, src/github/snapshot-builder.ts, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/contents.ts, fixtures/api/happy-path.json, test/integration/github-adapter.test.ts]
+  PG-303:
+    title: Retrieve complete changed paths with cap diagnostics
+    lane: github
+    depends_on: [PG-301]
+    paths: [src/github/changed-paths.ts, src/github/pagination.ts, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/changed-paths.ts, src/github/pagination.ts, src/github/request-budget.ts]
+  PG-304:
+    title: Retrieve linked issues from GitHub metadata
+    lane: github
+    depends_on: [PG-301]
+    paths: [src/github/linked-issues.ts, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/linked-issues.ts, fixtures/api/happy-path.json]
+  PG-305:
+    title: Normalize check and workflow evidence with source identity
+    lane: github
+    depends_on: [PG-301, PG-107]
+    paths: [src/github/checks.ts, src/github/workflows.ts, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/checks.ts, src/github/workflows.ts, test/integration/github-adapter.test.ts]
+  PG-306:
+    title: Normalize current review state and commit freshness
+    lane: github
+    depends_on: [PG-301]
+    paths: [src/github/reviews.ts, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/reviews.ts, src/github/snapshot-builder.ts]
+  PG-307:
+    title: Prove reviewer qualification from authenticated permissions and teams
+    lane: github
+    depends_on: [PG-306]
+    paths: [src/github/permissions.ts, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/permissions.ts, src/types.ts, test/security.test.ts]
+  PG-308:
+    title: Resolve base CODEOWNERS with explicit conformance limits
+    lane: github
+    depends_on: [PG-302, PG-303, PG-307]
+    paths: [src/github/codeowners.ts, fixtures/api, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/codeowners.ts, docs/github-api-support-matrix.md]
+  PG-309:
+    title: Normalize rulesets branch protection and bypass visibility
+    lane: github
+    depends_on: [PG-301]
+    paths: [src/github/rulesets.ts, src/github/branch-protection.ts, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/rulesets.ts, src/github/branch-protection.ts, docs/github-adapter-contract.md]
+  PG-310:
+    title: Add bounded retry rate-limit and API error semantics
+    lane: github
+    paths: [src/github/retry.ts, src/github/client.ts, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/client.ts, src/github/retry.ts, src/github/diagnostics.ts]
+  PG-311:
+    title: Re-read target identity before publishing a decision
+    lane: github
+    depends_on: [PG-301, PG-302, PG-303, PG-304, PG-305, PG-306, PG-309, PG-310, PG-314]
+    paths: [src/github/toctou.ts, src/github/snapshot-builder.ts, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/toctou.ts, test/integration/github-security.test.ts]
+  PG-312:
+    title: Redact sensitive and unnecessary GitHub data
+    lane: security
+    depends_on: [PG-302, PG-303, PG-304, PG-305, PG-306, PG-307, PG-308, PG-309, PG-313]
+    paths: [src/github, src/contract, test/security]
+    status: implemented
+    implementation_evidence: [src/github/redaction.ts, docs/security/github-adapter-boundary.md, test/integration/github-security.test.ts]
+  PG-313:
+    title: Expose per-requirement permission capability and unsupported diagnostics
+    lane: github
+    depends_on: [PG-301, PG-307, PG-309, PG-310]
+    paths: [src/github, src/cli, src/contract, docs, test/integration]
+    status: implemented
+    implementation_evidence: [src/github/capabilities.ts, docs/github-permissions.md, src/cli.ts]
+  PG-314:
+    title: Record and bound request pagination retry and rate-limit budgets
+    lane: github
+    depends_on: [PG-303, PG-310]
+    paths: [src/github, test/integration, docs]
+    acceptance:
+      - representative snapshots record request page retry and remaining-rate evidence
+      - retry exhaustion and caps return stable non-ready diagnostics
+    status: implemented
+    implementation_evidence: [src/github/request-budget.ts, test/integration/github-adapter.test.ts, docs/github-api-support-matrix.md]
+  PG-315:
+    title: Evaluate safe conditional requests and stable snapshot caching
+    lane: github
+    depends_on: [PG-302, PG-310, PG-311]
+    paths: [src/github, test/integration, docs]
+    acceptance:
+      - caching never crosses repository revision authorization or identity boundaries
+      - unchanged authenticated responses preserve semantic snapshot results
+    status: evaluated_deferred
+    implementation_evidence: [docs/decisions/2026-08-13-g3-contract.md]
+
+  PG-401:
+    title: Define Action metadata inputs and outputs
+    lane: action
+    paths: [action.yml, src/action/inputs.ts]
+  PG-402:
+    title: Build a self-contained JavaScript Action bundle
+    lane: action
+    depends_on: [PG-401]
+    paths: [src/action, dist/action, package.json]
+  PG-403:
+    title: Connect Action entrypoint to adapter and evaluator
+    lane: action
+    depends_on: [PG-311, PG-402]
+    paths: [src/action/index.ts, test/e2e]
+  PG-404:
+    title: Emit receipt outputs and a derived job summary
+    lane: action
+    depends_on: [PG-403]
+    paths: [src/action/summary.ts, test/e2e]
+  PG-405:
+    title: Document and test minimal permission profiles
+    lane: security
+    depends_on: [PG-403]
+    paths: [docs, .github/workflows, test/security]
+  PG-406:
+    title: Provide separated trusted and untrusted workflow examples
+    lane: action
+    depends_on: [PG-405]
+    paths: [docs, .github/workflows]
+  PG-407:
+    title: Support and test merge_group targets
+    lane: action
+    depends_on: [PG-301, PG-305, PG-403]
+    paths: [src/action, src/github, test/e2e]
+  PG-408:
+    title: Reject privileged checkout install build and artifact execution
+    lane: security
+    depends_on: [PG-406]
+    paths: [scripts, test/security, .github/workflows]
+  PG-409:
+    title: Verify committed bundle matches source build
+    lane: release
+    depends_on: [PG-402]
+    paths: [scripts, package.json, .github/workflows]
+  PG-410:
+    title: Enforce Action-only source claims
+    lane: security
+    depends_on: [PG-403]
+    paths: [src/action, docs, test/security]
+  PG-411:
+    title: Add explicit shadow mode and prohibit automatic ruleset mutation
+    lane: action
+    depends_on: [PG-403, PG-405]
+    paths: [action.yml, src/action, docs, test/e2e]
+  PG-412:
+    title: Deliver one idempotent low-noise check and opt-in comments
+    lane: product
+    depends_on: [PG-404, PG-411]
+    paths: [src/action, test/e2e, docs]
+    acceptance:
+      - replay updates or reuses one target-bound check
+      - default flow creates no repeated PR comments
+  PG-413:
+    title: Test actionable accessible check summaries and annotations
+    lane: product
+    depends_on: [PG-404, PG-410, PG-412]
+    paths: [src/action, test/e2e, docs]
+    acceptance:
+      - common failures do not require raw receipt inspection
+      - summary distinguishes failed unknown and human-gate states without color dependence
+  PG-414:
+    title: Run two consenting non-blocking shadow installations
+    lane: pilot
+    depends_on: [PG-407, PG-408, PG-412, PG-413]
+    paths: [docs/pilots]
+    acceptance:
+      - status distribution unknown causes delivery noise and remediation clarity are recorded
+      - no repository ruleset is changed by the installation
+
+  PG-501:
+    title: Test base-policy self-relaxation resistance
+    lane: security
+    paths: [fixtures/security, test/security]
+  PG-502:
+    title: Test base digest and re-read mismatch
+    lane: security
+    depends_on: [PG-311]
+    paths: [fixtures/security, test/security]
+  PG-503:
+    title: Test stale foreign duplicate and unexpected check sources
+    lane: security
+    depends_on: [PG-305, PG-107]
+    paths: [fixtures/security, test/security]
+  PG-504:
+    title: Test stale dismissed author bot and unqualified reviews
+    lane: security
+    depends_on: [PG-306, PG-307]
+    paths: [fixtures/security, test/security]
+  PG-505:
+    title: Test incomplete paths CODEOWNERS and team observations
+    lane: security
+    depends_on: [PG-303, PG-307, PG-308]
+    paths: [fixtures/security, test/security]
+  PG-506:
+    title: Test untrusted PR text and shell metacharacters
+    lane: security
+    depends_on: [PG-403]
+    paths: [fixtures/security, test/security]
+  PG-507:
+    title: Test privileged workflow boundaries
+    lane: security
+    depends_on: [PG-408]
+    paths: [.github/workflows, test/security]
+  PG-508:
+    title: Test receipt replay after a new head push
+    lane: security
+    depends_on: [PG-104, PG-311]
+    paths: [fixtures/security, test/security]
+  PG-509:
+    title: Test schema downgrade and unsupported versions
+    lane: security
+    depends_on: [PG-101, PG-110]
+    paths: [fixtures/security, test/security]
+  PG-510:
+    title: Test redaction dependency security and package provenance
+    lane: security
+    depends_on: [PG-312, PG-409]
+    paths: [test/security, .github/workflows, docs]
+  PG-511:
+    title: Add deterministic performance and algorithmic complexity budgets
+    lane: performance
+    depends_on: [PG-110, PG-314]
+    paths: [test/performance, fixtures, docs]
+  PG-512:
+    title: Add payload abuse property and fuzz tests at external boundaries
+    lane: security
+    depends_on: [PG-102, PG-314, PG-403]
+    paths: [test/security, test/property, fixtures/security]
+  PG-513:
+    title: Review shadow evidence and choose enforcement no-go or authorized scope
+    lane: maintainer
+    human_only: true
+    depends_on: [PG-414, PG-501, PG-502, PG-503, PG-504, PG-505, PG-506, PG-507, PG-508, PG-509, PG-510, PG-511, PG-512]
+  PG-514:
+    title: Verify required-check expected source and rollback after authorization
+    lane: security
+    depends_on: [PG-513]
+    paths: [docs, test/e2e]
+    acceptance:
+      - ruleset readback identifies exact check and expected source
+      - rollback restores prior merge behavior
+
+  PG-601:
+    title: Confirm registry name and make the package publishable
+    lane: maintainer
+    human_only: true
+    paths: [package.json]
+  PG-602:
+    title: Confirm Action-first and CLI-second distribution strategy
+    lane: maintainer
+    human_only: true
+  PG-603:
+    title: Run clean-room install and Node support tests
+    lane: release
+    depends_on: [PG-601, PG-602]
+  PG-604:
+    title: Complete quickstart permissions outputs status and limitation docs
+    lane: release
+    paths: [README.md, docs]
+  PG-605:
+    title: Add changelog versioning support and rollback documentation
+    lane: release
+    paths: [CHANGELOG.md, SUPPORT.md, docs]
+  PG-606:
+    title: Add bounded release provenance without compliance claims
+    lane: release
+    depends_on: [PG-409]
+  PG-607:
+    title: Publish v0.1.0-beta.1 immutable release
+    lane: maintainer
+    human_only: true
+    depends_on: [PG-603, PG-604, PG-605, PG-606]
+  PG-608:
+    title: Create safe good-first issues outside trust boundaries
+    lane: release
+    depends_on: [PG-607]
+  PG-609:
+    title: Publish supported GitHub and Node compatibility matrix
+    lane: release
+    depends_on: [PG-603, PG-604]
+    paths: [README.md, docs, package.json]
+  PG-610:
+    title: Build redacted diagnostic and support bundle workflow
+    lane: product
+    depends_on: [PG-312, PG-604]
+    paths: [src/cli, docs, test/security]
+    status: implemented
+    implementation_evidence: [src/support-bundle.ts, src/cli.ts, test/cli-smoke.test.ts, docs/support-bundle.md]
+  PG-611:
+    title: Clean-room test upgrade downgrade and rollback
+    lane: release
+    depends_on: [PG-603, PG-605, PG-609]
+    paths: [test/e2e, docs]
+  PG-612:
+    title: Audit UR acceptance and validation levels before beta publication
+    lane: product
+    depends_on: [PG-610, PG-611]
+    paths: [docs/product, docs/reviews]
+
+  PG-701:
+    title: Recruit and consent Pilot A
+    lane: pilot
+    human_only: true
+    depends_on: [PG-607]
+  PG-702:
+    title: Recruit and consent Pilot B
+    lane: pilot
+    human_only: true
+    depends_on: [PG-607]
+  PG-703:
+    title: Run pilots and collect defined metrics
+    lane: pilot
+    depends_on: [PG-701, PG-702]
+  PG-704:
+    title: Convert feedback into fixes fixtures and a release candidate
+    lane: pilot
+    depends_on: [PG-703]
+  PG-705:
+    title: Compare pilot shapes and report usefulness with raw counts and context
+    lane: pilot
+    depends_on: [PG-703]
+    paths: [docs/pilots, docs/reviews]
+  PG-706:
+    title: Audit all user requirements against external pilot evidence
+    lane: product
+    depends_on: [PG-704, PG-705]
+    paths: [docs/product, docs/reviews]
+
+  PG-801:
+    title: Audit the constitution definition of done line by line
+    lane: release
+    depends_on: [PG-704]
+  PG-802:
+    title: Publish v0.1.0 after all release gates pass
+    lane: maintainer
+    human_only: true
+    depends_on: [PG-801]
+  PG-803:
+    title: Build a verifiable Codex for Open Source evidence dossier
+    lane: pilot
+    depends_on: [PG-802]
+    paths: [docs/application]
+  PG-804:
+    title: Review current program terms and submit the application
+    lane: maintainer
+    human_only: true
+    depends_on: [PG-803]

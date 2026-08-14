@@ -1,0 +1,44 @@
+name: 'PatchGate Review-Readiness Gate'
+description: 'Deterministic pull-request reviewability evaluator and policy verification gate'
+author: 'The PatchGate Authors'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  fail-on:
+    description: 'Status level that causes the action step to fail. Options: never, blocked, human_review_required, evidence_missing, policy_ambiguous.'
+    required: false
+    default: 'blocked'
+  github-token:
+    description: 'GitHub token for querying authenticated repository metadata.'
+    required: false
+    default: ${{ github.token }}
+  report-path:
+    description: 'Path where the ContributionReceipt JSON artifact will be written.'
+    required: false
+    default: 'patchgate-receipt.json'
+  create-check-run:
+    description: 'Whether to post an idempotent GitHub Check Run with the receipt summary.'
+    required: false
+    default: 'false'
+  check-name:
+    description: 'Title of the GitHub Check Run.'
+    required: false
+    default: 'PatchGate Review Gate'
+
+outputs:
+  status:
+    description: 'The final evaluation status (ready_for_review, blocked, human_review_required, evidence_missing, policy_ambiguous).'
+  receipt-path:
+    description: 'Path to the generated ContributionReceipt JSON artifact.'
+  decision-input-digest:
+    description: 'SHA-256 canonical digest of the normalized input snapshot.'
+  receipt-digest:
+    description: 'SHA-256 canonical digest of the final evaluation receipt.'
+  summary-markdown:
+    description: 'Human-readable markdown summary of the evaluation findings.'
+
+runs:
+  using: 'node20'
+  main: 'dist/src/action/index.js'

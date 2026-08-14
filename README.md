@@ -1,0 +1,144 @@
+# PatchGate
+
+[![CI](https://github.com/patchgate/patchgate/actions/workflows/ci.yml/badge.svg)](https://github.com/patchgate/patchgate/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![TypeScript: Strict](https://img.shields.io/badge/TypeScript-Strict_100%25-blue.svg)](https://www.typescriptlang.org/)
+
+PatchGate is an open-source review-readiness gate for GitHub pull requests.
+It answers a narrower question than code review or AI-authorship detection:
+
+> Has this contribution supplied the policy, evidence, ownership, and human
+> boundaries that the repository requires before a maintainer spends review
+> time?
+
+The evaluator is deterministic and explainable. It does not decide whether code
+is correct, safe, or merge-worthy, and it cannot force an external coding agent
+to stop working.
+
+## GitHub Action Quickstart
+
+Add PatchGate to `.github/workflows/patchgate.yml`:
+
+```yaml
+name: PatchGate Review Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+
+jobs:
+  review-gate:
+    name: Evaluate Review-Readiness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run PatchGate Gate
+        uses: patchgate/patchgate@v0.1.0-dev
+        with:
+          fail-on: 'blocked'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          report-path: 'patchgate-receipt.json'
+```
+
+## Local development
+
+```bash
+npm install
+npm run verify
+npm run build
+node dist/src/cli.js init --path /tmp/my-repository
+node dist/src/cli.js validate --policy patchgate.example.yml
+node dist/src/cli.js preflight --base patchgate.example.yml
+node dist/src/cli.js preflight --base main --repo /path/to/repository --json
+node dist/src/cli.js doctor --base patchgate.example.yml --json
+node dist/src/cli.js evaluate --event fixtures/pr-ready.json --report /tmp/patchgate-receipt.json
+npm run test:github
+node dist/src/cli.js github snapshot --mock-fixture fixtures/api/happy-path.json --output /tmp/patchgate-github-snapshot.json
+node dist/src/cli.js support-bundle --input /tmp/patchgate-github-snapshot.json --output /tmp/patchgate-support.json
+```
+
+`init` creates a version-1 draft only and refuses to overwrite an existing
+policy. `validate` and local-file `preflight` read an explicit path. Git-ref
+`preflight` reads `patchgate.yml` and the discovery-only guidance files from
+the named commit using Git objects; it does not checkout or execute
+pull-request code. `doctor` reports local capability without requiring a
+token. All discovery findings are advisory, needs-confirmation, or
+unsupported and can never become enforcement by themselves.
+
+The `evaluate` command consumes a normalized JSON snapshot so that policy
+evaluation can be tested without network access. The future GitHub adapter
+now produces this same snapshot from recorded authenticated metadata and
+base-revision content. Live mode is explicit, requires
+`PATCHGATE_GITHUB_TOKEN`, and is documented in
+[the adapter contract](docs/github-adapter-contract.md); it was not run for
+this workspace task.
+
+## Trust model
+
+PatchGate uses three separate lanes:
+
+1. The trusted metadata lane reads base-revision policy, GitHub metadata,
+   rulesets, CODEOWNERS, reviews, and commit-bound check evidence. It never
+   checks out or executes pull-request code.
+2. The untrusted verification lane may run contributor code in a separate
+   read-only workflow with no repository secrets.
+3. The decision lane evaluates authenticated metadata and explicitly bound
+   evidence, then emits a receipt.
+
+For GitHub Actions, a `pull_request_target` workflow may read metadata and post
+results, but must never execute a checkout of pull-request code. A workflow
+that needs to run contributor code belongs in the unprivileged
+`pull_request` lane. See [the architecture note](docs/architecture.md) and
+[the threat model](docs/threat-model.md).
+
+## Documentation
+
+- [Project constitution](PROJECT_CONSTITUTION.md)
+- [Research and landscape review](docs/research/2026-08-12-patchgate-landscape.md)
+- [Deep-dive research: API, state, threat tests and pilot](docs/research/2026-08-13-patchgate-deep-dive.md)
+- [Architecture and evidence contract](docs/architecture.md)
+- [Receipt contract](docs/receipt-contract.md)
+- [Threat model](docs/threat-model.md)
+- [GitHub adapter contract](docs/github-adapter-contract.md)
+- [GitHub API and capability matrix](docs/github-api-support-matrix.md)
+- [GitHub permission contract](docs/github-permissions.md)
+- [GitHub adapter security boundary](docs/security/github-adapter-boundary.md)
+- [Authorized live-smoke protocol](docs/github-live-smoke-protocol.md)
+- [Redacted support bundle](docs/support-bundle.md)
+- [Project-wide review and next-build checkpoint](docs/reviews/2026-08-13-project-wide-review.md)
+- [Implementation roadmap](docs/implementation-roadmap.md)
+- [User requirements](docs/product/user-requirements.md)
+- [User-needs and roadmap research](docs/research/2026-08-13-patchgate-user-needs-roadmap-review.md)
+- [Detailed execution plan for agents](docs/agent-execution-plan.md)
+- [Machine-readable agent work packages](docs/agent-work-packages.yml)
+- [Prompt 1 implementation review](docs/reviews/2026-08-13-prompt-01-review.md)
+- [Prompt 2 implementation report](docs/reviews/2026-08-13-prompt-02-implementation.md)
+- [Roadmap 2.0 user-needs improvement report](docs/reviews/2026-08-13-roadmap-v2-user-needs.md)
+- [G2 local onboarding implementation report](docs/reviews/2026-08-13-g2-local-onboarding-implementation.md)
+- [G2 preflight, Git-ref and discovery checkpoint](docs/reviews/2026-08-13-g2-preflight-git-ref-discovery.md)
+- [G2 usability session protocol](docs/pilots/g2-usability-session-protocol.md)
+- [Prompt 2: observation contract and compatibility](docs/prompts/prompt-02-observation-contract-and-compatibility.md)
+- [Prompt launcher for Prompt 2](docs/prompts/prompt-02-launcher.md)
+- [Prompt 3: public foundation and maintainer decisions](docs/prompts/prompt-03-public-foundation-and-maintainer-decisions.md)
+- [Prompt launcher for Prompt 3](docs/prompts/prompt-03-launcher.md)
+- [Prompt 4: authenticated GitHub adapter](docs/prompts/prompt-04-authenticated-github-adapter.md)
+- [Prompt launcher for Prompt 4](docs/prompts/prompt-04-launcher.md)
+- [G0 maintainer decision brief](docs/decisions/2026-08-13-g0-maintainer-decision-brief.md)
+- [Codex for Open Source evidence dossier](docs/application/codex-for-open-source-evidence-dossier.md)
+- [Example policy](patchgate.example.yml)
+
+## Product boundary
+
+PatchGate can report `ready_for_review`, `blocked`,
+`human_review_required`, `evidence_missing`, or `policy_ambiguous`. A status
+check blocks a merge only when a maintainer configures the corresponding
+GitHub rule or ruleset. `human_review_required` means that a declared human
+gate remains unsatisfied; it is not proof that a human has reviewed the code.
+
+PatchGate must not claim a cryptographic signature, tamper-proof receipt,
+compliance certification, or proof that the code is correct until the exact
+mechanism and verification path exist and are tested.

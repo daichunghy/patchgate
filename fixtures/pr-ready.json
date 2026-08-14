@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "0.1",
+  "repository": { "owner": "example", "name": "service", "pullRequest": 7 },
+  "revisions": {
+    "baseSha": "base-sha",
+    "headSha": "head-sha",
+    "testedSha": "head-sha",
+    "targetKind": "head"
+  },
+  "policy": {
+    "version": 1,
+    "issueLinkage": { "required": true },
+    "requiredChecks": [
+      {
+        "id": "unit",
+        "name": "unit",
+        "target": "head",
+        "acceptableConclusions": ["success"],
+        "expectedSource": {
+          "kind": "github_actions_workflow",
+          "appId": 15368,
+          "workflowId": 123,
+          "workflowPath": ".github/workflows/ci.yml",
+          "event": "pull_request"
+        }
+      }
+    ],
+    "reviewability": { "mode": "advisory", "budgets": { "maxFiles": 50 } }
+  },
+  "policySources": [
+    {
+      "kind": "patchgate",
+      "identity": "patchgate.yml",
+      "revision": "base-sha",
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "contractDigest": "sha256:439f670c91ae287fe6c1a2c9cc0a95a034d5b4c667da408c369269303ed8cf9b",
+      "authority": "enforced"
+    }
+  ],
+  "policyDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "changedPaths": ["src/service.ts"],
+  "linkedIssues": [{ "repository": "example/service", "number": 12, "repositoryId": "repo-1", "issueId": "issue-12", "linked": true }],
+  "reviews": [],
+  "checks": [
+    {
+      "name": "unit",
+      "status": "completed",
+      "conclusion": "success",
+      "testedSha": "head-sha",
+      "appSlug": "github-actions",
+      "appId": 15368,
+      "workflowId": 123,
+      "workflowPath": ".github/workflows/ci.yml",
+      "workflowRunId": 101,
+      "workflowRunAttempt": 1,
+      "event": "pull_request",
+      "sourceStrength": "github_actions_workflow",
+      "retrievedAt": "2026-08-12T00:00:00Z"
+    }
+  ],
+  "ownershipRequirements": [],
+  "reviewability": {
+    "fileCount": 1,
+    "ownershipDomains": ["service"],
+    "generatedFileCount": 0,
+    "boundaryCount": 1
+  },
+  "observations": {
+    "policySources": [
+      {
+        "source": { "kind": "local-policy", "identity": "patchgate.yml" },
+        "revision": "base-sha",
+        "retrievedAt": "2026-08-12T00:00:00Z",
+        "complete": true,
+        "permissionState": "sufficient",
+        "normalizedDigest": "sha256:101f6f92da60f44baacc15a29047cd3093e28455e532eacc72eebb1182766d36"
+      }
+    ],
+    "changedPaths": {
+      "source": { "kind": "local", "identity": "changed-paths" },
+      "revision": "head-sha",
+      "retrievedAt": "2026-08-12T00:00:00Z",
+      "complete": true,
+      "permissionState": "sufficient",
+      "normalizedDigest": "sha256:43de7ca3dad668834a2ac8f2d784e24753219cd3482025a695f8c0f3114471e3"
+    },
+    "linkedIssues": {
+      "source": { "kind": "local", "identity": "linked-issues" },
+      "revision": "head-sha",
+      "retrievedAt": "2026-08-12T00:00:00Z",
+      "complete": true,
+      "permissionState": "sufficient",
+      "normalizedDigest": "sha256:c13cb6ecda2564e1a4c70cd2d68a70a9ff7ec596c558996ee17f6672cbdb4dc5"
+    },
+    "reviews": {
+      "source": { "kind": "local", "identity": "reviews" },
+      "revision": "head-sha",
+      "retrievedAt": "2026-08-12T00:00:00Z",
+      "complete": true,
+      "permissionState": "sufficient",
+      "normalizedDigest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "checks": {
+      "source": { "kind": "local", "identity": "checks" },
+      "revision": "head-sha",
+      "retrievedAt": "2026-08-12T00:00:00Z",
+      "complete": true,
+      "permissionState": "sufficient",
+      "normalizedDigest": "sha256:ea59b9f4b72c751ff13a2ca7171ea98cf8739f1138310b38541ebbb109abae73"
+    },
+    "ownership": {
+      "source": { "kind": "local", "identity": "codeowners" },
+      "revision": "base-sha",
+      "retrievedAt": "2026-08-12T00:00:00Z",
+      "complete": true,
+      "permissionState": "sufficient",
+      "normalizedDigest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "reviewability": {
+      "source": { "kind": "local", "identity": "reviewability" },
+      "revision": "head-sha",
+      "retrievedAt": "2026-08-12T00:00:00Z",
+      "complete": true,
+      "permissionState": "sufficient",
+      "normalizedDigest": "sha256:b7486ab0c1b4028a666e6f5aca4e061d98b44acd7e706d6f32f4af9ebcbe89a9"
+    }
+  }
+}

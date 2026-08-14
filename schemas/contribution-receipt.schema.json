@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://patchgate.dev/schemas/contribution-receipt/0.1",
+  "title": "ContributionReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "evaluatorVersion", "repository", "revisions", "policyDigest", "decisionInputDigest", "receiptDigest", "changedPaths", "policySources", "observations", "evidence", "requirements", "humanGates", "final", "evaluatedAt"],
+  "properties": {
+    "schemaVersion": { "const": "0.1" }, "evaluatorVersion": { "const": "0.1.0-dev" },
+    "repository": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/repository" }, "revisions": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/revisions" },
+    "policyDigest": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/digest" }, "decisionInputDigest": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/digest" }, "receiptDigest": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/digest" },
+    "changedPaths": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "uniqueItems": true },
+    "policySources": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/policySource" } },
+    "observations": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/observations" },
+    "evidence": {
+      "type": "object", "additionalProperties": false, "required": ["checks", "linkedIssues", "reviews", "ownershipRequirements"],
+      "properties": {
+        "checks": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/check" } },
+        "linkedIssues": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/linkedIssue" } },
+        "reviews": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/review" } },
+        "ownershipRequirements": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/ownershipRequirement" } }
+      }
+    },
+    "requirements": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/requirement" } },
+    "reviewability": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/reviewabilitySnapshot" },
+    "humanGates": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/humanGate" } },
+    "final": { "type": "object", "additionalProperties": false, "required": ["status", "reasonIds"], "properties": { "status": { "enum": ["ready_for_review", "blocked", "human_review_required", "evidence_missing", "policy_ambiguous"] }, "reasonIds": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "uniqueItems": true } } },
+    "evaluatedAt": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/timestamp" }
+  },
+  "$defs": {
+    "requirement": {
+      "type": "object", "additionalProperties": false, "required": ["id", "ruleClass", "authority", "source", "result", "severity", "remediation", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "ruleClass": { "enum": ["policy_integrity", "issue_linkage", "required_check", "ownership", "human_handoff", "reviewability"] },
+        "authority": { "enum": ["patchgate", "codeowners", "ruleset", "branch_protection", "derived"] }, "source": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "result": { "enum": ["passed", "failed", "unknown", "advisory"] }, "severity": { "enum": ["block", "human_gate", "evidence", "advisory"] },
+        "observed": { "type": "object", "additionalProperties": { "anyOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }, { "type": "array", "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" } }] } },
+        "remediation": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "evidenceRefs": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "uniqueItems": true }
+      }
+    },
+    "humanGate": {
+      "type": "object", "additionalProperties": false, "required": ["id", "reason", "satisfied", "requiredReviewers", "requiredCount", "approvedBy"],
+      "properties": { "id": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "reason": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "satisfied": { "type": "boolean" }, "requiredReviewers": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "uniqueItems": true }, "requiredCount": { "type": "integer", "minimum": 1 }, "approvedBy": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "uniqueItems": true } }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "caseId": "github-merge-group-unsupported",
+  "description": "The current scalar EvaluationInput cannot select one PR from an authenticated merge group.",
+  "request": { "owner": "example", "name": "service", "eventKind": "merge_group", "targetKind": "merge_group" },
+  "exchanges": []
+}

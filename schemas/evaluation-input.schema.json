@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://patchgate.dev/schemas/evaluation-input/0.1",
+  "title": "PatchGate evaluation input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "repository", "revisions", "policy", "policySources", "policyDigest", "changedPaths", "linkedIssues", "reviews", "checks", "ownershipRequirements", "observations"],
+  "properties": {
+    "schemaVersion": { "const": "0.1" },
+    "repository": { "$ref": "#/$defs/repository" },
+    "revisions": { "$ref": "#/$defs/revisions" },
+    "policy": { "anyOf": [{ "$ref": "https://patchgate.dev/schemas/patchgate-policy/0.1" }, { "type": "null" }] },
+    "policySources": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/policySource" } },
+    "policyDigest": { "$ref": "#/$defs/digest" },
+    "changedPaths": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/nonBlank" }, "uniqueItems": true },
+    "linkedIssues": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/linkedIssue" } },
+    "reviews": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/review" } },
+    "checks": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/check" } },
+    "ownershipRequirements": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/ownershipRequirement" } },
+    "reviewability": { "$ref": "#/$defs/reviewabilitySnapshot" },
+    "observations": { "$ref": "#/$defs/observations" }
+  },
+  "$defs": {
+    "nonBlank": { "type": "string", "minLength": 1, "pattern": ".*\\S.*", "maxLength": 100000 },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$" },
+    "repository": {
+      "type": "object", "additionalProperties": false, "required": ["owner", "name", "pullRequest"],
+      "properties": { "owner": { "$ref": "#/$defs/nonBlank" }, "name": { "$ref": "#/$defs/nonBlank" }, "pullRequest": { "type": "integer", "minimum": 1 } }
+    },
+    "revisions": {
+      "type": "object", "additionalProperties": false, "required": ["baseSha", "headSha", "testedSha", "targetKind"],
+      "properties": {
+        "baseSha": { "$ref": "#/$defs/nonBlank" }, "headSha": { "$ref": "#/$defs/nonBlank" }, "mergeSha": { "$ref": "#/$defs/nonBlank" },
+        "mergeGroupSha": { "$ref": "#/$defs/nonBlank" }, "testedSha": { "$ref": "#/$defs/nonBlank" },
+        "targetKind": { "enum": ["head", "merge", "merge_group"] }
+      }
+    },
+    "policySource": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "identity", "revision", "digest", "authority"],
+      "properties": {
+        "kind": { "enum": ["patchgate", "codeowners", "ruleset", "branch_protection"] }, "identity": { "$ref": "#/$defs/nonBlank" },
+        "revision": { "$ref": "#/$defs/nonBlank" }, "digest": { "$ref": "#/$defs/digest" }, "contractDigest": { "$ref": "#/$defs/digest" }, "authority": { "const": "enforced" }
+      }
+    },
+    "observationSource": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "identity"],
+      "properties": { "kind": { "$ref": "#/$defs/nonBlank" }, "identity": { "$ref": "#/$defs/nonBlank" } }
+    },
+    "observationMeta": {
+      "type": "object", "additionalProperties": false, "required": ["source", "retrievedAt", "complete", "permissionState"],
+      "properties": {
+        "source": { "$ref": "#/$defs/observationSource" }, "revision": { "$ref": "#/$defs/nonBlank" }, "retrievedAt": { "$ref": "#/$defs/timestamp" },
+        "complete": { "type": "boolean" }, "permissionState": { "enum": ["sufficient", "insufficient", "unknown"] },
+        "normalizedDigest": { "$ref": "#/$defs/digest" }, "responseDigest": { "$ref": "#/$defs/digest" }, "truncated": { "type": "boolean" }, "nextCursor": { "$ref": "#/$defs/nonBlank" }
+      }
+    },
+    "observations": {
+      "type": "object", "additionalProperties": false, "required": ["policySources", "changedPaths", "linkedIssues", "reviews", "checks", "ownership", "reviewability"],
+      "properties": {
+        "policySources": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/observationMeta" } },
+        "changedPaths": { "$ref": "#/$defs/observationMeta" }, "linkedIssues": { "$ref": "#/$defs/observationMeta" }, "reviews": { "$ref": "#/$defs/observationMeta" },
+        "checks": { "$ref": "#/$defs/observationMeta" }, "ownership": { "$ref": "#/$defs/observationMeta" }, "reviewability": { "$ref": "#/$defs/observationMeta" }
+      }
+    },
+    "linkedIssue": {
+      "type": "object", "additionalProperties": false, "required": ["repository", "number", "repositoryId", "issueId", "linked"],
+      "properties": { "repository": { "$ref": "#/$defs/nonBlank" }, "number": { "type": "integer", "minimum": 1 }, "repositoryId": { "$ref": "#/$defs/nonBlank" }, "issueId": { "$ref": "#/$defs/nonBlank" }, "linked": { "type": "boolean" } }
+    },
+    "qualification": {
+      "type": "object", "additionalProperties": false, "required": ["source", "complete", "permissionState"],
+      "properties": {
+        "source": { "$ref": "#/$defs/observationSource" }, "revision": { "$ref": "#/$defs/nonBlank" }, "complete": { "type": "boolean" }, "permissionState": { "enum": ["sufficient", "insufficient", "unknown"] },
+        "principalBindings": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/qualificationPrincipal" }, "uniqueItems": true }
+      }
+    },
+    "qualificationPrincipal": {
+      "type": "object", "additionalProperties": false, "required": ["configuredPrincipal", "kind", "immutableId", "membershipState"],
+      "properties": { "configuredPrincipal": { "$ref": "#/$defs/nonBlank" }, "kind": { "enum": ["user", "team"] }, "immutableId": { "type": "integer", "minimum": 1 }, "membershipState": { "enum": ["active", "pending", "unknown"] } }
+    },
+    "review": {
+      "type": "object", "additionalProperties": false, "required": ["reviewId", "actorId", "login", "state", "commitId", "qualified", "teams", "teamIds", "qualification", "isAuthor", "isBot", "active"],
+      "properties": {
+        "reviewId": { "type": "integer", "minimum": 1 }, "actorId": { "type": "integer", "minimum": 1 }, "login": { "$ref": "#/$defs/nonBlank" },
+        "state": { "enum": ["APPROVED", "CHANGES_REQUESTED", "COMMENTED", "DISMISSED"] }, "commitId": { "$ref": "#/$defs/nonBlank" }, "qualified": { "type": "boolean" },
+        "teams": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/nonBlank" }, "uniqueItems": true }, "teamIds": { "type": "array", "maxItems": 3000, "items": { "type": "integer", "minimum": 1 }, "uniqueItems": true },
+        "qualification": { "$ref": "#/$defs/qualification" }, "isAuthor": { "type": "boolean" }, "isBot": { "type": "boolean" }, "active": { "type": "boolean" }
+      }
+    },
+    "check": {
+      "type": "object", "additionalProperties": false, "required": ["name", "status", "testedSha", "sourceStrength", "retrievedAt"],
+      "allOf": [
+        { "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] }, "then": { "properties": { "conclusion": { "$ref": "#/$defs/nonBlank" } }, "required": ["conclusion"] } },
+        { "if": { "properties": { "sourceStrength": { "const": "github_app_expected" } }, "required": ["sourceStrength"] }, "then": { "properties": { "appId": { "type": "integer", "minimum": 1 }, "checkRunId": { "type": "integer", "minimum": 1 } }, "required": ["appId", "checkRunId"] } },
+        { "if": { "properties": { "sourceStrength": { "const": "github_actions_workflow" } }, "required": ["sourceStrength"] }, "then": { "properties": { "appId": { "type": "integer", "minimum": 1 }, "workflowRunId": { "type": "integer", "minimum": 1 }, "workflowRunAttempt": { "type": "integer", "minimum": 1 }, "event": { "$ref": "#/$defs/nonBlank" } }, "required": ["appId", "workflowRunId", "workflowRunAttempt", "event"] } }
+      ],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonBlank" }, "status": { "enum": ["queued", "in_progress", "completed"] }, "conclusion": { "$ref": "#/$defs/nonBlank" }, "testedSha": { "$ref": "#/$defs/nonBlank" },
+        "appSlug": { "$ref": "#/$defs/nonBlank" }, "appId": { "type": "integer", "minimum": 1 }, "checkRunId": { "type": "integer", "minimum": 1 }, "checkSuiteId": { "type": "integer", "minimum": 1 }, "workflowId": { "type": "integer", "minimum": 1 },
+        "workflowPath": { "$ref": "#/$defs/nonBlank" }, "workflowRunId": { "type": "integer", "minimum": 1 }, "workflowRunAttempt": { "type": "integer", "minimum": 1 }, "event": { "$ref": "#/$defs/nonBlank" },
+        "sourceStrength": { "enum": ["github_app_expected", "github_actions_workflow", "unattributed"] }, "retrievedAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "ownershipRequirement": {
+      "type": "object", "additionalProperties": false, "required": ["id", "owners", "requiredCount"],
+      "properties": { "id": { "$ref": "#/$defs/nonBlank" }, "owners": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/nonBlank" }, "uniqueItems": true }, "requiredCount": { "type": "integer", "minimum": 1 } }
+    },
+    "reviewabilitySnapshot": {
+      "type": "object", "additionalProperties": false, "required": ["fileCount", "ownershipDomains", "generatedFileCount", "boundaryCount"],
+      "properties": { "fileCount": { "type": "integer", "minimum": 0 }, "ownershipDomains": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/nonBlank" }, "uniqueItems": true }, "generatedFileCount": { "type": "integer", "minimum": 0 }, "boundaryCount": { "type": "integer", "minimum": 0 } }
+    }
+  }
+}

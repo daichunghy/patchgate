@@ -1,0 +1,48 @@
+name: Bug Report
+description: Create a report to help us improve PatchGate
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug report. Please provide reproducible details.
+  - type: input
+    id: version
+    attributes:
+      label: PatchGate Version
+      description: What version or commit of PatchGate are you using?
+      placeholder: e.g. 0.1.0-dev
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps or fixture snapshot reproducing the behavior.
+      placeholder: |
+        1. Run `patchgate evaluate --event ...`
+        2. See unexpected error ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen according to the specification.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Info
+      description: Node.js version, OS, GitHub Action runner details.
+      placeholder: Node 20.12.0, macOS / Ubuntu 22.04
+    validations:
+      required: false

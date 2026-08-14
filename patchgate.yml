@@ -1,0 +1,39 @@
+version: 1
+
+# Trusted base policy for PatchGate repository
+issue_linkage:
+  required: true
+
+required_checks:
+  - id: verify
+    name: "Verify & Test (ubuntu-latest, Node 20.x)"
+    target: head
+    acceptable_conclusions: [success]
+    expected_source:
+      kind: github_actions_workflow
+      app_slug: github-actions
+      app_id: 15368
+      workflow_path: .github/workflows/ci.yml
+      event: pull_request
+
+ownership:
+  require_code_owner_approval: true
+
+sensitive_paths:
+  - id: core-and-security
+    patterns: [".github/workflows/**", "src/github/**", "src/evaluator.ts"]
+    required_reviewers: ["@patchgate/maintainers"]
+    required_count: 1
+    human_gate: true
+
+policy_changes:
+  mode: human_review
+  paths: ["patchgate.yml"]
+
+reviewability:
+  mode: advisory
+  budgets:
+    max_files: 50
+    max_ownership_domains: 3
+    max_generated_files: 10
+    max_boundaries: 2

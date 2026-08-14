@@ -1,0 +1,18 @@
+# CODEOWNERS for PatchGate
+
+# Global maintainers
+* @patchgate/maintainers
+
+# Core Evaluator Engine & Pure Contract
+/src/contract/ @patchgate/security-maintainers
+/src/evaluator-core.ts @patchgate/security-maintainers
+/schemas/ @patchgate/security-maintainers
+
+# GitHub Adapter & Security Boundary
+/src/github/ @patchgate/maintainers
+/test/security.test.ts @patchgate/security-maintainers
+/test/integration/ @patchgate/security-maintainers
+
+# Action Packaging
+/action.yml @patchgate/maintainers
+/src/action/ @patchgate/maintainers

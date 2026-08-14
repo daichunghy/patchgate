@@ -1,0 +1,53 @@
+{
+  "name": "patchgate",
+  "version": "0.1.0-dev",
+  "private": true,
+  "description": "Deterministic GitHub pull-request review-readiness evaluator",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patchgate/patchgate.git"
+  },
+  "keywords": [
+    "github-actions",
+    "pull-requests",
+    "code-review",
+    "review-readiness",
+    "governance",
+    "ai-safety"
+  ],
+  "type": "module",
+  "bin": {
+    "patchgate": "dist/src/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --exclude test/cli-smoke.test.ts",
+    "test:coverage": "vitest run --coverage --exclude test/cli-smoke.test.ts",
+    "test:action": "vitest run test/action.test.ts",
+    "test:cli": "npm run build && vitest run test/cli-smoke.test.ts",
+    "test:schema": "vitest run test/schema.test.ts",
+    "test:fixtures": "vitest run test/fixture.test.ts",
+    "test:determinism": "vitest run test/determinism.test.ts",
+    "test:security": "vitest run test/security.test.ts",
+    "test:github": "vitest run test/integration",
+    "test:integration": "npm run test:github",
+    "test:redaction": "vitest run test/integration/github-security.test.ts",
+    "verify:fixtures": "vitest run test/integration/github-adapter.test.ts",
+    "check:fixture-budgets": "node scripts/check-fixture-budgets.mjs",
+    "smoke:live": "npm run build && node dist/scripts/live-smoke-harness.js",
+    "lint": "node scripts/lint.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm test && npm run test:security && npm run test:github && npm run test:cli"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@vitest/coverage-v8": "^3.2.7",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
