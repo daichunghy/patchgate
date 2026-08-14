@@ -86,9 +86,12 @@ describe("CLI process smoke contract", () => {
     const unsupportedFixture = runCommand(["preflight", "--base", resolve("fixtures/repositories/unsupported-guidance/patchgate.yml"), "--json"]);
     expect(unsupportedFixture.exit).toBe(0);
     expect(JSON.parse(unsupportedFixture.stdout).guidance).toEqual(expect.arrayContaining([expect.objectContaining({ diagnosticId: "DISCOVERY_UNSUPPORTED", classification: "unsupported" })]));
-    const doctor = runCommand(["doctor", "--base", resolve("patchgate.example.yml"), "--json"]);
+    const doctor = runCommand(["doctor", "--base", resolve("fixtures/repositories/missing-policy"), "--json"]);
     expect(doctor.exit).toBe(1);
     expect(JSON.parse(doctor.stdout)).toMatchObject({ status: "attention", mode: "local" });
+    const doctorReady = runCommand(["doctor", "--base", resolve("patchgate.example.yml"), "--json"]);
+    expect(doctorReady.exit).toBe(0);
+    expect(JSON.parse(doctorReady.stdout)).toMatchObject({ status: "ready_for_local_preflight", mode: "local" });
 
     const gitDirectory = mkdtempSync("/tmp/patchgate-cli-git-ref-");
     tempDirectories.push(gitDirectory);
