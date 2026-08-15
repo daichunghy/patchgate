@@ -55,8 +55,14 @@ export function shouldFailAction(status: FinalStatus, failOn: ActionInputs["fail
 }
 
 export function formatMarkdownSummary(receipt: ContributionReceipt): string {
-  const isReady = receipt.final.status === "ready_for_review";
-  const icon = isReady ? "✅" : "⚠️";
+  const statusEmoji: Record<FinalStatus, string> = {
+    ready_for_review: "✅",
+    blocked: "🛑",
+    human_review_required: "👤",
+    evidence_missing: "🔍",
+    policy_ambiguous: "⚠️",
+  };
+  const icon = statusEmoji[receipt.final.status] ?? "ℹ️";
   const title = `### ${icon} PatchGate Review Gate: \`${receipt.final.status.toUpperCase()}\``;
 
   const repoInfo = `**Repository:** \`${receipt.repository.owner}/${receipt.repository.name}\` PR #${receipt.repository.pullRequest}  
@@ -73,8 +79,28 @@ export function formatMarkdownSummary(receipt: ContributionReceipt): string {
 |---|---|---|---|
 ${rows.join("\n")}`;
 
-  return `${title}\n\n${repoInfo}\n\n${table}\n`;
+  let gatesSection = "";
+  if (receipt.humanGates.length > 0) {
+    const gateRows = receipt.humanGates.map((gate) => {
+      const state = gate.satisfied ? "✅ Satisfied" : "⏳ Pending Approval";
+      const reviewers = gate.requiredReviewers.join(", ") || "None";
+      const approved = gate.approvedBy.join(", ") || "None";
+      return `| \`${gate.id}\` | ${state} | ${reviewers} (need ${gate.requiredCount}) | ${approved} | ${gate.reason} |`;
+    });
+    gatesSection = `\n\n#### 👤 Human Review Boundaries\n| Gate ID | Status | Required Reviewers | Approved By | Reason |\n|---|---|---|---|---|\n${gateRows.join("\n")}`;
+  }
+
+  let reviewabilitySection = "";
+  if (receipt.reviewability) {
+    const r = receipt.reviewability;
+    reviewabilitySection = `\n\n#### 📊 Reviewability Signals\n- **Changed Files:** \`${r.fileCount}\`\n- **Generated Files:** \`${r.generatedFileCount}\`\n- **Ownership Domains:** \`${r.ownershipDomains.join(", ") || "none"}\` (\`${r.boundaryCount}\` boundaries)`;
+  }
+
+  const provenanceDetails = `\n\n<details>\n<summary>🔐 <b>Audit & Provenance Metadata</b></summary>\n\n- **Evaluator Version:** \`${receipt.evaluatorVersion}\`\n- **Schema Version:** \`${receipt.schemaVersion}\`\n- **Evaluated At:** \`${receipt.evaluatedAt}\`\n- **Decision Input Digest:** \`${receipt.decisionInputDigest}\`\n- **Receipt Digest:** \`${receipt.receiptDigest}\`\n- **Policy Sources:** ${receipt.policySources.map((s) => `\`${s.kind}:${s.identity}@${s.revision.slice(0, 7)}\``).join(", ") || "none"}\n\n</details>`;
+
+  return `${title}\n\n${repoInfo}\n\n${table}${gatesSection}${reviewabilitySection}${provenanceDetails}\n`;
 }
+
 
 interface EventPayload {
   pull_request?: {

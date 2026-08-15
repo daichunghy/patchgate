@@ -39,7 +39,8 @@
     "smoke:live": "npm run build && node dist/scripts/live-smoke-harness.js",
     "usability:session": "npm run build && node dist/scripts/run-usability-session.js",
     "lint": "node scripts/lint.mjs",
-    "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm test && npm run test:security && npm run test:github && npm run test:cli"
+    "verify:dist": "node scripts/verify-dist.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm test && npm run test:security && npm run test:github && npm run test:cli && npm run verify:dist"
   },
   "dependencies": {
     "ajv": "^8.20.0",
