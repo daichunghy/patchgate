@@ -193,6 +193,18 @@ async function localRoot(target: string): Promise<string> {
   return resolved;
 }
 
+async function findUp(startDir: string, name: string): Promise<string | undefined> {
+  let current = startDir;
+  while (true) {
+    const candidate = join(current, name);
+    if (await exists(candidate)) return candidate;
+    const parent = dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+  return undefined;
+}
+
 export async function doctor(target = "."): Promise<DoctorResult> {
   const root = await localRoot(target);
   const checks: DoctorCheck[] = [];
@@ -207,12 +219,12 @@ export async function doctor(target = "."): Promise<DoctorResult> {
       detail: error instanceof Error ? error.message : "policy could not be loaded",
     });
   }
-  const gitPath = join(root, ".git");
-  checks.push(await exists(gitPath)
+  const gitPath = await findUp(root, ".git");
+  checks.push(gitPath !== undefined
     ? { id: "git_repository", status: "passed", message: "Git repository metadata is present", detail: gitPath }
     : { id: "git_repository", status: "attention", message: "No local Git repository was detected", detail: "Local preflight still works; Git-ref mode needs a repository." });
-  const packagePath = join(root, "package.json");
-  if (await exists(packagePath)) {
+  const packagePath = await findUp(root, "package.json");
+  if (packagePath !== undefined) {
     try {
       const packageRecord: unknown = JSON.parse(await readFile(packagePath, "utf8")) as unknown;
       if (packageRecord !== null && typeof packageRecord === "object" && !Array.isArray(packageRecord)) {
@@ -227,7 +239,7 @@ export async function doctor(target = "."): Promise<DoctorResult> {
       checks.push({ id: "package", status: "attention", message: "package.json is not valid JSON", detail: error instanceof Error ? error.message : "invalid JSON" });
     }
   } else {
-    checks.push({ id: "package", status: "attention", message: "No package.json found", detail: packagePath });
+    checks.push({ id: "package", status: "attention", message: "No package.json found", detail: join(root, "package.json") });
   }
   checks.push({ id: "network", status: "passed", message: "Network is not required for local doctor checks", detail: "Authenticated GitHub retrieval is not being claimed." });
   const attention = checks.some((check) => check.status === "attention");

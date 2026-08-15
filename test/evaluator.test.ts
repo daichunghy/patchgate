@@ -128,7 +128,7 @@ describe("evaluateContribution", () => {
 
 describe("loadPatchgatePolicy", () => {
   it("returns raw and normalized contract digests from one policy artifact", async () => {
-    const loaded = await loadPatchgatePolicy(resolve("patchgate.example.yml"), { revision: "base-sha" });
+    const loaded = await loadPatchgatePolicy(resolve("docs/patchgate.example.yml"), { revision: "base-sha" });
     expect(loaded.source.revision).toBe("base-sha");
     expect(loaded.contractDigest).toMatch(/^sha256:[a-f0-9]{64}$/);
     expect(loaded.source.contractDigest).toBe(loaded.contractDigest);

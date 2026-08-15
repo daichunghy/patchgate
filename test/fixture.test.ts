@@ -209,7 +209,7 @@ async function executeAssertOracle(id: string, base: EvaluationInput): Promise<s
         return undefined;
       }
       case "raw-constructor-self-relaxed": {
-        const raw = await readFile(resolve("patchgate.example.yml"), "utf8");
+        const raw = await readFile(resolve("docs/patchgate.example.yml"), "utf8");
         const artifact = createTrustedPolicyArtifact(raw, { identity: "patchgate.yml", revision: "base-sha" });
         if (artifact.source.contractDigest !== artifact.contractDigest || artifact.policy.version !== 1 || artifact.policy.requiredChecks === undefined) throw new Error("trusted constructor returned an incomplete policy artifact");
         return undefined;
@@ -337,7 +337,7 @@ describe("executable compatibility and replay fixture manifest", () => {
     const core = (await import("../src/evaluator-core.js")).evaluateValidated(base);
     expect(() => assertContributionReceipt(core)).toThrow();
 
-    const raw = await readFile(resolve("patchgate.example.yml"), "utf8");
+    const raw = await readFile(resolve("docs/patchgate.example.yml"), "utf8");
     const artifact = createTrustedPolicyArtifact(raw, { identity: "patchgate.yml", revision: "base-sha" });
     expect(artifact.source.contractDigest).toBe(artifact.contractDigest);
     expect(artifact.policy).not.toEqual({ version: 1 });

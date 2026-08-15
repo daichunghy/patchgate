@@ -71,14 +71,14 @@ describe("CLI process smoke contract", () => {
     const overwrite = runCommand(["init", "--path", directory]);
     expect(overwrite.exit).toBe(2);
     expect(overwrite.stderr).toContain("INIT_TARGET_EXISTS");
-    const preflight = runCommand(["preflight", "--base", resolve("patchgate.example.yml")]);
+    const preflight = runCommand(["preflight", "--base", resolve("docs/patchgate.example.yml")]);
     expect(preflight.exit).toBe(0);
     expect(preflight.stdout).toContain("Status: valid local policy");
     expect(preflight.stdout).toContain("Enforcement: not enabled");
     expect(preflight.stdout).toContain("Discovery-only guidance:");
-    const preflightJson = runCommand(["preflight", "--base", resolve("patchgate.example.yml"), "--json"]);
+    const preflightJson = runCommand(["preflight", "--base", resolve("docs/patchgate.example.yml"), "--json"]);
     expect(JSON.parse(preflightJson.stdout)).toMatchObject({ mode: "local_file" });
-    expect(JSON.parse(preflightJson.stdout).guidance).toEqual(expect.arrayContaining([expect.objectContaining({ path: "README.md", present: true, authority: "discovery_only", diagnosticId: expect.any(String) })]));
+    expect(JSON.parse(preflightJson.stdout).guidance).toEqual(expect.arrayContaining([expect.objectContaining({ path: "README.md", authority: "discovery_only", diagnosticId: expect.any(String) })]));
 
     const guidanceDirectory = mkdtempSync("/tmp/patchgate-cli-guidance-");
     tempDirectories.push(guidanceDirectory);
@@ -103,7 +103,7 @@ describe("CLI process smoke contract", () => {
     const doctor = runCommand(["doctor", "--base", resolve("fixtures/repositories/missing-policy"), "--json"]);
     expect(doctor.exit).toBe(1);
     expect(JSON.parse(doctor.stdout)).toMatchObject({ status: "attention", mode: "local" });
-    const doctorReady = runCommand(["doctor", "--base", resolve("patchgate.example.yml"), "--json"]);
+    const doctorReady = runCommand(["doctor", "--base", resolve("docs/patchgate.example.yml"), "--json"]);
     expect(doctorReady.exit).toBe(0);
     expect(JSON.parse(doctorReady.stdout)).toMatchObject({ status: "ready_for_local_preflight", mode: "local" });
 

@@ -111,4 +111,58 @@ describe("GitHub Action runner unit tests", () => {
       expect(markdown).toContain("| `policy.base_revision` | ✅ Passed | `block` | Keep policy bound to base SHA. |");
     });
   });
+
+  describe("action environment outputs & runner helpers", () => {
+    it("skips non-PR events gracefully", async () => {
+      const { runAction } = await import("../src/action/index.js");
+      const { writeFileSync, mkdtempSync } = await import("node:fs");
+      const { join } = await import("node:path");
+
+      const tmpDir = mkdtempSync("/tmp/patchgate-action-test-");
+      const eventFile = join(tmpDir, "event.json");
+      writeFileSync(eventFile, JSON.stringify({ push: { ref: "refs/heads/main" } }), "utf8");
+
+      const exitCode = await runAction({
+        GITHUB_EVENT_PATH: eventFile,
+        GITHUB_EVENT_NAME: "push",
+      });
+      expect(exitCode).toBe(0);
+    });
+
+    it("returns error code when event payload is invalid or missing required fields", async () => {
+      const { runAction } = await import("../src/action/index.js");
+      const { writeFileSync, mkdtempSync } = await import("node:fs");
+      const { join } = await import("node:path");
+
+      const tmpDir = mkdtempSync("/tmp/patchgate-action-test-");
+      const eventFile = join(tmpDir, "event.json");
+      writeFileSync(eventFile, JSON.stringify({ pull_request: {} }), "utf8");
+
+      const exitCode = await runAction({
+        GITHUB_EVENT_PATH: eventFile,
+        GITHUB_EVENT_NAME: "pull_request",
+        GITHUB_TOKEN: "mock-token",
+      });
+      expect(exitCode).toBe(2);
+    });
+
+    it("writes outputs to GITHUB_OUTPUT and summary to GITHUB_STEP_SUMMARY", async () => {
+      const { setActionOutput, appendStepSummary } = await import("../src/action/index.js");
+      const { writeFileSync, readFileSync, mkdtempSync } = await import("node:fs");
+      const { join } = await import("node:path");
+
+      const tmpDir = mkdtempSync("/tmp/patchgate-action-test-");
+      const outputFile = join(tmpDir, "output.txt");
+      const summaryFile = join(tmpDir, "summary.md");
+      writeFileSync(outputFile, "", "utf8");
+      writeFileSync(summaryFile, "", "utf8");
+
+      setActionOutput("status", "ready_for_review", { GITHUB_OUTPUT: outputFile });
+      appendStepSummary("# Test Summary", { GITHUB_STEP_SUMMARY: summaryFile });
+
+      expect(readFileSync(outputFile, "utf8")).toBe("status=ready_for_review\n");
+      expect(readFileSync(summaryFile, "utf8")).toBe("# Test Summary\n");
+    });
+  });
 });
+

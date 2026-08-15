@@ -36,7 +36,7 @@ jobs:
           npm run build
 
       - name: Run PatchGate in Shadow Mode
-        uses: ./
+        uses: ./.github
         with:
           fail-on: never
           create-check-run: true

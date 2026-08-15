@@ -2,7 +2,79 @@
 
 This repository builds PatchGate, an open-source review-readiness gate for pull requests.
 
-Read `PROJECT_CONSTITUTION.md` completely before substantive work.
+Read `docs/PROJECT_CONSTITUTION.md` completely before substantive work.
+
+## Repository Layout & Agent Deep-Dive Guide
+
+The repository enforces a clean root structure (maximum 8 files) with well-defined subdirectories:
+
+```text
+.
+├── .github/                 # GitHub Action, workflows, CODEOWNERS, templates & community health files
+│   ├── action.yml           # GitHub Action entrypoint & metadata
+│   ├── CODEOWNERS           # Path ownership configuration
+│   ├── CODE_OF_CONDUCT.md   # Community Code of Conduct
+│   ├── CONTRIBUTING.md      # Contribution guidelines & architecture invariants
+│   ├── SECURITY.md          # Vulnerability reporting & security boundaries
+│   ├── SUPPORT.md           # Support channels & maintainer contact
+│   ├── patchgate.yml        # Repository review-readiness policy
+│   ├── ISSUE_TEMPLATE/      # GitHub issue forms
+│   ├── PULL_REQUEST_TEMPLATE.md # PR template
+│   └── workflows/           # CI/CD and verification GitHub Actions
+├── docs/                    # Architecture, specifications, research, roadmap & ADRs
+│   ├── PROJECT_CONSTITUTION.md # Authoritative charter & constitution
+│   ├── CHANGELOG.md         # Release history
+│   ├── NOTICE               # Open source attribution notices
+│   ├── patchgate.example.yml # Example PatchGate policy
+│   ├── architecture.md      # System architecture & evidence lanes
+│   ├── implementation-roadmap.md # Delivery roadmap (G0–G8)
+│   ├── receipt-contract.md  # ContributionReceipt specification
+│   ├── threat-model.md      # Security threat model & mitigations
+│   ├── github-adapter-contract.md # Adapter specification & bounds
+│   ├── github-api-support-matrix.md # API endpoints & versioning
+│   ├── github-permissions.md # Permission model & least privilege
+│   ├── support-bundle.md    # Redacted diagnostic bundle spec
+│   ├── research/            # Landscape & deep-dive research reports
+│   ├── decisions/           # Architecture Decision Records (ADRs)
+│   ├── product/             # User requirements & UX specifications
+│   ├── pilots/              # Usability session protocols & pilot results
+│   ├── prompts/             # Task prompts and launcher specifications
+│   └── reviews/             # Milestone review checkpoints
+├── src/                     # Pure TypeScript implementation (Strict mode, zero `any`)
+│   ├── types.ts             # Canonical types and data models
+│   ├── evaluator-core.ts    # Deterministic requirement evaluation engine
+│   ├── evaluator.ts         # High-level evaluation runner with timestamping
+│   ├── policy.ts            # Policy parser & SHA-256 digest computation
+│   ├── discovery.ts         # Advisory guidance discovery (AGENTS.md, README.md...)
+│   ├── canonical-json.ts    # Deterministic JSON serialization & SHA-256
+│   ├── support-bundle.ts    # Redacted support bundle builder
+│   ├── version.ts           # Evaluator version constant
+│   ├── contract/            # Schemas, status precedence & validation
+│   ├── evidence/            # Digest computation & check evidence verification
+│   ├── github/              # Authenticated GitHub adapter, snapshot builder & rate limiters
+│   ├── cli.ts & cli/        # Command-line interface and human/JSON renderers
+│   └── action/              # GitHub Action runner & summary formatter
+├── schemas/                 # Versioned JSON Schemas (receipt, policy, evaluation-input)
+├── fixtures/                # Deterministic test fixtures and API exchange recordings
+├── test/                    # Comprehensive unit, integration, security, and determinism tests
+├── scripts/                 # Linters, budget checkers, and verification harnesses
+├── AGENTS.md                # AI agent operating rules and context (this file)
+├── LICENSE                  # Apache-2.0 License
+├── README.md                # Project overview and quickstart
+├── package.json             # Node package manifest
+├── package-lock.json        # Deterministic dependency lockfile
+├── tsconfig.json            # Strict TypeScript configuration
+├── vitest.config.ts         # Test runner configuration
+└── .gitignore               # Git ignore rules
+```
+
+## How Agents Should Explore & Execute
+
+1. **Understand Authority**: Always read [docs/PROJECT_CONSTITUTION.md](file:///Users/macos/Desktop/Github/docs/PROJECT_CONSTITUTION.md) first. Policy is always read from the base commit (`baseSha`), never from the PR branch.
+2. **Review Types & Contracts**: Read [src/types.ts](file:///Users/macos/Desktop/Github/src/types.ts), [src/contract/status-precedence.ts](file:///Users/macos/Desktop/Github/src/contract/status-precedence.ts), and [schemas/](file:///Users/macos/Desktop/Github/schemas).
+3. **Core Engine**: Pure deterministic logic lives in [src/evaluator-core.ts](file:///Users/macos/Desktop/Github/src/evaluator-core.ts) and [src/evidence/](file:///Users/macos/Desktop/Github/src/evidence).
+4. **Adapter & Security**: GitHub integration logic lives in [src/github/](file:///Users/macos/Desktop/Github/src/github) and follows [docs/threat-model.md](file:///Users/macos/Desktop/Github/docs/threat-model.md).
+5. **Validation**: Run `npm run verify` before completing any change.
 
 ## Product identity
 
