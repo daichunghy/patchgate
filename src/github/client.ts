@@ -86,7 +86,7 @@ export function createFetchTransport(options: GitHubClientOptions = {}): GitHubR
           headers,
           redirect: "manual",
           signal: controller.signal,
-          ...(input.method === "POST" ? { body: JSON.stringify({ query: GRAPHQL_DOCUMENTS.pullRequestClosingIssues, operationName: "pullRequestClosingIssues", variables: input.variables }) } : {}),
+          ...(input.method === "POST" ? { body: JSON.stringify({ query: GRAPHQL_DOCUMENTS.pullRequestClosingIssues, operationName: "PullRequestClosingIssues", variables: input.variables }) } : {}),
         });
         const bytes = new Uint8Array(await response.arrayBuffer());
         if (bytes.byteLength > maxResponseBytes) throw new GitHubAdapterError(makeDiagnostic("GITHUB_RESPONSE_TOO_LARGE", "GitHub response exceeded the configured byte budget.", { remediation: "Reduce the requested collection or raise the bounded response limit after review." }));

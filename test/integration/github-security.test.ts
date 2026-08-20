@@ -52,6 +52,22 @@ describe("GitHub adapter trust-boundary probes", () => {
     await expect(client.request({ method: "GET", path: "/repos/example/service" }, "test")).rejects.toMatchObject({ diagnostic: { id: "GITHUB_RESPONSE_TOO_LARGE" } });
   });
 
+  it("sends the allowlisted GraphQL operation name that matches the document", async () => {
+    const originalFetch = globalThis.fetch;
+    let requestBody: Record<string, unknown> | undefined;
+    globalThis.fetch = (async (_input: RequestInfo | URL, init?: RequestInit) => {
+      requestBody = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return new Response(JSON.stringify({ data: { repository: { pullRequest: { closingIssuesReferences: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }), { status: 200, headers: { "content-type": "application/json" } });
+    }) as typeof fetch;
+    try {
+      const transport = createFetchTransport({ token: "test-token" });
+      await transport.request({ method: "POST", path: "/graphql", operation: "pullRequestClosingIssues", variables: { owner: "example", name: "service", number: 7, first: 100, after: null } });
+      expect(requestBody).toMatchObject({ operationName: "PullRequestClosingIssues" });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it("keeps 403 incomplete and enforces the documented changed-file ceiling", async () => {
     const denied = new GitHubClient(new RecordedGitHubTransport([{ request: { method: "GET", path: "/repos/example/service/pulls/7/files", query: { per_page: 100 } }, response: recordedResponse(403, { message: "Forbidden" }) }]));
     const deniedResult = await collectChangedPaths(denied, "example", "service", 7, "head-sha");
