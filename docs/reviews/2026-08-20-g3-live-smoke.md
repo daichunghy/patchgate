@@ -48,15 +48,15 @@ CODEOWNERS gates. It also added the base-policy path fallback for
 made workflow-run evidence references unique per check name.
 
 The same authorized GET-only harness then reached public
-`daichunghy/patchgate#9` on PR head `75e1d79`:
+`daichunghy/patchgate#9` on PR head `e14cd63`:
 
 ```text
-API Metrics: 24 attempted requests (634712 bytes transferred)
-Identity bound: Base=a3745f6, Tested=75e1d79
+API Metrics: 24 attempted requests (635764 bytes transferred)
+Identity bound: Base=a3745f6, Tested=e14cd63
 EvaluationInput conforms to schema v0.1
 ContributionReceipt conforms to schema v0.1
 Evaluator final status: human_review_required
-Receipt Digest: sha256:e2531c75ba65955c91bbffdf104d327730ada8899ff8422fa9fa43ac18071db1
+Receipt Digest: sha256:529a51815a83e5ae3b579f6e9a24a09ecaea33c5ab03a64ccca039cd525ea2ac
 Smoke Test Summary: 1 Built/Passed, 0 Rejected, 0 Failed
 ```
 
