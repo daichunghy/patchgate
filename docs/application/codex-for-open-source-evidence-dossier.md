@@ -92,10 +92,10 @@ Interest: both (Codex Security & API credits)
 OpenAI Organization ID: [Your Org ID]
 
 Why the repository qualifies (<=500 characters, draft only):
-PatchGate is developer infrastructure for review-readiness under rising agentic PR volume. It uses strict TypeScript, trusted-base policy, commit-bound evidence, qualified ownership and reproducible receipts. The project is Apache-2.0 licensed locally and is designed to avoid executing untrusted PR code in privileged workflows. Public usage and ecosystem importance are not yet established.
+PatchGate is an Apache-2.0 open-source developer-infrastructure project for a concrete maintainer problem: verifying policy, commit-bound evidence, ownership and human review boundaries before a pull request consumes review time. It has a public repository, deterministic evaluator, security model, CLI/Action candidate and contribution/pilot workflow. It is pre-release, so we make no adoption claim; the ecosystem need is trustworthy review readiness for agent-assisted contributions.
 
 How credits will be used (<=500 characters, draft only):
-We will use ChatGPT Pro & Codex to: 1) Synthesize complex GitHub API edge-cases, webhook payloads, and conflicting policy structures into deterministic regression test fixtures; 2) Accelerate issue triage into verified test cases; 3) Use Codex Security to continuously audit hostile trust-boundary adapters against TOCTOU, injection, and status spoofing; 4) Use API credits for preflight discovery benchmarks across open governance corpora, keeping maintainer review focused on verified evidence.
+API credits would support bounded issue triage, deterministic regression-fixture drafting, pull-request review preparation, security finding triage on authorized repositories, and release/rollback checklists. PatchGate would keep its evaluator deterministic, require maintainer approval for code and releases, exclude secrets and private repository data, and link each useful output to a public issue, test, PR or release artifact.
 
 Additional context (<=500 characters, draft only):
 Maintainers need to know whether a pull request is ready before spending time on
