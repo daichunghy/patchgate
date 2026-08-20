@@ -49,15 +49,15 @@ CODEOWNERS gates and the supported Rulesets `required_status_checks`/
 made workflow-run evidence references unique per check name.
 
 The same authorized GET-only harness then reached public
-`daichunghy/patchgate#9` on PR head `e14cd63`:
+`daichunghy/patchgate#9` on PR head `2a28e82`:
 
 ```text
-API Metrics: 24 attempted requests (635764 bytes transferred)
-Identity bound: Base=a3745f6, Tested=e14cd63
+API Metrics: 24 attempted requests (695088 bytes transferred)
+Identity bound: Base=a3745f6, Tested=2a28e82
 EvaluationInput conforms to schema v0.1
 ContributionReceipt conforms to schema v0.1
 Evaluator final status: human_review_required
-Receipt Digest: sha256:529a51815a83e5ae3b579f6e9a24a09ecaea33c5ab03a64ccca039cd525ea2ac
+Receipt Digest: sha256:4a3eebd6053a8a56eef4d17e16a939193a35b218a0aa56a0b2d49b3102e4c0f9
 Smoke Test Summary: 1 Built/Passed, 0 Rejected, 0 Failed
 ```
 
