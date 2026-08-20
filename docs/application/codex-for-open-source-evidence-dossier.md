@@ -51,6 +51,10 @@ consented external pilots.” It is not: “PatchGate is already widely used” 
 - Security hardening: workflow App identity binding, exact target SHA,
   TOCTOU re-read, bounded pagination/retries/responses, immutable linked-issue
   identity, redaction and fail-closed native controls.
+- Consumer boundary smoke: `scripts/test-consumer-fixture.mjs` verifies a
+  full-SHA consumer reference, bundle startup without source schemas or
+  `node_modules`, and explicit non-blocking `merge_group` handling. It is not a
+  live external consumer or pilot.
 - Supportability: `support-bundle` command and privacy exclusions in
   `docs/support-bundle.md`.
 - Latest local/public verification is recorded in
