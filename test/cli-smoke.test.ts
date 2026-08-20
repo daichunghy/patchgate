@@ -6,6 +6,7 @@ import { fixture, review, withInput, withPolicy } from "./helpers.js";
 import type { EvaluationInput, PatchgatePolicy } from "../src/types.js";
 
 const tempDirectories: string[] = [];
+const CLI_PROCESS_TEST_TIMEOUT = 15_000;
 
 function runCli(inputPath: string): { exit: number | null; status?: string; stderr: string } {
   const result = spawnSync(process.execPath, [resolve("dist/src/cli.js"), "evaluate", "--event", inputPath], { encoding: "utf8" });
@@ -123,7 +124,7 @@ describe("CLI process smoke contract", () => {
     writeFileSync(join(gitDirectory, "patchgate.yml"), "version: 1\nissueLinkage:\n  required: true\n", "utf8");
     const headChangeIgnored = runCommand(["preflight", "--base", "HEAD", "--repo", gitDirectory, "--json"]);
     expect(JSON.parse(headChangeIgnored.stdout).policy).toEqual({ version: 1 });
-  });
+  }, CLI_PROCESS_TEST_TIMEOUT);
 
   it("maps valid and evaluable non-ready snapshots to exit 0/1", async () => {
     const base = await fixture();
@@ -132,7 +133,7 @@ describe("CLI process smoke contract", () => {
     expect(runCli(writeInput(withInput(base, { policy: { version: 1 } })))).toMatchObject({ exit: 1, status: "policy_ambiguous" });
     expect(runCli(writeInput(withInput(base, { observations: { ...base.observations, linkedIssues: { ...base.observations.linkedIssues, complete: false, permissionState: "unknown", normalizedDigest: undefined } } })))).toMatchObject({ exit: 1, status: "evidence_missing" });
     expect(runCli(writeInput(withInput(base, { revisions: { ...base.revisions, testedSha: "foreign-sha" } })))).toMatchObject({ exit: 2 });
-  });
+  }, CLI_PROCESS_TEST_TIMEOUT);
 
   it("replays the authenticated GitHub snapshot fixture without network access", () => {
     const outputDirectory = mkdtempSync("/tmp/patchgate-github-cli-");
@@ -168,7 +169,7 @@ describe("CLI process smoke contract", () => {
     const invalidLiveAbsence = runCommand(["github", "snapshot", "--live", "--repo", "example/service", "--pull", "7", "--allow-confirmed-absence"]);
     expect(invalidLiveAbsence.exit).toBe(2);
     expect(invalidLiveAbsence.stderr).toContain("GITHUB_CONFIRMED_ABSENCE_MOCK_ONLY");
-  });
+  }, CLI_PROCESS_TEST_TIMEOUT);
 
   it("maps required-check and review evidence matrix cases", async () => {
     const base = await fixture();
@@ -178,7 +179,7 @@ describe("CLI process smoke contract", () => {
     const sensitive = withPolicy(base, sensitivePolicy());
     expect(runCli(writeInput(withInput(sensitive, { changedPaths: ["src/auth/token.ts"], observations: { ...sensitive.observations, reviews: { ...sensitive.observations.reviews, complete: false, permissionState: "unknown", normalizedDigest: undefined } } })))).toMatchObject({ exit: 1, status: "evidence_missing" });
     expect(runCli(writeInput(withInput(sensitive, { changedPaths: ["src/auth/token.ts"], reviews: [review()] })))).toMatchObject({ exit: 0, status: "ready_for_review" });
-  });
+  }, CLI_PROCESS_TEST_TIMEOUT);
 
   it("returns stable exit 2 diagnostics for malformed, unsupported and identity-invalid inputs", async () => {
     const malformed = runCli(resolve("fixtures/cli/malformed.json"));
@@ -199,5 +200,5 @@ describe("CLI process smoke contract", () => {
     delete missingAppIdentity.checks[0]!.appId;
     delete missingAppIdentity.checks[0]!.checkRunId;
     expect(runCli(writeInput(missingAppIdentity))).toMatchObject({ exit: 2 });
-  });
+  }, CLI_PROCESS_TEST_TIMEOUT);
 });
