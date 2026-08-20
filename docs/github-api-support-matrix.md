@@ -32,6 +32,9 @@ pagination links only when the link remains on the configured origin.
   documented result ceilings prevent proving completeness.
 - Merge-group events are rejected because the current scalar
   `EvaluationInput` has no authenticated multi-PR membership contract.
+  Required CI and CodeQL workflow definitions nevertheless include the
+  `merge_group/checks_requested` trigger so native required checks can run when
+  a repository later enables a merge queue.
 - Branch-protection check contexts may be qualified names such as `CI / job` while
   Check Runs exposes `job`; the adapter matches exact names first and then a
   unique suffix, rejecting ambiguous suffix matches.

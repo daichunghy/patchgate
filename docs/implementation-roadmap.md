@@ -143,8 +143,10 @@ The Action work has also reached a local Marketplace-shaped candidate state.
 The root metadata, source runner, committed ncc bundle, immutable workflow
 pins, clean-room startup check, single-check update/create behavior, safe
 multiline outputs, consumer bundle smoke and explicit `merge_group` non-ready
-handling are present and covered by local verification. The consumer smoke does
-not use a live repository or publish a check-run.
+handling are present and covered by local verification. Required CI and CodeQL
+also declare `merge_group/checks_requested` triggers, preventing a future
+merge queue from waiting on workflows that never start. The consumer smoke
+does not use a live repository or publish a check-run.
 G4 remains open because no external consumer repository, fork E2E,
 merge-group E2E or consenting shadow installation has been verified.
 

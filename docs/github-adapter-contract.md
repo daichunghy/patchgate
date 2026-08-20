@@ -55,8 +55,12 @@ GitHub control was bypassed.
 - Initial identity and decision-bearing observations are re-read during
   finalization. A changed identity or normalized observation discards the
   snapshot.
-- The current scalar evaluator cannot represent authenticated merge-group
-  membership; merge-group requests are explicitly unsupported.
+- Required CI and CodeQL workflows also trigger on
+  `merge_group/checks_requested`, so a future merge queue will not wait for
+  missing required checks. The current scalar evaluator still cannot represent
+  authenticated merge-group membership; merge-group requests remain explicitly
+  unsupported and the Action reports `evidence_missing` rather than treating a
+  merge-group SHA as an ordinary PR head.
 - Branch protection required checks, required approvals and applicable
   CODEOWNERS gates are represented in the versioned native-control contract and
   remain bound to the base revision. Rulesets with `required_status_checks` and

@@ -35,6 +35,7 @@
     "verify:fixtures": "vitest run test/integration/github-adapter.test.ts",
     "check:fixture-budgets": "node scripts/check-fixture-budgets.mjs",
     "check:workflow-pins": "node scripts/check-workflow-pins.mjs",
+    "check:workflow-events": "node scripts/check-workflow-events.mjs",
     "check:community-schedule": "node scripts/check-community-schedule.mjs",
     "test:consumer-fixture": "node scripts/test-consumer-fixture.mjs",
     "check:release-candidate": "node scripts/check-release-candidate.mjs",
@@ -42,7 +43,7 @@
     "usability:session": "npm run build && node dist/scripts/run-usability-session.js",
     "lint": "node scripts/lint.mjs",
     "verify:dist": "node scripts/verify-dist.mjs",
-    "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm run check:workflow-pins && npm run check:community-schedule && npm run audit && npm test && npm run test:security && npm run test:github && npm run bundle:action && npm run test:consumer-fixture && npm run check:release-candidate && npm run test:cli && npm run verify:dist"
+    "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm run check:workflow-pins && npm run check:workflow-events && npm run check:community-schedule && npm run audit && npm test && npm run test:security && npm run test:github && npm run bundle:action && npm run test:consumer-fixture && npm run check:release-candidate && npm run test:cli && npm run verify:dist"
   },
   "dependencies": {
     "ajv": "^8.20.0",
