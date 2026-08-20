@@ -27,10 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   branch protection with five required CI checks, one approving review, stale
   review dismissal, linear history and conversation resolution. Force-pushes
   and branch deletion are disabled.
-- Current public history contains no pull request or release. One pilot-request
-  issue and three Discussions are open outreach surfaces; they do not establish
-  external adoption or pilot evidence. The scheduled/manual Security Audit and
-  Pull Request-only PatchGate Shadow workflows have not produced a public run.
+- Current public history contains draft PR #9 but no merged pull request or
+  release. Four Discussions, one pilot request and three contribution issues
+  are open outreach surfaces; they do not establish external adoption or pilot
+  evidence. The scheduled/manual Security Audit and Pull Request-only PatchGate
+  Shadow workflows still need a successful public main-branch run.
 - Local release preparation now includes root `action.yml`, pinned CodeQL
   analysis, Dependabot configuration, valid owner/contact links, and workflow
   pin enforcement for both `actions/*` and `github/*` actions.
@@ -40,6 +41,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pilot request to make the next contribution path explicit.
 - Added three scoped contribution issues for the Action consumer fixture,
   CODEOWNERS conformance and release/rollback documentation.
+- Added a clean-room consumer fixture smoke for full-SHA references, bundle
+  isolation and non-blocking merge-group handling; live consumer E2E remains
+  open.
 
 ### Current audit boundary
 - Action candidate now has a self-contained ncc bundle and clean-room
