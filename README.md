@@ -1,6 +1,5 @@
 # PatchGate
 
-[![CI](https://github.com/patchgate/patchgate/actions/workflows/ci.yml/badge.svg)](https://github.com/patchgate/patchgate/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![TypeScript: Strict](https://img.shields.io/badge/TypeScript-Strict_100%25-blue.svg)](https://www.typescriptlang.org/)
 
@@ -15,34 +14,17 @@ The evaluator is deterministic and explainable. It does not decide whether code
 is correct, safe, or merge-worthy, and it cannot force an external coding agent
 to stop working.
 
-## GitHub Action Quickstart
+## GitHub Action candidate
 
-Add PatchGate to `.github/workflows/patchgate.yml`:
+The Action is bundled for the repository's local shadow workflow, but no public
+Action release or immutable version tag exists yet. Do not use the placeholder
+`patchgate/patchgate@v0.1.0-dev` as an installable public reference.
 
-```yaml
-name: PatchGate Review Gate
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-
-permissions:
-  contents: read
-  pull-requests: read
-  checks: read
-
-jobs:
-  review-gate:
-    name: Evaluate Review-Readiness
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run PatchGate Gate
-        uses: patchgate/patchgate@v0.1.0-dev
-        with:
-          fail-on: 'blocked'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          report-path: 'patchgate-receipt.json'
-```
+For this checkout, the source-of-truth workflow is
+[`.github/workflows/patchgate-shadow.yml`](.github/workflows/patchgate-shadow.yml).
+It uses `pull_request_target`, checks out the trusted base revision, builds the
+Action bundle from that base, runs with `fail-on: never`, and updates one check
+run. External consumers must wait for a public immutable Action release.
 
 ## Local development
 
@@ -50,6 +32,7 @@ jobs:
 npm install
 npm run verify
 npm run build
+npm run bundle:action
 node dist/src/cli.js init --path /tmp/my-repository
 node dist/src/cli.js validate --policy docs/patchgate.example.yml
 node dist/src/cli.js preflight --base docs/patchgate.example.yml
@@ -168,6 +151,7 @@ The repository maintains a clean root directory structure (8 files max) with mod
 - [Authorized live-smoke protocol](docs/github-live-smoke-protocol.md)
 - [Redacted support bundle](docs/support-bundle.md)
 - [Project-wide review and next-build checkpoint](docs/reviews/2026-08-13-project-wide-review.md)
+- [Current G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md)
 - [Implementation roadmap](docs/implementation-roadmap.md)
 - [User requirements](docs/product/user-requirements.md)
 - [User-needs and roadmap research](docs/research/2026-08-13-patchgate-user-needs-roadmap-review.md)

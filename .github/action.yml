@@ -41,4 +41,4 @@ outputs:
 
 runs:
   using: 'node20'
-  main: '../dist/src/action/index.js'
+  main: '../dist/action/index.js'

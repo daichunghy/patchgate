@@ -15,16 +15,6 @@ interface TargetPR {
   allowConfirmedAbsence?: boolean;
 }
 
-const TARGET_SUITE: TargetPR[] = [
-  {
-    name: "Standard Public PR Reference",
-    owner: "octocat",
-    repo: "Hello-World",
-    pullNumber: 12,
-    allowConfirmedAbsence: false,
-  },
-];
-
 function parseCliTargets(): TargetPR[] {
   const args = process.argv.slice(2);
   const repoIdx = args.indexOf("--repo");
@@ -45,7 +35,7 @@ function parseCliTargets(): TargetPR[] {
       ];
     }
   }
-  return TARGET_SUITE;
+  throw new Error("Live smoke requires an explicit --repo OWNER/REPOSITORY and --pull NUMBER target; no default repository is allowed.");
 }
 
 async function runLiveSmoke(): Promise<void> {
@@ -59,11 +49,19 @@ async function runLiveSmoke(): Promise<void> {
     console.error("   Provide a valid read-only token via GITHUB_TOKEN, PATCHGATE_GITHUB_TOKEN, or GH_TOKEN.");
     process.exit(1);
   }
+  if (process.env.PATCHGATE_LIVE_SMOKE_AUTHORIZED !== "yes") {
+    console.error("❌ ERROR: Live smoke requires PATCHGATE_LIVE_SMOKE_AUTHORIZED=yes after maintainer confirmation of the exact read-only target and permissions.");
+    process.exit(1);
+  }
 
   // 1. Initialize Schemas
   const ajv = new Ajv2020({ allErrors: true, strict: true });
+  const policySchema = JSON.parse(readFileSync(resolve("schemas/patchgate-policy.schema.json"), "utf8")) as object;
   const inputSchema = JSON.parse(readFileSync(resolve("schemas/evaluation-input.schema.json"), "utf8")) as object;
   const receiptSchema = JSON.parse(readFileSync(resolve("schemas/contribution-receipt.schema.json"), "utf8")) as object;
+  ajv.addSchema(policySchema);
+  ajv.addSchema(inputSchema);
+  ajv.addSchema(receiptSchema);
   const validateInput = ajv.compile(inputSchema);
   const validateReceipt = ajv.compile(receiptSchema);
 
@@ -71,6 +69,7 @@ async function runLiveSmoke(): Promise<void> {
   const client = new GitHubClient(transport, undefined, { token });
 
   let totalPassed = 0;
+  let totalRejected = 0;
   let totalFailed = 0;
   const targets = parseCliTargets();
 
@@ -94,10 +93,10 @@ async function runLiveSmoke(): Promise<void> {
       const elapsedMs = Date.now() - startTime;
 
       if (snapshotResult.kind === "rejected") {
-        console.warn(`  ⚠️ Snapshot rejected as expected for unconfigured native controls or permissions:`);
+        console.warn(`  ⚠️ Snapshot rejected; this is diagnostic evidence, not a passing complete snapshot:`);
         console.warn(`     Diagnostic: [${snapshotResult.diagnostic.id}] ${snapshotResult.diagnostic.message}`);
-        console.log(`  ✓ Snapshot rejection was safe, bounded, and diagnostic-sound (${elapsedMs}ms)\n`);
-        totalPassed++;
+        console.log(`  ! Snapshot rejection was safe and bounded, but the target was not evaluated as a complete snapshot (${elapsedMs}ms)\n`);
+        totalRejected++;
         continue;
       }
 
@@ -136,10 +135,10 @@ async function runLiveSmoke(): Promise<void> {
   }
 
   console.log("----------------------------------------------------------");
-  console.log(`Smoke Test Summary: ${totalPassed} Passed, ${totalFailed} Failed`);
+  console.log(`Smoke Test Summary: ${totalPassed} Built/Passed, ${totalRejected} Rejected, ${totalFailed} Failed`);
   console.log("----------------------------------------------------------");
 
-  if (totalFailed > 0) {
+  if (totalFailed > 0 || totalRejected > 0) {
     process.exit(1);
   }
 }

@@ -4,10 +4,6 @@
   "private": true,
   "description": "Deterministic GitHub pull-request review-readiness evaluator",
   "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/patchgate/patchgate.git"
-  },
   "keywords": [
     "github-actions",
     "pull-requests",
@@ -22,6 +18,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "bundle:action": "ncc build src/action/index.ts -o dist/action --minify --transpile-only",
+    "audit": "npm audit --audit-level=high",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --exclude test/cli-smoke.test.ts",
     "test:coverage": "vitest run --coverage --exclude test/cli-smoke.test.ts",
@@ -36,11 +34,12 @@
     "test:redaction": "vitest run test/integration/github-security.test.ts",
     "verify:fixtures": "vitest run test/integration/github-adapter.test.ts",
     "check:fixture-budgets": "node scripts/check-fixture-budgets.mjs",
+    "check:workflow-pins": "node scripts/check-workflow-pins.mjs",
     "smoke:live": "npm run build && node dist/scripts/live-smoke-harness.js",
     "usability:session": "npm run build && node dist/scripts/run-usability-session.js",
     "lint": "node scripts/lint.mjs",
     "verify:dist": "node scripts/verify-dist.mjs",
-    "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm test && npm run test:security && npm run test:github && npm run test:cli && npm run verify:dist"
+    "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm run check:workflow-pins && npm run audit && npm test && npm run test:security && npm run test:github && npm run bundle:action && npm run test:cli && npm run verify:dist"
   },
   "dependencies": {
     "ajv": "^8.20.0",
@@ -48,6 +47,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
+    "@vercel/ncc": "^0.45.0",
     "@vitest/coverage-v8": "^3.2.7",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"

@@ -1,6 +1,8 @@
+import { randomUUID } from "node:crypto";
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { evaluateContribution } from "../evaluator.js";
+import { GITHUB_ACCEPT, GITHUB_API_VERSION } from "../github/api-types.js";
 import { createFetchTransport, GitHubClient } from "../github/client.js";
 import { buildGitHubSnapshot } from "../github/snapshot-builder.js";
 import type { GitHubSnapshotRequest } from "../github/identity.js";
@@ -14,24 +16,45 @@ export interface ActionInputs {
   checkName: string;
 }
 
+const MAX_ACTION_SUMMARY_LENGTH = 64_000;
+
 export function parseActionInputs(env: NodeJS.ProcessEnv = process.env): ActionInputs {
   const failOnRaw = env.INPUT_FAIL_ON?.trim() || "blocked";
   const validFailOns = ["never", "blocked", "human_review_required", "evidence_missing", "policy_ambiguous"] as const;
   const failOn = validFailOns.includes(failOnRaw as ActionInputs["failOn"]) ? (failOnRaw as ActionInputs["failOn"]) : "blocked";
 
+  const reportPath = env.INPUT_REPORT_PATH?.trim() || "patchgate-receipt.json";
+  const checkName = env.INPUT_CHECK_NAME?.trim() || "PatchGate Review Gate";
+  assertActionText(reportPath, "report-path", 500);
+  assertActionText(checkName, "check-name", 200);
   return {
     failOn,
     githubToken: env.INPUT_GITHUB_TOKEN?.trim() || env.GITHUB_TOKEN?.trim() || "",
-    reportPath: env.INPUT_REPORT_PATH?.trim() || "patchgate-receipt.json",
+    reportPath,
     createCheckRun: env.INPUT_CREATE_CHECK_RUN?.trim().toLowerCase() === "true",
-    checkName: env.INPUT_CHECK_NAME?.trim() || "PatchGate Review Gate",
+    checkName,
   };
+}
+
+function assertActionText(value: string, label: string, maxLength: number): void {
+  if (value.length === 0 || value.length > maxLength || /[\u0000-\u001F\u007F]/.test(value)) {
+    throw new Error(`PatchGate Action ${label} contains unsafe or oversized text.`);
+  }
 }
 
 export function setActionOutput(name: string, value: string, env: NodeJS.ProcessEnv = process.env): void {
   const outputFile = env.GITHUB_OUTPUT;
   if (outputFile && existsSync(outputFile)) {
-    appendFileSync(outputFile, `${name}=${value}\n`, "utf8");
+    assertActionText(name, "output name", 200);
+    const delimiterBase = `patchgate_${randomUUID()}`;
+    let delimiter = delimiterBase;
+    while (value.includes(delimiter)) delimiter = `${delimiterBase}_${randomUUID()}`;
+    if (value.includes("\n") || value.includes("\r")) {
+      appendFileSync(outputFile, `${name}<<${delimiter}\n${value}\n${delimiter}\n`, "utf8");
+    } else {
+      assertActionText(value, `output ${name}`, 1_000_000);
+      appendFileSync(outputFile, `${name}=${value}\n`, "utf8");
+    }
   }
 }
 
@@ -40,6 +63,19 @@ export function appendStepSummary(markdown: string, env: NodeJS.ProcessEnv = pro
   if (summaryFile && existsSync(summaryFile)) {
     appendFileSync(summaryFile, `${markdown}\n`, "utf8");
   }
+}
+
+function markdownCell(value: string): string {
+  return value.replace(/[\r\n]+/g, " ").replace(/\|/g, "\\|");
+}
+
+function resolveReportPath(reportPath: string, env: NodeJS.ProcessEnv): string {
+  const workspace = resolve(env.GITHUB_WORKSPACE?.trim() || process.cwd());
+  if (reportPath.startsWith("/") || reportPath.includes("\\")) throw new Error("PatchGate Action report-path must be a relative POSIX path inside GITHUB_WORKSPACE.");
+  const candidate = resolve(workspace, reportPath);
+  const relative = candidate === workspace ? "" : candidate.slice(workspace.length + 1);
+  if (relative === "" || relative === ".." || relative.startsWith("../")) throw new Error("PatchGate Action report-path must stay inside GITHUB_WORKSPACE.");
+  return candidate;
 }
 
 export function shouldFailAction(status: FinalStatus, failOn: ActionInputs["failOn"]): boolean {
@@ -52,6 +88,10 @@ export function shouldFailAction(status: FinalStatus, failOn: ActionInputs["fail
     return status === "blocked" || status === "human_review_required" || status === "evidence_missing" || status === "policy_ambiguous";
   }
   return false;
+}
+
+export function snapshotRejectionExitCode(failOn: ActionInputs["failOn"]): 0 | 1 {
+  return shouldFailAction("evidence_missing", failOn) ? 1 : 0;
 }
 
 export function formatMarkdownSummary(receipt: ContributionReceipt): string {
@@ -72,7 +112,7 @@ export function formatMarkdownSummary(receipt: ContributionReceipt): string {
 
   const rows = receipt.requirements.map((req) => {
     const statusIcon = req.result === "passed" ? "✅ Passed" : req.result === "failed" ? "❌ Failed" : req.result === "advisory" ? "ℹ️ Advisory" : "❓ Unknown";
-    return `| \`${req.id}\` | ${statusIcon} | \`${req.severity}\` | ${req.remediation} |`;
+    return `| \`${markdownCell(req.id)}\` | ${statusIcon} | \`${markdownCell(req.severity)}\` | ${markdownCell(req.remediation)} |`;
   });
 
   const table = `| Requirement | Result | Severity | Remediation |
@@ -85,7 +125,7 @@ ${rows.join("\n")}`;
       const state = gate.satisfied ? "✅ Satisfied" : "⏳ Pending Approval";
       const reviewers = gate.requiredReviewers.join(", ") || "None";
       const approved = gate.approvedBy.join(", ") || "None";
-      return `| \`${gate.id}\` | ${state} | ${reviewers} (need ${gate.requiredCount}) | ${approved} | ${gate.reason} |`;
+      return `| \`${markdownCell(gate.id)}\` | ${state} | ${markdownCell(reviewers)} (need ${gate.requiredCount}) | ${markdownCell(approved)} | ${markdownCell(gate.reason)} |`;
     });
     gatesSection = `\n\n#### 👤 Human Review Boundaries\n| Gate ID | Status | Required Reviewers | Approved By | Reason |\n|---|---|---|---|---|\n${gateRows.join("\n")}`;
   }
@@ -98,7 +138,10 @@ ${rows.join("\n")}`;
 
   const provenanceDetails = `\n\n<details>\n<summary>🔐 <b>Audit & Provenance Metadata</b></summary>\n\n- **Evaluator Version:** \`${receipt.evaluatorVersion}\`\n- **Schema Version:** \`${receipt.schemaVersion}\`\n- **Evaluated At:** \`${receipt.evaluatedAt}\`\n- **Decision Input Digest:** \`${receipt.decisionInputDigest}\`\n- **Receipt Digest:** \`${receipt.receiptDigest}\`\n- **Policy Sources:** ${receipt.policySources.map((s) => `\`${s.kind}:${s.identity}@${s.revision.slice(0, 7)}\``).join(", ") || "none"}\n\n</details>`;
 
-  return `${title}\n\n${repoInfo}\n\n${table}${gatesSection}${reviewabilitySection}${provenanceDetails}\n`;
+  const summary = `${title}\n\n${repoInfo}\n\n${table}${gatesSection}${reviewabilitySection}${provenanceDetails}\n`;
+  return summary.length <= MAX_ACTION_SUMMARY_LENGTH
+    ? summary
+    : `${summary.slice(0, MAX_ACTION_SUMMARY_LENGTH - 120)}\n\n> Summary truncated to keep GitHub Action output bounded. The full receipt remains at the configured report path.\n`;
 }
 
 
@@ -132,6 +175,13 @@ export async function runAction(env: NodeJS.ProcessEnv = process.env): Promise<n
   }
 
   const eventName = env.GITHUB_EVENT_NAME || "pull_request";
+  if (eventName === "merge_group") {
+    const message = "PatchGate does not yet support authenticated merge-group membership in the current scalar contract.";
+    setActionOutput("status", "evidence_missing", env);
+    appendStepSummary(`### ⚠️ PatchGate Unsupported Target\n\n**Event:** \`merge_group\`  \n**Status:** \`evidence_missing\`  \n**Remediation:** Use a pull_request head/merge target or extend the versioned merge-group contract before enforcing this event.\n`, env);
+    console.warn(`PatchGate Action: ${message}`);
+    return shouldFailAction("evidence_missing", inputs.failOn) ? 1 : 0;
+  }
   if (eventName !== "pull_request" && eventName !== "pull_request_target") {
     console.log(`PatchGate Action: Skipping execution for unsupported event '${eventName}'. Only pull_request events are evaluated.`);
     return 0;
@@ -177,14 +227,22 @@ export async function runAction(env: NodeJS.ProcessEnv = process.env): Promise<n
       console.error(`Remediation: ${diagnostic.remediation}`);
     }
     const errorMarkdown = `### ❌ PatchGate Snapshot Rejected\n\n**Diagnostic:** \`${diagnostic.id}\`  \n**Message:** ${diagnostic.message}  \n**Remediation:** ${diagnostic.remediation ?? "None"}\n`;
+    setActionOutput("status", "evidence_missing", env);
+    setActionOutput("summary-markdown", errorMarkdown, env);
     appendStepSummary(errorMarkdown, env);
-    return diagnostic.exitCode ?? 2;
+    return snapshotRejectionExitCode(inputs.failOn);
   }
 
   const evaluatedAt = new Date().toISOString();
   const receipt = evaluateContribution(snapshotResult.input, evaluatedAt);
 
-  const resolvedReportPath = resolve(process.cwd(), inputs.reportPath);
+  let resolvedReportPath: string;
+  try {
+    resolvedReportPath = resolveReportPath(inputs.reportPath, env);
+  } catch (error) {
+    console.error(`PatchGate Action: ${error instanceof Error ? error.message : String(error)}`);
+    return 2;
+  }
   try {
     mkdirSync(dirname(resolvedReportPath), { recursive: true });
     writeFileSync(resolvedReportPath, JSON.stringify(receipt, null, 2), "utf8");
@@ -229,18 +287,20 @@ export async function runAction(env: NodeJS.ProcessEnv = process.env): Promise<n
   return 0;
 }
 
-interface CheckRunParams {
+export interface CheckRunParams {
   owner: string;
   name: string;
   headSha: string;
   checkName: string;
   status: FinalStatus;
-  receipt: ContributionReceipt;
+  receipt: Pick<ContributionReceipt, "receiptDigest" | "decisionInputDigest" | "evaluatedAt">;
   summaryMarkdown: string;
   token: string;
 }
 
-async function postCheckRun(params: CheckRunParams): Promise<void> {
+interface CheckRunRecord { id?: number; name?: string; head_sha?: string; }
+
+export async function upsertCheckRun(params: CheckRunParams, fetchImpl: typeof fetch = fetch): Promise<void> {
   const conclusionMap: Record<FinalStatus, "success" | "failure" | "action_required" | "neutral"> = {
     ready_for_review: "success",
     blocked: "failure",
@@ -263,25 +323,50 @@ async function postCheckRun(params: CheckRunParams): Promise<void> {
   };
 
   try {
-    const res = await fetch(`https://api.github.com/repos/${params.owner}/${params.name}/check-runs`, {
-      method: "POST",
+    const apiUrl = `https://api.github.com/repos/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}`;
+    const lookupUrl = `${apiUrl}/commits/${encodeURIComponent(params.headSha)}/check-runs?check_name=${encodeURIComponent(params.checkName)}&filter=latest&per_page=100`;
+    const lookup = await fetchImpl(lookupUrl, {
+      method: "GET",
+      redirect: "error",
       headers: {
         Authorization: `Bearer ${params.token}`,
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
+        Accept: GITHUB_ACCEPT,
+        "X-GitHub-Api-Version": GITHUB_API_VERSION,
         "User-Agent": "patchgate-action/0.1.0",
+      },
+    });
+    if (!lookup.ok) {
+      console.warn(`PatchGate Action: Notice — Could not look up an existing check-run (HTTP ${lookup.status}); no check-run write was attempted.`);
+      return;
+    }
+    const lookupBody = await lookup.json() as { check_runs?: CheckRunRecord[] };
+    const existing = Array.isArray(lookupBody.check_runs)
+      ? lookupBody.check_runs.filter((item) => item.id !== undefined && item.name === params.checkName && item.head_sha === params.headSha).sort((left, right) => (right.id ?? 0) - (left.id ?? 0))[0]
+      : undefined;
+    const url = existing?.id === undefined ? `${apiUrl}/check-runs` : `${apiUrl}/check-runs/${existing.id}`;
+    const res = await fetchImpl(url, {
+      method: existing?.id === undefined ? "POST" : "PATCH",
+      redirect: "error",
+      headers: {
+        Authorization: `Bearer ${params.token}`,
+        Accept: GITHUB_ACCEPT,
+        "X-GitHub-Api-Version": GITHUB_API_VERSION,
+        "User-Agent": "patchgate-action/0.1.0",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
       console.warn(`PatchGate Action: Notice — Could not post check-run (HTTP ${res.status}). Verify that 'checks: write' permission is granted.`);
     } else {
-      console.log(`PatchGate Action: Check run '${params.checkName}' successfully posted with conclusion '${payload.conclusion}'.`);
+      console.log(`PatchGate Action: Check run '${params.checkName}' successfully ${existing?.id === undefined ? "created" : "updated"} with conclusion '${payload.conclusion}'.`);
     }
   } catch (err) {
     console.warn(`PatchGate Action: Check run posting skipped (${err instanceof Error ? err.message : String(err)}).`);
   }
 }
+
+const postCheckRun = upsertCheckRun;
 
 // Auto-run if executed directly as entrypoint
 if (import.meta.url === `file://${process.argv[1]}`) {

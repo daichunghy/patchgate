@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMarkdownSummary, parseActionInputs, shouldFailAction } from "../src/action/index.js";
+import { formatMarkdownSummary, parseActionInputs, shouldFailAction, snapshotRejectionExitCode } from "../src/action/index.js";
 import type { ContributionReceipt } from "../src/types.js";
 
 describe("GitHub Action runner unit tests", () => {
@@ -16,13 +16,13 @@ describe("GitHub Action runner unit tests", () => {
     it("parses custom input parameters from environment variables", () => {
       const inputs = parseActionInputs({
         INPUT_FAIL_ON: "human_review_required",
-        INPUT_GITHUB_TOKEN: "ghp_secret_token_123",
+        INPUT_GITHUB_TOKEN: "github-token-placeholder",
         INPUT_REPORT_PATH: "custom-dir/receipt.json",
         INPUT_CREATE_CHECK_RUN: "true",
         INPUT_CHECK_NAME: "Custom Gate",
       });
       expect(inputs.failOn).toBe("human_review_required");
-      expect(inputs.githubToken).toBe("ghp_secret_token_123");
+      expect(inputs.githubToken).toBe("github-token-placeholder");
       expect(inputs.reportPath).toBe("custom-dir/receipt.json");
       expect(inputs.createCheckRun).toBe(true);
       expect(inputs.checkName).toBe("Custom Gate");
@@ -58,6 +58,14 @@ describe("GitHub Action runner unit tests", () => {
       expect(shouldFailAction("human_review_required", "human_review_required")).toBe(true);
       expect(shouldFailAction("blocked", "human_review_required")).toBe(true);
       expect(shouldFailAction("evidence_missing", "human_review_required")).toBe(true);
+    });
+  });
+
+  describe("snapshot rejection handling", () => {
+    it("keeps shadow mode non-blocking while enforcing modes fail", () => {
+      expect(snapshotRejectionExitCode("never")).toBe(0);
+      expect(snapshotRejectionExitCode("blocked")).toBe(1);
+      expect(snapshotRejectionExitCode("evidence_missing")).toBe(1);
     });
   });
 
@@ -129,6 +137,23 @@ describe("GitHub Action runner unit tests", () => {
       expect(exitCode).toBe(0);
     });
 
+    it("returns an explicit non-ready result for unsupported merge groups", async () => {
+      const { runAction } = await import("../src/action/index.js");
+      const { writeFileSync, mkdtempSync, readFileSync } = await import("node:fs");
+      const { join } = await import("node:path");
+      const tmpDir = mkdtempSync("/tmp/patchgate-action-test-");
+      const eventFile = join(tmpDir, "event.json");
+      const outputFile = join(tmpDir, "output.txt");
+      const summaryFile = join(tmpDir, "summary.md");
+      writeFileSync(eventFile, JSON.stringify({ merge_group: { head_sha: "merge-group-sha" } }), "utf8");
+      writeFileSync(outputFile, "", "utf8");
+      writeFileSync(summaryFile, "", "utf8");
+      const exitCode = await runAction({ GITHUB_EVENT_PATH: eventFile, GITHUB_EVENT_NAME: "merge_group", GITHUB_OUTPUT: outputFile, GITHUB_STEP_SUMMARY: summaryFile, INPUT_FAIL_ON: "never" });
+      expect(exitCode).toBe(0);
+      expect(readFileSync(outputFile, "utf8")).toContain("status=evidence_missing");
+      expect(readFileSync(summaryFile, "utf8")).toContain("merge_group");
+    });
+
     it("returns error code when event payload is invalid or missing required fields", async () => {
       const { runAction } = await import("../src/action/index.js");
       const { writeFileSync, mkdtempSync } = await import("node:fs");
@@ -163,6 +188,39 @@ describe("GitHub Action runner unit tests", () => {
       expect(readFileSync(outputFile, "utf8")).toBe("status=ready_for_review\n");
       expect(readFileSync(summaryFile, "utf8")).toBe("# Test Summary\n");
     });
+
+    it("writes multiline outputs with a safe command-file delimiter", async () => {
+      const { setActionOutput } = await import("../src/action/index.js");
+      const { writeFileSync, readFileSync, mkdtempSync } = await import("node:fs");
+      const { join } = await import("node:path");
+      const tmpDir = mkdtempSync("/tmp/patchgate-action-test-");
+      const outputFile = join(tmpDir, "output.txt");
+      writeFileSync(outputFile, "", "utf8");
+      setActionOutput("summary-markdown", "line one\nline two", { GITHUB_OUTPUT: outputFile });
+      const output = readFileSync(outputFile, "utf8");
+      expect(output).toMatch(/^summary-markdown<<patchgate_[^\n]+\nline one\nline two\npatchgate_[^\n]+\n$/);
+    });
+
+    it("updates an existing check run instead of creating a duplicate", async () => {
+      const { upsertCheckRun } = await import("../src/action/index.js");
+      const calls: Array<{ url: string; method: string }> = [];
+      const fetchMock: typeof fetch = async (input, init) => {
+        calls.push({ url: String(input), method: init?.method ?? "GET" });
+        if (init?.method === "GET") return new Response(JSON.stringify({ check_runs: [{ id: 42, name: "PatchGate Review Gate", head_sha: "head-sha" }] }), { status: 200 });
+        return new Response("{}", { status: 200 });
+      };
+      await upsertCheckRun({
+        owner: "example",
+        name: "service",
+        headSha: "head-sha",
+        checkName: "PatchGate Review Gate",
+        status: "ready_for_review",
+        summaryMarkdown: "summary",
+        token: "test-token",
+        receipt: { receiptDigest: "sha256:receipt", decisionInputDigest: "sha256:input", evaluatedAt: "2026-08-20T00:00:00Z" },
+      }, fetchMock);
+      expect(calls.map((call) => call.method)).toEqual(["GET", "PATCH"]);
+      expect(calls[1]?.url).toContain("/check-runs/42");
+    });
   });
 });
-

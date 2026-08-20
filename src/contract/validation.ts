@@ -1,28 +1,18 @@
 import { Ajv2020, type ErrorObject, type ValidateFunction } from "ajv/dist/2020.js";
-import { existsSync, readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { determineFinalStatus } from "./status-precedence.js";
 import { MAX_COLLECTION_ITEMS, MAX_NESTED_ENTRIES, MAX_STRING_LENGTH } from "./bounds.js";
 import { canonicalJson, sha256Digest } from "../canonical-json.js";
 import { receiptDigest } from "../evidence/digests.js";
 import { evidenceReference } from "../evidence/source-verifier.js";
 import type { ContributionReceipt, EvaluationInput, EvaluationObservations, ObservationMeta, PatchgatePolicy, ReceiptEvidence } from "../types.js";
+import policySchema from "../../schemas/patchgate-policy.schema.json" with { type: "json" };
+import inputSchema from "../../schemas/evaluation-input.schema.json" with { type: "json" };
+import receiptSchema from "../../schemas/contribution-receipt.schema.json" with { type: "json" };
 
 const ajv = new Ajv2020({ allErrors: true, strict: true });
-
-function schema(name: string): unknown {
-  const candidates = [
-    fileURLToPath(new URL(`../../schemas/${name}`, import.meta.url)),
-    fileURLToPath(new URL(`../../../schemas/${name}`, import.meta.url)),
-  ];
-  const path = candidates.find((candidate) => existsSync(candidate));
-  if (path === undefined) throw new Error(`PatchGate schema is not packaged: ${name}`);
-  return JSON.parse(readFileSync(path, "utf8")) as unknown;
-}
-
-ajv.addSchema(schema("patchgate-policy.schema.json") as object);
-ajv.addSchema(schema("evaluation-input.schema.json") as object);
-ajv.addSchema(schema("contribution-receipt.schema.json") as object);
+ajv.addSchema(policySchema as object);
+ajv.addSchema(inputSchema as object);
+ajv.addSchema(receiptSchema as object);
 const policyValidator = ajv.getSchema("https://patchgate.dev/schemas/patchgate-policy/0.1") as ValidateFunction<unknown>;
 const inputValidator = ajv.getSchema("https://patchgate.dev/schemas/evaluation-input/0.1") as ValidateFunction<unknown>;
 const receiptValidator = ajv.getSchema("https://patchgate.dev/schemas/contribution-receipt/0.1") as ValidateFunction<unknown>;

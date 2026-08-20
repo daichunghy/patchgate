@@ -39,6 +39,9 @@ npm run verify
 # Build project
 npm run build
 
+# Build the self-contained GitHub Action bundle
+npm run bundle:action
+
 # Run specific test suites
 npm test
 npm run test:security

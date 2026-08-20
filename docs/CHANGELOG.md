@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Current audit boundary
+- Action candidate now has a self-contained ncc bundle and clean-room
+  verification; it remains unreleased and unproven in external consumer repos.
+- Check-run delivery uses lookup plus update/create semantics to reduce
+  duplicate checks; `merge_group` remains explicit `evidence_missing`.
+- Full verification includes dependency audit, Action bundling and bundle
+  startup checks.
+- Third-party workflow Actions are pinned to immutable commit SHAs.
+
 ### Added
 - Deterministic evaluator with pure functional core
 - Six constitutional rule classes: issue linkage, required checks, ownership, sensitive paths, policy integrity, reviewability

@@ -3,10 +3,10 @@
 Thank you for using PatchGate.
 
 ## 1. Documentation & Guides
-- [Product Overview & Architecture](docs/architecture.md)
-- [Receipt Contract Specification](docs/receipt-contract.md)
-- [Threat Model & Security Boundary](docs/threat-model.md)
-- [CLI Quickstart & Subcommands](README.md#local-development)
+- [Product Overview & Architecture](../docs/architecture.md)
+- [Receipt Contract Specification](../docs/receipt-contract.md)
+- [Threat Model & Security Boundary](../docs/threat-model.md)
+- [CLI Quickstart & Subcommands](../README.md#local-development)
 
 ## 2. Asking Questions & Community Discussion
 - Use **GitHub Discussions** for questions, ideas, and architecture inquiries.

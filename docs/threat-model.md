@@ -1,10 +1,12 @@
 # PatchGate architecture threat model
 
-**Scope:** the planned GitHub adapter, untrusted verification workflow, pure
-evaluator, receipt, and status-check publication path.  
-**Current implementation state:** only the local pure evaluator exists; all
-adapter and workflow mitigations below are design requirements unless marked
-otherwise.
+**Scope:** the GitHub adapter, local/shadow Action candidate, untrusted
+verification workflow, pure evaluator, receipt, and status-check publication
+path.
+**Current implementation state:** the deterministic evaluator, local/mock
+adapter, Action runner, bundle verification and shadow workflow exist locally.
+Authorized live smoke, public release, external shadow installations and
+enforcement remain unproven.
 
 ## Assets
 
@@ -75,9 +77,10 @@ reviewer without the repository’s own access-control failure.
   reviewability modes. These are local contract/security probes only; they do
   not prove authenticated GitHub retrieval or Action security.
 
-### Required before Action release
+### Required before public Action release
 
-- pinned Action implementation from a trusted base/default branch;
+- pinned Action implementation from a trusted base/default branch, with the
+  self-contained bundle committed and verified;
 - minimal `permissions` declaration and documented token/App requirements;
 - no PR checkout in the privileged path;
 - safe handling of PR title/body/labels and all shell inputs;

@@ -1,4 +1,6 @@
 blank_issues_enabled: false
+# These URLs are publication placeholders. Verify the owner and public remote
+# before enabling the community-health surface.
 contact_links:
   - name: Security Vulnerability
     url: https://github.com/patchgate/patchgate/security/advisories/new

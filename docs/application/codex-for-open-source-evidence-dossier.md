@@ -1,7 +1,7 @@
 # Codex for Open Source evidence dossier
 
 **Status:** preparation only; not submitted and not an approval claim  
-**Date:** 2026-08-13  
+**Date:** 2026-08-20
 **Project:** PatchGate
 
 ## Purpose
@@ -18,9 +18,9 @@ and the program terms linked from that application.
 
 | Program signal | Evidence currently available | Strength | Missing before submission |
 | --- | --- | --- | --- |
-| Public active open-source project | Workspace is not yet a Git repository; no public remote or OSI license | none | public URL, license, maintainer identity, community files |
+| Public active open-source project | Local Git history, Apache-2.0 `LICENSE`, community files and CI definitions exist; no public remote is configured and `package.json` remains private | local foundation only | public URL, public CI run, maintainer identity, public feedback/security routes |
 | Meaningful usage or ecosystem importance | Product rationale and threat model are documented; no public usage, stars, downloads or downstream users | hypothesis | public release, real users/pilots, concrete ecosystem references |
-| Active maintenance | Local implementation, security review and deterministic verification are recorded | local-only | public history, issues, PRs, releases and maintainer workflow |
+| Active maintenance | Five local commits, current implementation, security review and deterministic verification are recorded | local-only | public history, issues, PRs, releases and maintainer workflow |
 | Maintainer role | No public repository or role relationship exists yet | unverified | public GitHub username/repository and primary/core maintainer explanation |
 | Security and quality | Local verification passes; no high-severity npm audit findings; security boundary and fail-closed tests exist | local/fixture | CI run on public default branch, secret scan, live integration and external review |
 | Codex use case | Clear fit for PR review-readiness, triage, security review and release maintenance | documented | explain concrete day-to-day workflow after publication |
@@ -61,33 +61,37 @@ ecosystem importance and adoption remain unproven until publication and pilots.
 
 ## Application draft fields
 
-These fields are ready for submission to [openai.com/form/codex-for-oss](https://openai.com/form/codex-for-oss/):
+These fields are a draft only. They are not ready for submission until the
+public repository, maintainer role and usage evidence are independently
+verifiable.
 
 ```text
 Applicant name: [Your Name]
 ChatGPT account email: [Your ChatGPT Account Email]
 Public GitHub username: [Your GitHub Username]
-Public repository URL: https://github.com/patchgate/patchgate
+Public repository URL: [not yet provisioned]
 Role: primary maintainer / core maintainer
 Interest: both (Codex Security & API credits)
 OpenAI Organization ID: [Your Org ID]
 
-Why the repository qualifies (<=500 characters, exactly 494 chars):
-PatchGate is open-source developer infrastructure that protects OSS maintainers from agentic PR fatigue. Built in strict TypeScript, it deterministically evaluates PR review-readiness against 6 core rules (issue linkage, commit-bound checks, CODEOWNERS, policy integrity, human gates, reviewability budget) emitting reproducible JSON receipts. It enforces zero privileged PR-code execution, prevents policy self-relaxation, and is licensed under Apache-2.0 with 100% fixture and schema verification.
+Why the repository qualifies (<=500 characters, draft only):
+PatchGate is developer infrastructure for review-readiness under rising agentic PR volume. It uses strict TypeScript, trusted-base policy, commit-bound evidence, qualified ownership and reproducible receipts. The project is Apache-2.0 licensed locally and is designed to avoid executing untrusted PR code in privileged workflows. Public usage and ecosystem importance are not yet established.
 
-How credits will be used (<=500 characters, exactly 496 chars):
+How credits will be used (<=500 characters, draft only):
 We will use ChatGPT Pro & Codex to: 1) Synthesize complex GitHub API edge-cases, webhook payloads, and conflicting policy structures into deterministic regression test fixtures; 2) Accelerate issue triage into verified test cases; 3) Use Codex Security to continuously audit hostile trust-boundary adapters against TOCTOU, injection, and status spoofing; 4) Use API credits for preflight discovery benchmarks across open governance corpora, keeping maintainer review focused on verified evidence.
 
-Additional context (<=500 characters, exactly 493 chars):
+Additional context (<=500 characters, draft only):
 As AI coding agents rapidly accelerate PR volume (RepoComplianceBench), OSS maintainers face severe review overload. PatchGate bridges this gap: it shifts policy discovery, evidence binding, and human approval boundaries before maintainer review without executing untrusted PR code in privileged workflows. As a standard ContributionReceipt schema and lightweight GitHub Action/CLI, PatchGate serves as critical open safety infrastructure for maintainers navigating the AI-contributor ecosystem.
 ```
 
 ## Submission checklist
 
-- [x] G0 Public Foundation: `LICENSE` (Apache-2.0), `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `.github/CODEOWNERS`, `.github/workflows/ci.yml`.
-- [x] G4 Action Packaging: `action.yml`, `src/action/index.ts`, `test/action.test.ts`.
-- [x] G3 Live Smoke Harness: `scripts/live-smoke-harness.ts`.
-- [x] Verified Determinism and Security: 100% test pass on all unit, integration, fixture, and CLI smoke suites.
-- [ ] Push default branch to public GitHub remote (`https://github.com/patchgate/patchgate`).
+- [x] Local foundation: Git history, `LICENSE` (Apache-2.0), community files and CI definitions.
+- [x] Action candidate: `.github/action.yml`, `src/action/index.ts`, bundled `dist/action/index.js`, and `test/action.test.ts`.
+- [x] G3 Live Smoke Harness: `scripts/live-smoke-harness.ts`, guarded against implicit targets.
+- [x] Verified determinism and security: local test and bundle verification pass.
+- [ ] Authorized G3 live read-only smoke.
+- [ ] Three G2 usability sessions with consenting participants.
+- [ ] Two G4 shadow installations.
+- [ ] Push default branch to a maintainer-confirmed public GitHub remote.
 - [ ] Submit application form at `https://openai.com/form/codex-for-oss/`.
-

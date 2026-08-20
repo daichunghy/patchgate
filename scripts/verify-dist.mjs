@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,9 +31,9 @@ async function verify() {
   }
   reportSuccess('dist/ directory exists.');
 
-  // 2. Verify dist/src/cli.js and dist/src/action/index.js exist
+  // 2. Verify the CLI and self-contained Action bundle exist
   const cliJsPath = path.join(distPath, 'src', 'cli.js');
-  const actionIndexPath = path.join(distPath, 'src', 'action', 'index.js');
+  const actionIndexPath = path.join(distPath, 'action', 'index.js');
   
   if (!fs.existsSync(cliJsPath)) {
     reportError(`Missing: ${cliJsPath}`);
@@ -43,6 +45,24 @@ async function verify() {
     reportError(`Missing: ${actionIndexPath}`);
   } else {
     reportSuccess(`Found: ${actionIndexPath}`);
+    const actionSource = fs.readFileSync(actionIndexPath, 'utf8');
+    if (/\bfrom\s*["'](?:ajv|yaml)(?:\/|["'])|\bimport\s*\(["'](?:ajv|yaml)/.test(actionSource)) {
+      reportError('Action bundle still contains an external ajv/yaml runtime import.');
+    } else {
+      reportSuccess('Action bundle has no external ajv/yaml runtime import.');
+    }
+    const cleanRoom = fs.mkdtempSync(path.join(tmpdir(), 'patchgate-action-verify-'));
+    try {
+      for (const file of fs.readdirSync(path.join(distPath, 'action'))) {
+        if (file.endsWith('.js') || file === 'package.json') fs.copyFileSync(path.join(distPath, 'action', file), path.join(cleanRoom, file));
+      }
+      const result = spawnSync(process.execPath, [path.join(cleanRoom, 'index.js')], { cwd: cleanRoom, encoding: 'utf8' });
+      const cleanRoomStarted = result.status === 0 || (result.status === 2 && String(result.stderr).includes('GITHUB_EVENT_PATH'));
+      if (!cleanRoomStarted || /ERR_MODULE_NOT_FOUND|Cannot find module/.test(String(result.stderr))) reportError('Action bundle did not pass the clean-room startup smoke test.');
+      else reportSuccess('Action bundle starts in a clean room without source schemas or node_modules.');
+    } finally {
+      fs.rmSync(cleanRoom, { recursive: true, force: true });
+    }
   }
 
   // 3. Verify dist was built from current source (tsconfig mtime vs dist mtime)

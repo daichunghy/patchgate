@@ -4,8 +4,8 @@
 
 | Version | Supported |
 |---|---|
-| `0.1.x` | :white_check_mark: |
-| `< 0.1.0` | :x: |
+| `0.1.0-dev` | Best effort during pre-release |
+| Released versions | No released version yet |
 
 ## 2. Reporting a Vulnerability
 
@@ -14,8 +14,11 @@ We take the security of PatchGate and the repositories that rely on it seriously
 If you believe you have found a security vulnerability in PatchGate:
 
 1. **Please do NOT disclose it publicly** via GitHub issues, PRs, or discussions.
-2. Submit a report through **[GitHub Private Vulnerability Reporting](https://github.com/patchgate/patchgate/security/advisories/new)**.
-3. If PVR is not available, contact the core maintainers via email with encrypted details where appropriate.
+2. Use GitHub Private Vulnerability Reporting after the public repository and
+   security channel are provisioned.
+3. Until that channel exists, do not disclose a suspected vulnerability
+   publicly; preserve a local reproduction and contact the maintainer through
+   the private channel supplied with the release.
 
 ### Response Timelines (SLAs)
 - **Initial Acknowledgment:** Within 48 hours.

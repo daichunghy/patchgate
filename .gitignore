@@ -1,5 +1,9 @@
 node_modules/
-dist/
+dist/*
+!dist/
+!dist/action/
+!dist/action/*.js
+!dist/action/package.json
 coverage/
 *.tsbuildinfo
 .DS_Store
