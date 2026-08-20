@@ -369,7 +369,7 @@ export async function upsertCheckRun(params: CheckRunParams, fetchImpl: typeof f
 const postCheckRun = upsertCheckRun;
 
 // Auto-run if executed directly as entrypoint
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.env.GITHUB_ACTIONS === "true") {
   runAction().then((exitCode) => {
     if (exitCode !== 0) process.exit(exitCode);
   }).catch((err) => {

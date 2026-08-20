@@ -56,7 +56,7 @@ async function verify() {
       for (const file of fs.readdirSync(path.join(distPath, 'action'))) {
         if (file.endsWith('.js') || file === 'package.json') fs.copyFileSync(path.join(distPath, 'action', file), path.join(cleanRoom, file));
       }
-      const result = spawnSync(process.execPath, [path.join(cleanRoom, 'index.js')], { cwd: cleanRoom, encoding: 'utf8' });
+      const result = spawnSync(process.execPath, [path.join(cleanRoom, 'index.js')], { cwd: cleanRoom, encoding: 'utf8', env: { ...process.env, GITHUB_ACTIONS: 'true' } });
       const cleanRoomStarted = result.status === 0 || (result.status === 2 && String(result.stderr).includes('GITHUB_EVENT_PATH'));
       if (!cleanRoomStarted || /ERR_MODULE_NOT_FOUND|Cannot find module/.test(String(result.stderr))) reportError('Action bundle did not pass the clean-room startup smoke test.');
       else reportSuccess('Action bundle starts in a clean room without source schemas or node_modules.');
