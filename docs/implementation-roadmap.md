@@ -28,7 +28,7 @@ authority.
 
 | Surface | Highest proven level | Evidence | Open dependency |
 | --- | --- | --- | --- |
-| Contract/evaluator | static and fixture verified | 92 non-CLI tests across 10 files, deterministic fixtures, security coverage and receipt validation | external review and adoption |
+| Contract/evaluator | static and fixture verified | 93 non-CLI tests across 10 files, deterministic fixtures, security coverage and receipt validation | external review and adoption |
 | Local preflight/onboarding | native user-flow verified | local-file/Git-ref preflight, validate, safe init, doctor, discovery and five CLI process tests | three task sessions and UR acceptance evidence |
 | GitHub adapter | complete live snapshot on the local candidate; result remains non-ready on real missing evidence | bounded adapter, base-policy path fallback, direct GraphQL Issue-node normalization, branch-protection check/approval contract, recorded fixtures, source/SHA binding, TOCTOU re-read and [G3 live smoke record](reviews/2026-08-20-g3-live-smoke.md) | public merged implementation, active ruleset semantics, merge-group contract and external consumer |
 | GitHub Action | static and clean-room verified local candidate | `action.yml`, committed ncc bundle, pinned workflows, idempotent check delivery, `verify:dist` and `test:consumer-fixture` | live consumer E2E, fork/merge-group E2E and two shadow installations |

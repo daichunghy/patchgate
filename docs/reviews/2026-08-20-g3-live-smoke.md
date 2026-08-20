@@ -47,24 +47,27 @@ CODEOWNERS gates. It also added the base-policy path fallback for
 `.github/patchgate.yml`, normalized GitHub's direct `Issue` GraphQL nodes, and
 made workflow-run evidence references unique per check name.
 
-The same authorized GET-only harness then reached public `daichunghy/patchgate#9`
-again:
+The same authorized GET-only harness then reached public
+`daichunghy/patchgate#9` on PR head `75e1d79`:
 
 ```text
-API Metrics: 24 attempted requests (422468 bytes transferred)
-Identity bound: Base=a3745f6, Tested=b258924
+API Metrics: 24 attempted requests (634712 bytes transferred)
+Identity bound: Base=a3745f6, Tested=75e1d79
 EvaluationInput conforms to schema v0.1
 ContributionReceipt conforms to schema v0.1
-Evaluator final status: evidence_missing
+Evaluator final status: human_review_required
+Receipt Digest: sha256:e2531c75ba65955c91bbffdf104d327730ada8899ff8422fa9fa43ac18071db1
 Smoke Test Summary: 1 Built/Passed, 0 Rejected, 0 Failed
 ```
 
 The non-ready status is expected for this target and is not a product failure:
-the PR still lacks the required independent approval and applicable ownership
-approval, and its issue-linkage/reviewability state is retained as evidence
-instead of being guessed away. The run performed no GitHub writes. The result
-was produced from the local candidate before its implementation commit was
-published; a post-merge smoke is still required for public-code proof.
+the PR has no independent approving review, no applicable CODEOWNERS approvals
+and no linked issue; reviewability overruns remain advisory. The receipt keeps
+those facts visible, and the final `human_review_required` status follows the
+declared status precedence. The GraphQL observation is complete and produced
+no API diagnostic. The run performed no GitHub writes. The implementation is
+now on the public PR head; a post-merge smoke is still required for default-
+branch/public-release proof.
 
 The current G3 boundary is therefore narrower and verified: branch-protection
 checks and approval gates are represented; active decision-bearing rulesets,
