@@ -4,15 +4,15 @@
 [![TypeScript: Strict](https://img.shields.io/badge/TypeScript-Strict_100%25-blue.svg)](https://www.typescriptlang.org/)
 
 PatchGate is an open-source review-readiness gate for GitHub pull requests.
-It answers a narrower question than code review or AI-authorship detection:
+It answers a narrower question than code review or authorship analysis:
 
 > Has this contribution supplied the policy, evidence, ownership, and human
 > boundaries that the repository requires before a maintainer spends review
 > time?
 
-The evaluator is deterministic and explainable. It does not decide whether code
-is correct, safe, or merge-worthy, and it cannot force an external coding agent
-to stop working.
+The evaluator is deterministic and explainable. It does not determine who or
+what produced the code, whether the code is correct, safe, or merge-worthy, and
+it cannot force external automation to stop working.
 
 ## GitHub Action candidate
 
@@ -121,7 +121,7 @@ The repository maintains a clean root directory structure (8 files max) with mod
 ├── fixtures/                # Deterministic test fixtures and API exchange recordings
 ├── test/                    # Comprehensive unit, integration, security, and determinism tests
 ├── scripts/                 # Linters, budget checkers, and verification harnesses
-├── AGENTS.md                # AI agent operating rules and context
+├── AGENTS.md                # Repository guidance for automated contributors
 ├── LICENSE                  # Apache-2.0 License
 ├── README.md                # Project overview and quickstart
 ├── package.json             # Node package manifest

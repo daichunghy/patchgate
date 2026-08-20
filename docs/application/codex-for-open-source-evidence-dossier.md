@@ -45,8 +45,8 @@ and the program terms linked from that application.
 PatchGate addresses a narrow maintenance problem: a pull request can be
 syntactically valid while lacking trusted policy, commit-bound checks, required
 ownership or an explicit human gate. The project is designed as deterministic
-developer infrastructure rather than an AI-authorship detector or correctness
-oracle. Its strongest current evidence is security-conscious engineering; its
+developer infrastructure rather than an authorship or correctness oracle. Its
+strongest current evidence is security-conscious engineering; its
 ecosystem importance and adoption remain unproven until publication and pilots.
 
 ## Intended Codex workflow after release
@@ -81,7 +81,11 @@ How credits will be used (<=500 characters, draft only):
 We will use ChatGPT Pro & Codex to: 1) Synthesize complex GitHub API edge-cases, webhook payloads, and conflicting policy structures into deterministic regression test fixtures; 2) Accelerate issue triage into verified test cases; 3) Use Codex Security to continuously audit hostile trust-boundary adapters against TOCTOU, injection, and status spoofing; 4) Use API credits for preflight discovery benchmarks across open governance corpora, keeping maintainer review focused on verified evidence.
 
 Additional context (<=500 characters, draft only):
-As AI coding agents rapidly accelerate PR volume (RepoComplianceBench), OSS maintainers face severe review overload. PatchGate bridges this gap: it shifts policy discovery, evidence binding, and human approval boundaries before maintainer review without executing untrusted PR code in privileged workflows. As a standard ContributionReceipt schema and lightweight GitHub Action/CLI, PatchGate serves as critical open safety infrastructure for maintainers navigating the AI-contributor ecosystem.
+Maintainers need to know whether a pull request is ready before spending time on
+a full review. PatchGate moves policy discovery, evidence binding, and human
+approval boundaries before that review. It does so without executing untrusted
+pull-request code in a privileged workflow. The ContributionReceipt schema and
+GitHub Action/CLI provide a concrete interface for the gate.
 ```
 
 ## Submission checklist

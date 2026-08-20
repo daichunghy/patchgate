@@ -10,7 +10,7 @@
     "code-review",
     "review-readiness",
     "governance",
-    "ai-safety"
+    "developer-tools"
   ],
   "type": "module",
   "bin": {

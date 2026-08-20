@@ -1,4 +1,4 @@
-# Kế hoạch thực thi PatchGate dành cho AI agents
+# Kế hoạch thực thi PatchGate cho quy trình tự động
 
 **Phiên bản kế hoạch:** 2.0  
 **Ngày chốt bằng chứng:** 2026-08-13  
@@ -14,11 +14,12 @@ thực thi mới hơn; constitution vẫn cao nhất.
 ## 1. Kết luận điều hành
 
 PatchGate nên tiếp tục theo định vị hiện tại: một **review-readiness gate có
-authority rõ ràng và fail-closed**, không phải công cụ phát hiện code do AI tạo,
+authority rõ ràng và fail-closed**, không phải công cụ xác định nguồn gốc mã nguồn,
 không phải code-review oracle và không phải SaaS compliance.
 
 Đường tối ưu để tăng xác suất được hỗ trợ từ Codex for Open Source không phải là
-thêm AI vào evaluator. Đường đúng là biến PatchGate thành một public project có
+thêm suy đoán về nguồn gốc mã nguồn vào evaluator. Đường đúng là biến PatchGate
+thành một public project có
 license, release dùng được, trust boundary đã kiểm thử, ít nhất hai maintainer
 bên ngoài đã pilot và một hồ sơ chứng minh người nộp là core maintainer có hoạt
 động thực tế.
@@ -123,7 +124,7 @@ Trước khi chuẩn bị nộp hồ sơ, phải có tối thiểu:
 
 Mọi work package user-facing phải map vào UR IDs trong
 [user requirements](product/user-requirements.md). Persona ưu tiên là OSS
-maintainer, contributor/coding agent, security/platform owner và
+maintainer, contributor hoặc công cụ tự động, security/platform owner và
 monorepo/domain owner. Flow bắt buộc gồm local value, contributor remediation,
 shadow rollout, actionable PR result, administrator diagnosis và replay/support.
 
@@ -357,7 +358,7 @@ repository/license/publication decision independently.
 
 ## G2 — Local preflight có ích
 
-**Mục tiêu:** con người và coding agent biết yêu cầu trước khi mở PR.
+**Mục tiêu:** con người và công cụ tự động biết yêu cầu trước khi mở PR.
 
 ### Công việc
 
