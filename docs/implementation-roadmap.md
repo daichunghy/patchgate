@@ -30,7 +30,7 @@ authority.
 | --- | --- | --- | --- |
 | Contract/evaluator | static and fixture verified | 87 non-CLI tests across 10 files, deterministic fixtures, security coverage and receipt validation | authenticated provenance |
 | Local preflight/onboarding | native user-flow verified | local-file/Git-ref preflight, validate, safe init, doctor, discovery and five CLI process tests | three task sessions and UR acceptance evidence |
-| GitHub adapter | local/mock technically verified | bounded adapter, recorded API fixtures, capability/permission diagnostics, source/SHA binding and TOCTOU re-read | authorized live read-only smoke |
+| GitHub adapter | local/mock verified plus live boundary rejection | bounded adapter, recorded API fixtures, capability/permission diagnostics, source/SHA binding, TOCTOU re-read and [G3 live smoke record](reviews/2026-08-20-g3-live-smoke.md) | complete live snapshot; native-control contract or explicitly supported repository shape |
 | GitHub Action | static and clean-room verified local candidate | `action.yml`, committed ncc bundle, pinned workflows, idempotent check delivery, `verify:dist` and `test:consumer-fixture` | live consumer E2E, fork/merge-group E2E and two shadow installations |
 | User value | hypothesis | research and constitution | task sessions and pilots |
 | Public OSS/release | public foundation present; release not authorized | public `daichunghy/patchgate` repository, Apache-2.0, community files and successful public `main` CI run; package remains private and no release exists | release decision, public support/security operation, compatibility and external usage |

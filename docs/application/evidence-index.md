@@ -14,6 +14,7 @@ same as independent community use.
 | Public open-source foundation | [Repository](https://github.com/daichunghy/patchgate), Apache-2.0 license, public Discussions, protected `main` and [default-branch CI](https://github.com/daichunghy/patchgate/actions/runs/32333914059) | Public pre-release project | Release, adoption or selection |
 | Active maintenance | [Discussions](https://github.com/daichunghy/patchgate/discussions), [issues #4–#7](https://github.com/daichunghy/patchgate/issues), [public Project](https://github.com/users/daichunghy/projects/1), draft [PR #9](https://github.com/daichunghy/patchgate/pull/9) | Ongoing maintainer work and contribution routing | Merged external contributions |
 | Technical quality | [G4/G0 audit](../reviews/2026-08-20-g4-g0-audit.md), deterministic fixtures, security tests and `npm run verify` | Reproducible local quality evidence | Live GitHub integration or production reliability |
+| Live integration boundary | [G3 live smoke record](../reviews/2026-08-20-g3-live-smoke.md) reached a real public PR and rejected an unsupported native control safely | Runtime fail-closed behavior | A complete live snapshot or successful integration |
 | Ecosystem research | Context-specific questions to Policy Bot, Danger, Reviewdog and Zizmor | Relevant ecosystem questions | Replies, endorsement or downstream use |
 | Usage and adoption | No verified downstream users, downloads, releases or pilots yet | Open gap | Meaningful usage |
 
