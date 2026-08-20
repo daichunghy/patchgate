@@ -123,7 +123,8 @@ Passed required-check results additionally bind the accepted conclusion set,
 the selected conclusion, the configured expected source identity, and the
 selected immutable run identity. A GitHub App check uses
 `check-run:<checkRunId>`. A GitHub Actions run uses
-`workflow-run:<workflowRunId>:attempt:<workflowRunAttempt>` so a rerun attempt
+`workflow-run:<workflowRunId>:attempt:<workflowRunAttempt>:check:<encodedName>` so
+a rerun attempt and each job/check name remain distinct
 cannot alias an earlier run.
 
 Each human gate records its configured positive `requiredCount`. A satisfied

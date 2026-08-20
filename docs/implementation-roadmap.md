@@ -28,9 +28,9 @@ authority.
 
 | Surface | Highest proven level | Evidence | Open dependency |
 | --- | --- | --- | --- |
-| Contract/evaluator | static and fixture verified | 87 non-CLI tests across 10 files, deterministic fixtures, security coverage and receipt validation | authenticated provenance |
+| Contract/evaluator | static and fixture verified | 92 non-CLI tests across 10 files, deterministic fixtures, security coverage and receipt validation | external review and adoption |
 | Local preflight/onboarding | native user-flow verified | local-file/Git-ref preflight, validate, safe init, doctor, discovery and five CLI process tests | three task sessions and UR acceptance evidence |
-| GitHub adapter | local/mock verified plus live boundary rejection | bounded adapter, recorded API fixtures, capability/permission diagnostics, source/SHA binding, TOCTOU re-read and [G3 live smoke record](reviews/2026-08-20-g3-live-smoke.md) | complete live snapshot; native-control contract or explicitly supported repository shape |
+| GitHub adapter | complete live snapshot on the local candidate; result remains non-ready on real missing evidence | bounded adapter, base-policy path fallback, direct GraphQL Issue-node normalization, branch-protection check/approval contract, recorded fixtures, source/SHA binding, TOCTOU re-read and [G3 live smoke record](reviews/2026-08-20-g3-live-smoke.md) | public merged implementation, active ruleset semantics, merge-group contract and external consumer |
 | GitHub Action | static and clean-room verified local candidate | `action.yml`, committed ncc bundle, pinned workflows, idempotent check delivery, `verify:dist` and `test:consumer-fixture` | live consumer E2E, fork/merge-group E2E and two shadow installations |
 | User value | hypothesis | research and constitution | task sessions and pilots |
 | Public OSS/release | public foundation present; release not authorized | public `daichunghy/patchgate` repository, Apache-2.0, community files and successful public `main` CI run; package remains private and no release exists | release decision, public support/security operation, compatibility and external usage |
@@ -114,9 +114,13 @@ budgets, and a finalization re-read.
 
 The CLI supports deterministic fixture replay through `github snapshot
 --mock-fixture`. The adapter deliberately rejects merge-group requests and
-active decision-bearing native controls that the current scalar evaluator
-cannot represent. No live API call was made; G3 remains open for an explicitly
-authorized read-only smoke and current permission evidence.
+active decision-bearing rulesets that the current scalar evaluator cannot
+represent. Branch-protection required checks, approvals and applicable
+CODEOWNERS gates are now represented in the versioned native-control contract;
+unsupported last-pusher semantics remain evidence-missing. An authorized
+GET-only smoke built a complete schema-valid snapshot and receipt for public
+PR #9; the result remained non-ready because the real PR lacks its required
+approval/ownership/linkage evidence. See the [live smoke record](reviews/2026-08-20-g3-live-smoke.md).
 
 ## Current checkpoint — 2026-08-20
 
@@ -147,7 +151,7 @@ The current gate position is:
 
 - G1: locally verified.
 - G2: local onboarding slice verified; three consented task sessions remain.
-- G3: narrowed local/mock adapter verified; authorized live read-only smoke remains.
+- G3: branch-protection subset and authorized live snapshot verified on the local candidate; public merge and external consumer proof remain open.
 - G4: local Action candidate verified; consumer and shadow evidence remain.
 - G5 through G8: not started as release gates because their upstream evidence is incomplete.
 
@@ -237,8 +241,8 @@ requires privileged PR-code execution; or adoption claims require fabrication.
 
 1. Run three consented G2 task sessions and record raw task time,
    comprehension, remediation clarity and UR mapping.
-2. Execute the authorized G3 live read-only smoke against a maintainer-approved
-   repository/PR target; retain only the agreed redacted evidence.
+2. Re-run the authorized G3 live read-only smoke after the native-control PR is
+   merged; retain only the agreed redacted evidence and actual non-ready causes.
 3. Reconcile the G0 publication surface: package privacy, security reporting,
    support links, maintainer ownership and release/rollback policy.
 4. Run two non-blocking G4 shadow installations in consenting consumer

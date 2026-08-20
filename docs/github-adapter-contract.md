@@ -31,7 +31,9 @@ PATCHGATE_GITHUB_TOKEN='read-only-token' \
 ```
 
 The command refuses live mode without `--live` and refuses to run without the
-environment token. This workspace did not execute that command.
+environment token. An authorized GET-only run against public
+`daichunghy/patchgate#9` is recorded in
+[`docs/reviews/2026-08-20-g3-live-smoke.md`](reviews/2026-08-20-g3-live-smoke.md).
 
 ## Envelope and status
 
@@ -55,9 +57,12 @@ GitHub control was bypassed.
   snapshot.
 - The current scalar evaluator cannot represent authenticated merge-group
   membership; merge-group requests are explicitly unsupported.
-- Rulesets and branch protection are normalized for capability reporting. An
-  applicable active decision-bearing native control is rejected until the
-  evaluator has a versioned native requirement contract.
+- Branch protection required checks, required approvals and applicable
+  CODEOWNERS gates are represented in the versioned native-control contract and
+  remain bound to the base revision. Active decision-bearing rulesets are still
+  rejected until their rule semantics have an equivalent contract. The
+  `require_last_push_approval` setting remains an explicit evidence-missing
+  result because this snapshot does not yet include immutable last-pusher data.
 
 The contract decisions are recorded in
 [`docs/decisions/2026-08-13-g3-contract.md`](decisions/2026-08-13-g3-contract.md).

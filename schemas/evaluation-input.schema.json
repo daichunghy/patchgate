@@ -17,6 +17,7 @@
     "reviews": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/review" } },
     "checks": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/check" } },
     "ownershipRequirements": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/ownershipRequirement" } },
+    "nativeControls": { "$ref": "#/$defs/nativeControls" },
     "reviewability": { "$ref": "#/$defs/reviewabilitySnapshot" },
     "observations": { "$ref": "#/$defs/observations" }
   },
@@ -104,6 +105,27 @@
     "ownershipRequirement": {
       "type": "object", "additionalProperties": false, "required": ["id", "owners", "requiredCount"],
       "properties": { "id": { "$ref": "#/$defs/nonBlank" }, "owners": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/nonBlank" }, "uniqueItems": true }, "requiredCount": { "type": "integer", "minimum": 1 } }
+    },
+    "nativeBranchProtectionCheck": {
+      "type": "object", "additionalProperties": false, "required": ["context"],
+      "properties": { "context": { "$ref": "#/$defs/nonBlank" }, "appId": { "type": "integer", "minimum": 1 } }
+    },
+    "nativeBranchProtection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["requiredChecks", "requiredApprovals", "requireCodeOwnerReviews", "requireLastPushApproval", "staleReviews", "bypassVisible", "decisionBearing"],
+      "properties": {
+        "requiredChecks": { "type": "array", "maxItems": 3000, "items": { "$ref": "#/$defs/nativeBranchProtectionCheck" }, "uniqueItems": true },
+        "requiredApprovals": { "type": "integer", "minimum": 0 },
+        "requireCodeOwnerReviews": { "type": "boolean" },
+        "requireLastPushApproval": { "type": "boolean" },
+        "staleReviews": { "type": "boolean" },
+        "bypassVisible": { "type": "boolean" },
+        "decisionBearing": { "type": "boolean" }
+      }
+    },
+    "nativeControls": {
+      "type": "object", "additionalProperties": false,
+      "properties": { "branchProtection": { "$ref": "#/$defs/nativeBranchProtection" } }
     },
     "reviewabilitySnapshot": {
       "type": "object", "additionalProperties": false, "required": ["fileCount", "ownershipDomains", "generatedFileCount", "boundaryCount"],

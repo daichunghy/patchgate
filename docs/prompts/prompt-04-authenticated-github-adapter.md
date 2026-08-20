@@ -565,7 +565,8 @@ Selection invariants:
 - candidate resolution xảy ra trên toàn bộ eligible collection trước pass;
 - wrong SHA, wrong App, wrong workflow, wrong event hoặc wrong attempt không
   thỏa rule;
-- duplicate checkRunId hoặc duplicate workflow run identity reject;
+- duplicate checkRunId hoặc duplicate cùng workflow run identity và check name
+  reject; nhiều check name có thể dùng chung một workflow run;
 - hai eligible runs success/failure hoặc success/pending là ambiguous trừ khi
   explicit immutable rerun selector được contract hóa;
 - stale/foreign candidate cộng một valid candidate không tự tạo ambiguity nếu

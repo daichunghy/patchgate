@@ -173,6 +173,20 @@ export interface OwnershipRequirement {
   requiredCount: number;
 }
 
+export interface NativeBranchProtection {
+  requiredChecks: Array<{ context: string; appId?: number | undefined }>;
+  requiredApprovals: number;
+  requireCodeOwnerReviews: boolean;
+  requireLastPushApproval: boolean;
+  staleReviews: boolean;
+  bypassVisible: boolean;
+  decisionBearing: boolean;
+}
+
+export interface NativeControls {
+  branchProtection?: NativeBranchProtection | undefined;
+}
+
 export interface ReviewabilitySnapshot {
   fileCount: number;
   ownershipDomains: string[];
@@ -199,6 +213,7 @@ export interface EvaluationInput {
   reviews: ReviewSnapshot[];
   checks: CheckEvidence[];
   ownershipRequirements: OwnershipRequirement[];
+  nativeControls?: NativeControls | undefined;
   reviewability?: ReviewabilitySnapshot;
   observations: EvaluationObservations;
 }
@@ -249,6 +264,7 @@ export interface ContributionReceiptCore {
   receiptDigest: string;
   changedPaths: string[];
   policySources: PolicySource[];
+  nativeControls?: NativeControls | undefined;
   observations: EvaluationObservations;
   evidence: ReceiptEvidence;
   requirements: Requirement[];

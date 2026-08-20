@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { assertContributionReceipt, assertEvaluationInput, assertPatchgatePolicy, ContractValidationError, parseEvaluationInputJson } from "../src/contract/validation.js";
 import { receiptDigest } from "../src/evidence/digests.js";
+import { sha256Digest } from "../src/canonical-json.js";
 import { evaluate, fixture, withInput } from "./helpers.js";
 import type { PatchgatePolicy } from "../src/types.js";
 
@@ -50,6 +51,23 @@ describe("runtime contract schemas", () => {
     rejectsContract(() => assertEvaluationInput({ ...input, observations: { ...input.observations, checks: { ...input.observations.checks, complete: true, permissionState: "unknown" } } }), "OBSERVATION_INVARIANT");
     rejectsContract(() => assertEvaluationInput({ ...input, reviews: [{ ...input.reviews, unexpected: true }] }), "SCHEMA_INVALID");
     rejectsContract(() => assertEvaluationInput({ ...input, changedPaths: Array.from({ length: 3001 }, (_, index) => `path/${index}`) }), "SCHEMA_INVALID");
+  });
+
+  it("binds normalized native branch protection to its base policy source digest", async () => {
+    const input = await fixture();
+    const branchProtection = { requiredChecks: [{ context: "unit" }], requiredApprovals: 0, requireCodeOwnerReviews: false, requireLastPushApproval: false, staleReviews: true, bypassVisible: true, decisionBearing: true };
+    const source = { kind: "branch_protection" as const, identity: "branch-protection:main", revision: "base-sha", digest: sha256Digest(branchProtection), authority: "enforced" as const };
+    const valid = withInput({
+      ...input,
+      nativeControls: { branchProtection },
+      policySources: [...input.policySources, source],
+      observations: {
+        ...input.observations,
+        policySources: [...input.observations.policySources, { source: { kind: "github", identity: source.identity }, revision: "base-sha", retrievedAt: "2026-08-13T00:00:00Z", complete: true, permissionState: "sufficient" as const }],
+      },
+    }, {});
+    expect(() => assertEvaluationInput(valid)).not.toThrow();
+    rejectsContract(() => assertEvaluationInput({ ...valid, nativeControls: { branchProtection: { ...branchProtection, requiredApprovals: 1 } } }), "NATIVE_CONTROL_DIGEST_MISMATCH");
   });
 
   it("rejects duplicate source, review, check and rule identities", async () => {

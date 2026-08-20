@@ -488,7 +488,7 @@ run ID làm expected configuration. Evidence `github_app_expected` phải có
 immutable `checkRunId`; evidence `github_actions_workflow` phải có run identity
 và stable workflow identity. Receipt requirement phải tham chiếu evidence thực
 sự dùng bằng `check-run:<checkRunId>` hoặc
-`workflow-run:<workflowRunId>:attempt:<workflowRunAttempt>`.
+`workflow-run:<workflowRunId>:attempt:<workflowRunAttempt>:check:<encodedName>`.
 
 Identity tối thiểu:
 
@@ -497,8 +497,11 @@ Identity tối thiểu:
 - GitHub Actions: expected `appId`, stable `workflowId` hoặc canonical
   base-controlled `workflowPath`, cùng `workflowRunId`, positive
   `workflowRunAttempt` và event tương thích target;
-- exact duplicate `checkRunId` hoặc `(workflowRunId, workflowRunAttempt)` là
-  invalid normalized snapshot, không phải hai votes độc lập.
+- exact duplicate `checkRunId` hoặc duplicate cùng
+  `(workflowRunId, workflowRunAttempt, check name, testedSha)` là invalid
+  normalized snapshot, không phải hai votes độc lập; nhiều check name khác
+  nhau trong cùng một workflow run là hợp lệ vì một workflow có thể tạo nhiều
+  job/check.
 
 Source resolution order bắt buộc:
 

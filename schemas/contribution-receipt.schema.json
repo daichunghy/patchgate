@@ -11,6 +11,7 @@
     "policyDigest": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/digest" }, "decisionInputDigest": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/digest" }, "receiptDigest": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/digest" },
     "changedPaths": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "uniqueItems": true },
     "policySources": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/policySource" } },
+    "nativeControls": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nativeControls" },
     "observations": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/observations" },
     "evidence": {
       "type": "object", "additionalProperties": false, "required": ["checks", "linkedIssues", "reviews", "ownershipRequirements"],

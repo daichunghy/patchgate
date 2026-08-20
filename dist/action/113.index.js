@@ -19,14 +19,28 @@ function responseDigest(response) {
 }
 async function fetchTrustedBasePolicy(client, owner, name, baseSha, allowConfirmedAbsence = false, phase = "collection") {
     const retrievedAt = new Date(client.clock.now()).toISOString();
+    const policyPaths = ["patchgate.yml", ".github/patchgate.yml"];
+    let selectedPath = policyPaths[0];
+    const responseDigests = [];
     try {
-        const response = await client.request({ method: "GET", path: `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/contents/patchgate.yml`, query: { ref: baseSha } }, "base policy", phase);
-        const responseDigestValue = responseDigest(response);
+        let response;
+        for (const path of policyPaths) {
+            selectedPath = path;
+            const candidate = await client.request({ method: "GET", path: `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/contents/${path.split("/").map(encodeURIComponent).join("/")}`, query: { ref: baseSha } }, `base policy:${path}`, phase);
+            responseDigests.push(responseDigest(candidate));
+            if (candidate.status === 404 && path !== policyPaths[policyPaths.length - 1])
+                continue;
+            response = candidate;
+            break;
+        }
+        if (response === undefined)
+            throw new diagnostics_js_1.GitHubAdapterError((0, diagnostics_js_1.makeDiagnostic)("GITHUB_RESOURCE_NOT_VISIBLE", "The trusted base policy lookup did not return a terminal response.", { observation: "policySources", snapshotEvaluable: false, exitCode: 2 }));
+        const responseDigestValue = (0, canonical_json_js_1.sha256Digest)(responseDigests);
         if (response.status === 403)
-            return { meta: { source: { kind: "github", identity: "contents:patchgate.yml" }, revision: baseSha, retrievedAt, complete: false, permissionState: "insufficient", responseDigest: responseDigestValue }, diagnostics: [(0, diagnostics_js_1.makeDiagnostic)("GITHUB_PERMISSION_INSUFFICIENT", "GitHub denied access to the trusted base policy.", { observation: "policySources", remediation: "Grant Contents: read to the read-only credential; do not use the PR head as a fallback." })] };
+            return { meta: { source: { kind: "github", identity: `contents:${selectedPath}` }, revision: baseSha, retrievedAt, complete: false, permissionState: "insufficient", responseDigest: responseDigestValue }, diagnostics: [(0, diagnostics_js_1.makeDiagnostic)("GITHUB_PERMISSION_INSUFFICIENT", "GitHub denied access to the trusted base policy.", { observation: "policySources", remediation: "Grant Contents: read to the read-only credential; do not use the PR head as a fallback." })] };
         if (response.status === 404) {
             const diagnosticId = allowConfirmedAbsence ? "GITHUB_POLICY_ABSENT" : "GITHUB_RESOURCE_NOT_VISIBLE";
-            return { meta: { source: { kind: "github", identity: "contents:patchgate.yml" }, revision: baseSha, retrievedAt, complete: allowConfirmedAbsence, permissionState: allowConfirmedAbsence ? "sufficient" : "unknown", responseDigest: responseDigestValue }, diagnostics: [(0, diagnostics_js_1.makeDiagnostic)(diagnosticId, allowConfirmedAbsence ? "No patchgate.yml exists at the trusted base revision." : "The trusted base policy is not visible; a hidden 404 is not treated as absence.", { observation: "policySources", permissionState: allowConfirmedAbsence ? "sufficient" : "unknown", complete: allowConfirmedAbsence, remediation: allowConfirmedAbsence ? "Confirm whether the repository intentionally operates without a structured PatchGate policy; this is never an empty green policy." : "Confirm Contents: read and repository visibility, then rerun the snapshot." })] };
+            return { meta: { source: { kind: "github", identity: `contents:${selectedPath}` }, revision: baseSha, retrievedAt, complete: allowConfirmedAbsence, permissionState: allowConfirmedAbsence ? "sufficient" : "unknown", responseDigest: responseDigestValue }, diagnostics: [(0, diagnostics_js_1.makeDiagnostic)(diagnosticId, allowConfirmedAbsence ? "No supported patchgate.yml path exists at the trusted base revision." : "The trusted base policy is not visible; a hidden 404 is not treated as absence.", { observation: "policySources", permissionState: allowConfirmedAbsence ? "sufficient" : "unknown", complete: allowConfirmedAbsence, remediation: allowConfirmedAbsence ? "Confirm whether the repository intentionally operates without a structured PatchGate policy; this is never an empty green policy." : "Confirm Contents: read and repository visibility, then rerun the snapshot." })] };
         }
         if (response.status !== 200 || !(0, api_types_js_1.isRecord)(response.body))
             throw new diagnostics_js_1.GitHubAdapterError((0, diagnostics_js_1.makeDiagnostic)("GITHUB_RESPONSE_MALFORMED", "The base policy contents response was not a successful file object.", { observation: "policySources", snapshotEvaluable: false, exitCode: 2 }));
@@ -35,7 +49,7 @@ async function fetchTrustedBasePolicy(client, owner, name, baseSha, allowConfirm
         const content = (0, api_types_js_1.readString)(response.body, "content");
         const path = (0, api_types_js_1.readString)(response.body, "path");
         const size = (0, api_types_js_1.readPositiveInt)(response.body, "size");
-        if (type !== "file" || encoding !== "base64" || content === undefined || path !== "patchgate.yml" || size === undefined)
+        if (type !== "file" || encoding !== "base64" || content === undefined || path !== selectedPath || size === undefined)
             throw new diagnostics_js_1.GitHubAdapterError((0, diagnostics_js_1.makeDiagnostic)("GITHUB_RESPONSE_MALFORMED", "The base policy file response had an unexpected encoding, path, or size.", { observation: "policySources", snapshotEvaluable: false, exitCode: 2 }));
         if (size > client.budget.limits.maxResponseBytes || content.length > client.budget.limits.maxResponseBytes * 2)
             throw new diagnostics_js_1.GitHubAdapterError((0, diagnostics_js_1.makeDiagnostic)("GITHUB_RESPONSE_TOO_LARGE", "The trusted base policy exceeded the configured response budget.", { observation: "policySources", remediation: "Reduce the policy artifact or raise the reviewed response cap." }));
@@ -53,18 +67,18 @@ async function fetchTrustedBasePolicy(client, owner, name, baseSha, allowConfirm
         }
         let artifact;
         try {
-            artifact = (0, policy_js_1.createTrustedPolicyArtifact)(text, { identity: "patchgate.yml", revision: baseSha }, "patchgate.yml");
+            artifact = (0, policy_js_1.createTrustedPolicyArtifact)(text, { identity: selectedPath, revision: baseSha }, selectedPath);
         }
         catch (error) {
             throw new diagnostics_js_1.GitHubAdapterError((0, diagnostics_js_1.makeDiagnostic)("GITHUB_POLICY_INVALID", error instanceof Error ? error.message : "The trusted base policy failed validation.", { observation: "policySources", remediation: "Repair patchgate.yml at the base revision and rerun the snapshot." }));
         }
         const rawBytesDigest = `sha256:${(0, node_crypto_1.createHash)("sha256").update(bytes).digest("hex")}`;
         const source = { ...artifact.source, digest: rawBytesDigest };
-        return { artifact, source, rawDigest: rawBytesDigest, rawBytesDigest, meta: { source: { kind: "github", identity: "contents:patchgate.yml" }, revision: baseSha, retrievedAt, complete: true, permissionState: "sufficient", responseDigest: responseDigestValue }, diagnostics: [] };
+        return { artifact, source, rawDigest: rawBytesDigest, rawBytesDigest, meta: { source: { kind: "github", identity: `contents:${selectedPath}` }, revision: baseSha, retrievedAt, complete: true, permissionState: "sufficient", responseDigest: responseDigestValue }, diagnostics: [] };
     }
     catch (error) {
         const diagnostic = (0, diagnostics_js_1.diagnosticFrom)(error, "GITHUB_POLICY_INVALID");
-        return { meta: { source: { kind: "github", identity: "contents:patchgate.yml" }, revision: baseSha, retrievedAt, complete: false, permissionState: diagnostic.permissionState }, diagnostics: [diagnostic] };
+        return { meta: { source: { kind: "github", identity: `contents:${selectedPath}` }, revision: baseSha, retrievedAt, complete: false, permissionState: diagnostic.permissionState, ...(responseDigests.length === 0 ? {} : { responseDigest: (0, canonical_json_js_1.sha256Digest)(responseDigests) }) }, diagnostics: [diagnostic] };
     }
 }
 

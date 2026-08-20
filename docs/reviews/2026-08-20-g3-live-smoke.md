@@ -39,9 +39,33 @@ controls as absent or guessing their meaning.
 - unsupported decision-bearing controls fail closed;
 - the current G3 contract is not yet a complete live integration.
 
-## Follow-up
+## Follow-up run: native branch-protection contract
 
-To close G3, either implement a versioned native-control requirement contract
-with tests, or run a separately authorized smoke against a repository shape
-whose native controls are explicitly supported. A future run must use a
-credential whose permission scope is independently recorded as read-only.
+After the initial rejection, the local candidate added a versioned contract for
+branch-protection required checks, required approving reviews and applicable
+CODEOWNERS gates. It also added the base-policy path fallback for
+`.github/patchgate.yml`, normalized GitHub's direct `Issue` GraphQL nodes, and
+made workflow-run evidence references unique per check name.
+
+The same authorized GET-only harness then reached public `daichunghy/patchgate#9`
+again:
+
+```text
+API Metrics: 24 attempted requests (422468 bytes transferred)
+Identity bound: Base=a3745f6, Tested=b258924
+EvaluationInput conforms to schema v0.1
+ContributionReceipt conforms to schema v0.1
+Evaluator final status: evidence_missing
+Smoke Test Summary: 1 Built/Passed, 0 Rejected, 0 Failed
+```
+
+The non-ready status is expected for this target and is not a product failure:
+the PR still lacks the required independent approval and applicable ownership
+approval, and its issue-linkage/reviewability state is retained as evidence
+instead of being guessed away. The run performed no GitHub writes. The result
+was produced from the local candidate before its implementation commit was
+published; a post-merge smoke is still required for public-code proof.
+
+The current G3 boundary is therefore narrower and verified: branch-protection
+checks and approval gates are represented; active decision-bearing rulesets,
+merge-group membership and immutable last-pusher semantics remain fail-closed.

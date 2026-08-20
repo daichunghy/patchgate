@@ -96,6 +96,19 @@ export function assertPatchgatePolicy(value: unknown): asserts value is Patchgat
   assertPolicySemantics(value as PatchgatePolicy);
 }
 
+function assertNativeControlsContract(nativeControls: EvaluationInput["nativeControls"], policySources: EvaluationInput["policySources"], baseSha: string, label: string): void {
+  const branchProtection = nativeControls?.branchProtection;
+  if (branchProtection === undefined) return;
+  const source = policySources.find((candidate) => candidate.kind === "branch_protection");
+  if (source === undefined) fail(`${label} requires an enforced branch-protection policy source`, "NATIVE_CONTROL_SOURCE_MISSING");
+  if (source.revision !== baseSha) fail(`${label} branch-protection source must be bound to baseSha`, "POLICY_SOURCE_REVISION_MISMATCH");
+  if (source.digest !== sha256Digest(branchProtection)) fail(`${label} branch-protection digest does not match the normalized native control`, "NATIVE_CONTROL_DIGEST_MISMATCH");
+  const checkKeys = branchProtection.requiredChecks.map((check) => `${check.context}\u0000${check.appId ?? ""}`);
+  assertUniqueStrings(checkKeys, `${label} branch-protection required checks`);
+  const expectedDecisionBearing = branchProtection.requiredChecks.length > 0 || branchProtection.requiredApprovals > 0 || branchProtection.requireCodeOwnerReviews || branchProtection.requireLastPushApproval;
+  if (branchProtection.decisionBearing !== expectedDecisionBearing) fail(`${label} branch-protection decision-bearing flag is inconsistent`, "NATIVE_CONTROL_INCONSISTENT");
+}
+
 function compareText(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
@@ -175,7 +188,7 @@ function assertCheckSemantics(input: EvaluationInput): void {
       checkRunIds.add(check.checkRunId);
     }
     if (check.workflowRunId !== undefined && check.workflowRunAttempt !== undefined) {
-      const key = `${check.workflowRunId}:${check.workflowRunAttempt}`;
+      const key = `${check.workflowRunId}:${check.workflowRunAttempt}:${check.name}:${check.testedSha}`;
       if (workflowRunKeys.has(key)) fail(`duplicate workflow run identity ${key}`, "DUPLICATE_EVIDENCE_ID");
       workflowRunKeys.add(key);
     }
@@ -246,6 +259,7 @@ export function assertEvaluationInput(value: unknown): asserts value is Evaluati
     assertString(source.revision, `policy source ${source.identity} revision`);
     if (source.revision !== input.revisions.baseSha) fail(`policy source ${source.identity} must be bound to baseSha`, "POLICY_SOURCE_REVISION_MISMATCH");
   }
+  assertNativeControlsContract(input.nativeControls, input.policySources, input.revisions.baseSha, "evaluation input nativeControls");
   assertUniqueStrings(input.changedPaths, "changed paths");
   input.changedPaths.forEach((path) => assertString(path, "changed path"));
   const linkedIssueKeys = input.linkedIssues.map((issue) => `${issue.repository.toLowerCase()}#${issue.number}`);
@@ -342,12 +356,13 @@ function assertReceiptEvidenceIntegrity(receipt: ContributionReceipt): void {
         if (observed.selectedConclusion !== check.conclusion || !Array.isArray(observed.acceptableConclusions) || !observed.acceptableConclusions.includes(check.conclusion)) {
           fail(`passed check requirement ${requirement.id} selected an unacceptable conclusion`, "RECEIPT_EVIDENCE_INCONSISTENT");
         }
-        if (observed.expectedSourceKind !== check.sourceStrength || observed.expectedAppId !== check.appId) {
+        const sourceConstraint = observed.sourceConstraint;
+        if (sourceConstraint !== "unconstrained" && (observed.expectedSourceKind !== check.sourceStrength || observed.expectedAppId !== check.appId)) {
           fail(`passed check requirement ${requirement.id} does not match its expected immutable source`, "RECEIPT_EVIDENCE_INCONSISTENT");
         }
         const expectedFields: Array<[string, string | number | undefined]> = [["expectedAppSlug", check.appSlug], ["expectedWorkflowId", check.workflowId], ["expectedWorkflowPath", check.workflowPath], ["expectedEvent", check.event]];
         for (const [field, actual] of expectedFields) if (observed[field] !== undefined && observed[field] !== actual) fail(`passed check requirement ${requirement.id} expected ${field} is inconsistent`, "RECEIPT_EVIDENCE_INCONSISTENT");
-        if (check.sourceStrength === "github_actions_workflow" && observed.expectedWorkflowId === undefined && observed.expectedWorkflowPath === undefined) {
+        if (sourceConstraint !== "unconstrained" && check.sourceStrength === "github_actions_workflow" && observed.expectedWorkflowId === undefined && observed.expectedWorkflowPath === undefined) {
           fail(`passed check requirement ${requirement.id} must preserve its expected workflow identity`, "RECEIPT_EVIDENCE_INCONSISTENT");
         }
         const identityFields: Array<[string, string | number | undefined]> = [["sourceStrength", check?.sourceStrength], ["appId", check?.appId], ["checkRunId", check?.checkRunId], ["workflowId", check?.workflowId], ["workflowPath", check?.workflowPath], ["workflowRunId", check?.workflowRunId], ["workflowRunAttempt", check?.workflowRunAttempt], ["event", check?.event]];
@@ -356,7 +371,7 @@ function assertReceiptEvidenceIntegrity(receipt: ContributionReceipt): void {
   }
   const checkRunIds = receipt.evidence.checks.flatMap((check) => check.checkRunId === undefined ? [] : [check.checkRunId]);
   if (new Set(checkRunIds).size !== checkRunIds.length) fail("receipt evidence contains duplicate checkRunId values", "DUPLICATE_EVIDENCE_ID");
-  const workflowRunKeys = receipt.evidence.checks.flatMap((check) => check.workflowRunId === undefined || check.workflowRunAttempt === undefined ? [] : [`${check.workflowRunId}:${check.workflowRunAttempt}`]);
+  const workflowRunKeys = receipt.evidence.checks.flatMap((check) => check.workflowRunId === undefined || check.workflowRunAttempt === undefined ? [] : [`${check.workflowRunId}:${check.workflowRunAttempt}:${check.name}:${check.testedSha}`]);
   if (new Set(workflowRunKeys).size !== workflowRunKeys.length) fail("receipt evidence contains duplicate workflow run identities", "DUPLICATE_EVIDENCE_ID");
 }
   for (const gate of receipt.humanGates) {
@@ -417,7 +432,8 @@ export function assertContributionReceipt(value: unknown): asserts value is Cont
   const receiptSourceKeys = receipt.policySources.map((source) => `${source.kind}\u0000${source.identity}`);
   assertUniqueStrings(receiptSourceKeys, "ContributionReceipt policy source identities");
   for (const source of receipt.policySources) if (source.revision !== receipt.revisions.baseSha) fail(`ContributionReceipt policy source ${source.identity} must be bound to baseSha`, "POLICY_SOURCE_REVISION_MISMATCH");
-  const patchgateSource = receipt.policySources.find((source) => source.kind === "patchgate" && source.identity === "patchgate.yml");
+  assertNativeControlsContract(receipt.nativeControls, receipt.policySources, receipt.revisions.baseSha, "ContributionReceipt nativeControls");
+  const patchgateSource = receipt.policySources.find((source) => source.kind === "patchgate" && (source.identity === "patchgate.yml" || source.identity === ".github/patchgate.yml"));
   if (patchgateSource !== undefined && patchgateSource.digest !== receipt.policyDigest) fail("ContributionReceipt policyDigest does not match patchgate.yml source digest", "RECEIPT_EVIDENCE_INCONSISTENT");
   for (const check of receipt.evidence.checks) assertUtcTimestamp(check.retrievedAt, "check retrievedAt");
   const reviewIds = receipt.evidence.reviews.map((review) => review.reviewId);

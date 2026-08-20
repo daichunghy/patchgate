@@ -78,6 +78,14 @@ describe("GitHub adapter trust-boundary probes", () => {
     expect(result.decisionBearing).toBe(true);
   });
 
+  it("accepts GitHub's current direct Issue nodes for closingIssuesReferences", async () => {
+    const request = { method: "POST" as const, path: "/graphql", operation: "pullRequestClosingIssues" as const, variables: { owner: "example", name: "service", number: 7, first: 100, after: null } };
+    const client = new GitHubClient(new RecordedGitHubTransport([{ request, response: recordedResponse(200, { data: { repository: { pullRequest: { closingIssuesReferences: { nodes: [{ id: "issue-12", repository: { nameWithOwner: "example/service", id: "issue-repo" }, number: 12 }], pageInfo: { hasNextPage: false, endCursor: null } } } } } }) }]));
+    const result = await collectLinkedIssues(client, "example", "service", 7, "head-sha");
+    expect(result.meta).toMatchObject({ complete: true, permissionState: "sufficient" });
+    expect(result.issues).toEqual([{ repository: "example/service", number: 12, repositoryId: "issue-repo", issueId: "issue-12", linked: true }]);
+  });
+
   it("derives current review state by submitted time rather than response order", async () => {
     const request = { method: "GET" as const, path: "/repos/example/service/pulls/7/reviews", query: { per_page: 100 } };
     const client = new GitHubClient(new RecordedGitHubTransport([{ request, response: recordedResponse(200, [

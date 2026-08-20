@@ -4,7 +4,7 @@ import { BudgetLedger, type RequestPhase } from "./request-budget.js";
 import { boundedRetryDelay, type RetryClock } from "./retry.js";
 
 const GRAPHQL_DOCUMENTS: Record<string, string> = {
-  pullRequestClosingIssues: `query PullRequestClosingIssues($owner: String!, $name: String!, $number: Int!, $first: Int!, $after: String) { repository(owner: $owner, name: $name) { pullRequest(number: $number) { closingIssuesReferences(first: $first, after: $after, userLinkedOnly: true) { nodes { issue { id repository { nameWithOwner id } number } } pageInfo { hasNextPage endCursor } } } } }`,
+  pullRequestClosingIssues: `query PullRequestClosingIssues($owner: String!, $name: String!, $number: Int!, $first: Int!, $after: String) { repository(owner: $owner, name: $name) { pullRequest(number: $number) { closingIssuesReferences(first: $first, after: $after, userLinkedOnly: true) { nodes { id repository { nameWithOwner id } number } pageInfo { hasNextPage endCursor } } } } }`,
 };
 
 export interface GitHubClientOptions {

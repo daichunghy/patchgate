@@ -116,7 +116,7 @@ maintenance problem and pre-release evidence rather than claiming adoption.
 - [x] Action candidate (local): root `action.yml`, `src/action/index.ts`, bundled `dist/action/index.js`, and `test/action.test.ts`.
 - [x] G3 Live Smoke Harness: `scripts/live-smoke-harness.ts`, guarded against implicit targets.
 - [x] Verified determinism and security: local test and bundle verification pass.
-- [ ] Authorized G3 live read-only smoke.
+- [x] Authorized G3 live read-only smoke; complete snapshot/receipt built, with non-ready requirements retained as evidence.
 - [ ] Three G2 usability sessions with consenting participants.
 - [ ] Two G4 shadow installations.
 - [x] Push default branch to a maintainer-confirmed public GitHub remote.

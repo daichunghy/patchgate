@@ -65,7 +65,7 @@ export async function collectChecks(client: GitHubClient, owner: string, name: s
     const workflow = workflowCandidates.length === 1 ? workflowCandidates[0] : undefined;
     const workflowAmbiguous = workflowCandidates.length > 1;
     if (workflow !== undefined) {
-      const key = `${workflow.id}:${workflow.run_attempt}`;
+      const key = `${workflow.id}:${workflow.run_attempt}:${raw.name}`;
       if (workflowKeys.has(key)) diagnostics.push(makeDiagnostic("GITHUB_PROVENANCE_AMBIGUOUS", `Duplicate workflow run identity ${key} was returned.`, { observation: "checks" }));
       workflowKeys.add(key);
     }
