@@ -86,7 +86,7 @@ describe("GitHub adapter trust-boundary probes", () => {
     const secondRequest = { method: "GET" as const, path: "/repos/example/service/rulesets", query: { includes_parents: "true", per_page: "100", page: "2" } };
     const client = new GitHubClient(new RecordedGitHubTransport([
       { request: firstRequest, response: recordedResponse(200, [], { link: '<https://api.github.com/repos/example/service/rulesets?includes_parents=true&per_page=100&page=2>; rel="next"' }) },
-      { request: secondRequest, response: recordedResponse(200, [{ id: 90, name: "protect-main", target: "branch", enforcement: "active", conditions: { ref_name: { include: ["refs/heads/main"] } }, rules: [{ type: "required_status_checks" }], bypass_actors: [] }]) },
+      { request: secondRequest, response: recordedResponse(200, [{ id: 90, name: "protect-main", target: "branch", enforcement: "active", conditions: { ref_name: { include: ["refs/heads/main"], exclude: [] } }, rules: [{ type: "required_status_checks", parameters: { required_status_checks: [{ context: "unit" }], strict_required_status_checks_policy: true } }], bypass_actors: [] }]) },
     ]));
     const result = await collectRulesets(client, "example", "service", "main", "base-sha", true);
     expect(result.meta).toMatchObject({ complete: true, permissionState: "sufficient" });

@@ -86,7 +86,12 @@ function buildInput(identity: SnapshotIdentity, collected: CollectedSnapshot): E
     reviews: collected.reviews.reviews,
     checks: collected.checks.checks,
     ownershipRequirements: collected.codeowners.requirements,
-    ...(collected.branchProtection.protection === undefined ? {} : { nativeControls: { branchProtection: collected.branchProtection.protection } }),
+    ...((collected.branchProtection.protection === undefined && collected.rulesets.rulesets.length === 0)
+      ? {}
+      : { nativeControls: {
+        ...(collected.branchProtection.protection === undefined ? {} : { branchProtection: collected.branchProtection.protection }),
+        ...(collected.rulesets.rulesets.length === 0 ? {} : { rulesets: collected.rulesets.rulesets }),
+      } }),
     reviewability: collected.reviewability,
   };
   const observationsWithoutDigests: EvaluationObservations = {
@@ -137,7 +142,6 @@ function inputGroupDigests(input: EvaluationInput): Record<string, string> {
 
 function fatalNativeDiagnostic(collected: CollectedSnapshot): GitHubDiagnostic | undefined {
   if (!collected.rulesets.meta.complete || !collected.branchProtection.meta.complete) return makeDiagnostic("GITHUB_PROVENANCE_AMBIGUOUS", "Native ruleset or branch-protection visibility is incomplete; the current evaluator cannot safely treat unknown native controls as absent.", { remediation: "Grant the documented native-control read permissions and rerun, or keep the native-control snapshot rejected.", snapshotEvaluable: false, exitCode: 2 });
-  if (collected.rulesets.decisionBearing) return makeDiagnostic("GITHUB_API_UNSUPPORTED", "An applicable decision-bearing native ruleset cannot be represented by the current evaluator contract.", { remediation: "Use a repository shape without an active decision-bearing ruleset, or extend the versioned ruleset contract before evaluating this repository.", snapshotEvaluable: false, exitCode: 2 });
   return undefined;
 }
 

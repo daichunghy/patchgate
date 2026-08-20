@@ -15,7 +15,7 @@ argument and is never included in a report.
 | Actions: read | Workflow run ID/attempt, path, event, suite relation | Workflow-source evidence cannot pass |
 | Repository collaborator visibility | Permission qualification for reviewers | Reviewer qualification remains unknown |
 | Organization Members: read | Team identity and active membership | Team-backed approval cannot become qualified |
-| Administration/metadata read | Rulesets and branch-protection visibility | Incomplete native visibility rejects; supported branch-protection checks/approval gates are evaluated, while active rulesets remain unsupported |
+| Administration/metadata read | Rulesets and branch-protection visibility | Incomplete native visibility rejects; supported branch-protection and Rulesets subset checks/approval gates are evaluated, while unsupported active rule semantics remain non-ready |
 
 GitHub may vary effective access by repository visibility, organization policy,
 fine-grained token resource selection, and endpoint-specific authorization. The

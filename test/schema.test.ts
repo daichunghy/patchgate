@@ -55,7 +55,7 @@ describe("runtime contract schemas", () => {
 
   it("binds normalized native branch protection to its base policy source digest", async () => {
     const input = await fixture();
-    const branchProtection = { requiredChecks: [{ context: "unit" }], requiredApprovals: 0, requireCodeOwnerReviews: false, requireLastPushApproval: false, staleReviews: true, bypassVisible: true, decisionBearing: true };
+    const branchProtection = { requiredChecks: [{ context: "unit" }], requiredApprovals: 0, requireCodeOwnerReviews: false, requireLastPushApproval: false, staleReviews: true, requiredReviewThreadResolution: false, bypassVisible: true, decisionBearing: true };
     const source = { kind: "branch_protection" as const, identity: "branch-protection:main", revision: "base-sha", digest: sha256Digest(branchProtection), authority: "enforced" as const };
     const valid = withInput({
       ...input,

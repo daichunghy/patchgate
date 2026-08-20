@@ -28,9 +28,9 @@ authority.
 
 | Surface | Highest proven level | Evidence | Open dependency |
 | --- | --- | --- | --- |
-| Contract/evaluator | static and fixture verified | 93 non-CLI tests across 10 files, deterministic fixtures, security coverage and receipt validation | external review and adoption |
+| Contract/evaluator | static and fixture verified | 94 non-CLI tests across 10 files, deterministic fixtures, security coverage and receipt validation | external review and adoption |
 | Local preflight/onboarding | native user-flow verified | local-file/Git-ref preflight, validate, safe init, doctor, discovery and five CLI process tests | three task sessions and UR acceptance evidence |
-| GitHub adapter | complete live snapshot on the local candidate; result remains non-ready on real missing evidence | bounded adapter, base-policy path fallback, direct GraphQL Issue-node normalization, branch-protection check/approval contract, recorded fixtures, source/SHA binding, TOCTOU re-read and [G3 live smoke record](reviews/2026-08-20-g3-live-smoke.md) | public merged implementation, active ruleset semantics, merge-group contract and external consumer |
+| GitHub adapter | complete live snapshot on the local candidate; result remains non-ready on real missing evidence | bounded adapter, base-policy path fallback, direct GraphQL Issue-node normalization, branch-protection and Rulesets subset contract, recorded fixtures, source/SHA binding, TOCTOU re-read and [G3 live smoke record](reviews/2026-08-20-g3-live-smoke.md) | public merged implementation, unsupported Ruleset semantics, merge-group contract and external consumer |
 | GitHub Action | static and clean-room verified local candidate | `action.yml`, committed ncc bundle, pinned workflows, idempotent check delivery, `verify:dist` and `test:consumer-fixture` | live consumer E2E, fork/merge-group E2E and two shadow installations |
 | User value | hypothesis | research and constitution | task sessions and pilots |
 | Public OSS/release | public foundation present; release not authorized | public `daichunghy/patchgate` repository, Apache-2.0, community files and successful public `main` CI run; package remains private and no release exists | release decision, public support/security operation, compatibility and external usage |
@@ -115,9 +115,10 @@ budgets, and a finalization re-read.
 The CLI supports deterministic fixture replay through `github snapshot
 --mock-fixture`. The adapter deliberately rejects merge-group requests and
 active decision-bearing rulesets that the current scalar evaluator cannot
-represent. Branch-protection required checks, approvals and applicable
-CODEOWNERS gates are now represented in the versioned native-control contract;
-unsupported last-pusher semantics remain evidence-missing. An authorized
+represent. Branch-protection and the supported Rulesets required-check/review
+subset are now represented in the versioned native-control contract;
+unsupported last-pusher, review-thread and other rule semantics remain
+evidence-missing. An authorized
 GET-only smoke built a complete schema-valid snapshot and receipt for public
 PR #9; the result remained non-ready because the real PR lacks its required
 approval/ownership/linkage evidence. See the [live smoke record](reviews/2026-08-20-g3-live-smoke.md).

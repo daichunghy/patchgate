@@ -125,7 +125,38 @@ describe("authenticated GitHub adapter fixtures", () => {
     }
     const { client: github } = client(exchanges);
     const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
-    expect(result).toMatchObject({ kind: "rejected", diagnostic: { id: "GITHUB_API_UNSUPPORTED" } });
+    expect(result).toMatchObject({ kind: "rejected", diagnostic: { id: "GITHUB_PROVENANCE_AMBIGUOUS" } });
+  });
+
+  it("evaluates the supported required-status-check and pull-request ruleset subset", async () => {
+    const recorded = await fixture("happy-path.json");
+    const exchanges = structuredClone(recorded.exchanges);
+    const ruleset = {
+      id: 90,
+      name: "protect-main",
+      target: "branch",
+      source_type: "Repository",
+      source: "example/service",
+      enforcement: "active",
+      conditions: { ref_name: { include: ["refs/heads/main"], exclude: [] } },
+      bypass_actors: [],
+      rules: [
+        { type: "required_status_checks", parameters: { required_status_checks: [{ context: "unit", integration_id: 15368 }], strict_required_status_checks_policy: true } },
+        { type: "pull_request", parameters: { allowed_merge_methods: ["merge", "squash", "rebase"], dismiss_stale_reviews_on_push: true, require_code_owner_review: false, require_last_push_approval: false, required_approving_review_count: 1, required_review_thread_resolution: false } },
+      ],
+    };
+    for (const exchange of exchanges) {
+      if (exchange.request.path === "/repos/example/service/rulesets") exchange.response = recordedResponse(200, [ruleset]);
+    }
+    const { client: github } = client(exchanges);
+    const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
+
+    expect(result.kind).toBe("built");
+    if (result.kind !== "built") return;
+    expect(result.input.nativeControls?.rulesets?.[0]).toMatchObject({ id: 90, applicable: true, requiredChecks: [{ context: "unit", appId: 15368 }], requiredApprovals: 1 });
+    const receipt = evaluateContribution(result.input, "2026-08-13T00:00:00.000Z");
+    expect(receipt.final.status).toBe("human_review_required");
+    expect(receipt.requirements).toEqual(expect.arrayContaining([expect.objectContaining({ id: "native.ruleset.90.check.1", result: "passed", authority: "ruleset" }), expect.objectContaining({ id: "handoff.native.ruleset.90.required_approvals", result: "failed", authority: "ruleset" })]));
   });
 
   it("evaluates branch-protection checks from a normalized, base-bound native contract", async () => {

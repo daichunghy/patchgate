@@ -42,8 +42,9 @@ controls as absent or guessing their meaning.
 ## Follow-up run: native branch-protection contract
 
 After the initial rejection, the local candidate added a versioned contract for
-branch-protection required checks, required approving reviews and applicable
-CODEOWNERS gates. It also added the base-policy path fallback for
+branch-protection required checks, required approving reviews, applicable
+CODEOWNERS gates and the supported Rulesets `required_status_checks`/
+`pull_request` subset. It also added the base-policy path fallback for
 `.github/patchgate.yml`, normalized GitHub's direct `Issue` GraphQL nodes, and
 made workflow-run evidence references unique per check name.
 
@@ -70,5 +71,6 @@ now on the public PR head; a post-merge smoke is still required for default-
 branch/public-release proof.
 
 The current G3 boundary is therefore narrower and verified: branch-protection
-checks and approval gates are represented; active decision-bearing rulesets,
-merge-group membership and immutable last-pusher semantics remain fail-closed.
+checks, approval gates and the supported Rulesets required-check/review subset
+are represented; unsupported Ruleset semantics, merge-group membership and
+immutable last-pusher/review-thread evidence remain fail-closed.

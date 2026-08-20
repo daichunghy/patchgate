@@ -20,7 +20,7 @@ pagination links only when the link remains on the configured origin.
 | Review state | `GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews` | Pull requests: read | Chronological active state, review ID, actor ID, commit SHA, author/bot flags | `src/github/reviews.ts` |
 | Reviewer qualification | Collaborator permission; qualified team identity and membership | Repository collaborator visibility; Members: read for organization/team lookup where required | Qualified only with sufficient permission and immutable user/team binding | `src/github/permissions.ts`, `test/security.test.ts` |
 | CODEOWNERS | Contents endpoint at base ref, `.github/CODEOWNERS`, `CODEOWNERS`, then `docs/CODEOWNERS` | Contents: read | Published parser subset; unsupported syntax is incomplete, never silently accepted | `src/github/codeowners.ts` |
-| Native controls | Repository rulesets and branch protection endpoints | Administration/metadata read according to repository visibility and token type | Branch-protection required checks and approval/code-owner gates are represented and digest-bound; active decision-bearing rulesets still reject; last-push approval remains explicit evidence-missing until immutable last-pusher data is modeled | `src/github/rulesets.ts`, `src/github/branch-protection.ts`, `src/evaluator-core.ts` |
+| Native controls | Repository rulesets and branch protection endpoints | Administration/metadata read according to repository visibility and token type | Branch-protection and the Rulesets `required_status_checks`/`pull_request` subset are represented and digest-bound; unsupported rule semantics remain fail-closed | `src/github/rulesets.ts`, `src/github/branch-protection.ts`, `src/evaluator-core.ts` |
 
 ## Explicit limits
 
@@ -35,6 +35,10 @@ pagination links only when the link remains on the configured origin.
 - Branch-protection check contexts may be qualified names such as `CI / job` while
   Check Runs exposes `job`; the adapter matches exact names first and then a
   unique suffix, rejecting ambiguous suffix matches.
+- The supported Rulesets subset is limited to `required_status_checks` and
+  `pull_request` review parameters. Required reviewers, review-thread
+  resolution, merge queue, commit/tag patterns, restricted merge methods and
+  other active rule types remain non-ready until their evidence is modeled.
 - Multiple check names may share one workflow run. Evidence references therefore
   include the encoded check name; only duplicate `(workflowRunId, attempt, check
   name, testedSha)` identities are rejected.

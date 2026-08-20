@@ -98,15 +98,30 @@ export function assertPatchgatePolicy(value: unknown): asserts value is Patchgat
 
 function assertNativeControlsContract(nativeControls: EvaluationInput["nativeControls"], policySources: EvaluationInput["policySources"], baseSha: string, label: string): void {
   const branchProtection = nativeControls?.branchProtection;
-  if (branchProtection === undefined) return;
-  const source = policySources.find((candidate) => candidate.kind === "branch_protection");
-  if (source === undefined) fail(`${label} requires an enforced branch-protection policy source`, "NATIVE_CONTROL_SOURCE_MISSING");
-  if (source.revision !== baseSha) fail(`${label} branch-protection source must be bound to baseSha`, "POLICY_SOURCE_REVISION_MISMATCH");
-  if (source.digest !== sha256Digest(branchProtection)) fail(`${label} branch-protection digest does not match the normalized native control`, "NATIVE_CONTROL_DIGEST_MISMATCH");
-  const checkKeys = branchProtection.requiredChecks.map((check) => `${check.context}\u0000${check.appId ?? ""}`);
-  assertUniqueStrings(checkKeys, `${label} branch-protection required checks`);
-  const expectedDecisionBearing = branchProtection.requiredChecks.length > 0 || branchProtection.requiredApprovals > 0 || branchProtection.requireCodeOwnerReviews || branchProtection.requireLastPushApproval;
-  if (branchProtection.decisionBearing !== expectedDecisionBearing) fail(`${label} branch-protection decision-bearing flag is inconsistent`, "NATIVE_CONTROL_INCONSISTENT");
+  const rulesets = nativeControls?.rulesets;
+  const branchSource = policySources.find((candidate) => candidate.kind === "branch_protection");
+  if (branchProtection !== undefined) {
+    if (branchSource === undefined) fail(`${label} requires an enforced branch-protection policy source`, "NATIVE_CONTROL_SOURCE_MISSING");
+    if (branchSource.revision !== baseSha) fail(`${label} branch-protection source must be bound to baseSha`, "POLICY_SOURCE_REVISION_MISMATCH");
+    if (branchSource.digest !== sha256Digest(branchProtection)) fail(`${label} branch-protection digest does not match the normalized native control`, "NATIVE_CONTROL_DIGEST_MISMATCH");
+    const checkKeys = branchProtection.requiredChecks.map((check) => `${check.context}\u0000${check.appId ?? ""}`);
+    assertUniqueStrings(checkKeys, `${label} branch-protection required checks`);
+    const expectedDecisionBearing = branchProtection.requiredChecks.length > 0 || branchProtection.requiredApprovals > 0 || branchProtection.requireCodeOwnerReviews || branchProtection.requireLastPushApproval || branchProtection.requiredReviewThreadResolution;
+    if (branchProtection.decisionBearing !== expectedDecisionBearing) fail(`${label} branch-protection decision-bearing flag is inconsistent`, "NATIVE_CONTROL_INCONSISTENT");
+  }
+  if (rulesets !== undefined) {
+    const rulesetSource = policySources.find((candidate) => candidate.kind === "ruleset");
+    if (rulesetSource === undefined) fail(`${label} requires an enforced ruleset policy source`, "NATIVE_CONTROL_SOURCE_MISSING");
+    if (rulesetSource.revision !== baseSha) fail(`${label} ruleset source must be bound to baseSha`, "POLICY_SOURCE_REVISION_MISMATCH");
+    if (rulesetSource.digest !== sha256Digest(rulesets)) fail(`${label} ruleset digest does not match the normalized native controls`, "NATIVE_CONTROL_DIGEST_MISMATCH");
+    assertUniqueStrings(rulesets.map((ruleset) => String(ruleset.id)), `${label} ruleset IDs`);
+    for (const ruleset of rulesets) {
+      const checkKeys = ruleset.requiredChecks.map((check) => `${check.context}\u0000${check.appId ?? ""}`);
+      assertUniqueStrings(checkKeys, `${label} ruleset ${ruleset.id} required checks`);
+      const expectedDecisionBearing = ruleset.enforcement === "active" && ruleset.applicable && ruleset.ruleTypes.length > 0;
+      if (ruleset.decisionBearing !== expectedDecisionBearing) fail(`${label} ruleset ${ruleset.id} decision-bearing flag is inconsistent`, "NATIVE_CONTROL_INCONSISTENT");
+    }
+  }
 }
 
 function compareText(left: string, right: string): number {
@@ -362,7 +377,7 @@ function assertReceiptEvidenceIntegrity(receipt: ContributionReceipt): void {
         }
         const expectedFields: Array<[string, string | number | undefined]> = [["expectedAppSlug", check.appSlug], ["expectedWorkflowId", check.workflowId], ["expectedWorkflowPath", check.workflowPath], ["expectedEvent", check.event]];
         for (const [field, actual] of expectedFields) if (observed[field] !== undefined && observed[field] !== actual) fail(`passed check requirement ${requirement.id} expected ${field} is inconsistent`, "RECEIPT_EVIDENCE_INCONSISTENT");
-        if (sourceConstraint !== "unconstrained" && check.sourceStrength === "github_actions_workflow" && observed.expectedWorkflowId === undefined && observed.expectedWorkflowPath === undefined) {
+        if (sourceConstraint !== "unconstrained" && sourceConstraint !== "app_id" && check.sourceStrength === "github_actions_workflow" && observed.expectedWorkflowId === undefined && observed.expectedWorkflowPath === undefined) {
           fail(`passed check requirement ${requirement.id} must preserve its expected workflow identity`, "RECEIPT_EVIDENCE_INCONSISTENT");
         }
         const identityFields: Array<[string, string | number | undefined]> = [["sourceStrength", check?.sourceStrength], ["appId", check?.appId], ["checkRunId", check?.checkRunId], ["workflowId", check?.workflowId], ["workflowPath", check?.workflowPath], ["workflowRunId", check?.workflowRunId], ["workflowRunAttempt", check?.workflowRunAttempt], ["event", check?.event]];

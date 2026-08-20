@@ -239,12 +239,15 @@ function resolveNativeCheckEvidence(checks: readonly CheckEvidence[], context: s
   return { status: "passed", evidence: candidate };
 }
 
-function nativeCheckRequirements(input: EvaluationInput): Requirement[] {
-  const branchProtection = input.nativeControls?.branchProtection;
-  if (branchProtection === undefined) return [];
-  const source = input.policySources.find((candidate) => candidate.kind === "branch_protection");
-  const sourceIdentity = source?.identity ?? "branch-protection";
-  return branchProtection.requiredChecks.map((rule, index) => {
+interface NativeRequirementSource {
+  authority: "branch_protection" | "ruleset";
+  sourceIdentity: string;
+  idPrefix: string;
+  requiredChecks: Array<{ context: string; appId?: number | undefined }>;
+}
+
+function nativeCheckRequirementsForSource(input: EvaluationInput, source: NativeRequirementSource): Requirement[] {
+  return source.requiredChecks.map((rule, index) => {
     const baseObserved: Record<string, string | number | boolean | string[]> = {
       name: rule.context,
       context: rule.context,
@@ -254,7 +257,7 @@ function nativeCheckRequirements(input: EvaluationInput): Requirement[] {
       sourceConstraint: rule.appId === undefined ? "unconstrained" : "app_id",
       ...(rule.appId === undefined ? {} : { expectedAppId: rule.appId }),
     };
-    if (!groupAvailable(input, "checks")) return requirement({ id: `native.branch_protection.check.${index + 1}`, ruleClass: "required_check", authority: "branch_protection", source: sourceIdentity, result: "unknown", severity: "evidence", observed: { ...baseObserved, resolution: "observation_incomplete" }, remediation: `Retrieve complete check/workflow evidence for the branch-protection context ${rule.context} on ${input.revisions.testedSha}.` });
+    if (!groupAvailable(input, "checks")) return requirement({ id: `${source.idPrefix}.check.${index + 1}`, ruleClass: "required_check", authority: source.authority, source: source.sourceIdentity, result: "unknown", severity: "evidence", observed: { ...baseObserved, resolution: "observation_incomplete" }, remediation: `Retrieve complete check/workflow evidence for the native context ${rule.context} on ${input.revisions.testedSha}.` });
     const resolution = resolveNativeCheckEvidence(input.checks, rule.context, input.revisions.testedSha, rule.appId);
     const evidence = resolution.status === "passed" || resolution.status === "failed" ? resolution.evidence : undefined;
     const result: RequirementResult = resolution.status === "passed" ? "passed" : resolution.status === "failed" ? "failed" : "unknown";
@@ -272,19 +275,34 @@ function nativeCheckRequirements(input: EvaluationInput): Requirement[] {
       ...(evidence.event === undefined ? {} : { event: evidence.event }),
     };
     return requirement({
-      id: `native.branch_protection.check.${index + 1}`,
+      id: `${source.idPrefix}.check.${index + 1}`,
       ruleClass: "required_check",
-      authority: "branch_protection",
-      source: sourceIdentity,
+      authority: source.authority,
+      source: source.sourceIdentity,
       result,
       severity: resolution.status === "failed" ? "block" : "evidence",
       observed: { ...baseObserved, resolution: resolution.status, ...(resolution.status === "passed" ? {} : { resolutionReason: resolution.reason }), ...selected },
       remediation: rule.appId === undefined
-        ? `Provide a completed ${rule.context} check on ${input.revisions.testedSha}; the branch protection does not declare a source App, so PatchGate still requires an immutable check/workflow identity.`
+        ? `Provide a completed ${rule.context} check on ${input.revisions.testedSha}; the native control does not declare a source App, so PatchGate still requires an immutable check/workflow identity.`
         : `Provide a completed ${rule.context} check from GitHub App ${rule.appId} on ${input.revisions.testedSha}.`,
       evidenceRefs: evidence === undefined ? [] : [evidenceReference(evidence)],
     });
   });
+}
+
+function nativeCheckRequirements(input: EvaluationInput): Requirement[] {
+  const sources: NativeRequirementSource[] = [];
+  const branchProtection = input.nativeControls?.branchProtection;
+  if (branchProtection !== undefined) {
+    const source = input.policySources.find((candidate) => candidate.kind === "branch_protection");
+    sources.push({ authority: "branch_protection", sourceIdentity: source?.identity ?? "branch-protection", idPrefix: "native.branch_protection", requiredChecks: branchProtection.requiredChecks });
+  }
+  for (const ruleset of input.nativeControls?.rulesets ?? []) {
+    if (ruleset.enforcement !== "active" || !ruleset.applicable) continue;
+    const source = input.policySources.find((candidate) => candidate.kind === "ruleset");
+    sources.push({ authority: "ruleset", sourceIdentity: source?.identity ?? "repository-rulesets", idPrefix: `native.ruleset.${ruleset.id}`, requiredChecks: ruleset.requiredChecks });
+  }
+  return sources.flatMap((source) => nativeCheckRequirementsForSource(input, source));
 }
 
 function nativeReviewRequirements(input: EvaluationInput): { requirements: Requirement[]; gates: HumanGate[] } {
@@ -329,6 +347,43 @@ function nativeReviewRequirements(input: EvaluationInput): { requirements: Requi
 
   if (branchProtection.requireLastPushApproval) {
     addGate("native.branch_protection.last_push_approval", "GitHub branch protection requires approval from someone other than the last pusher.", [], 1, "unknown", { resolution: "last_pusher_identity_unavailable" }, "Provide immutable last-pusher identity evidence before evaluating this native control; the current PR snapshot does not include it.", []);
+  }
+  return { requirements, gates };
+}
+
+function nativeRulesetReviewRequirements(input: EvaluationInput): { requirements: Requirement[]; gates: HumanGate[] } {
+  const requirements: Requirement[] = [];
+  const gates: HumanGate[] = [];
+  const source = input.policySources.find((candidate) => candidate.kind === "ruleset");
+  const sourceIdentity = source?.identity ?? "repository-rulesets";
+  const addGate = (rulesetId: number, gateSuffix: string, reason: string, requiredReviewers: string[], requiredCount: number, result: RequirementResult, observed: Record<string, string | number | boolean | string[]>, remediation: string, approvals: ReviewSnapshot[]): void => {
+    const gateId = `native.ruleset.${rulesetId}.${gateSuffix}`;
+    gates.push({ id: gateId, reason, satisfied: result === "passed", requiredReviewers, requiredCount, approvedBy: approvals.map((review) => `actor:${review.actorId}`) });
+    requirements.push(requirement({ id: `handoff.${gateId}`, ruleClass: "human_handoff", authority: "ruleset", source: sourceIdentity, result, severity: result === "failed" ? "human_gate" : "evidence", observed, remediation, evidenceRefs: approvals.map((review) => `review:${review.reviewId}:actor:${review.actorId}:${review.commitId}`) }));
+  };
+  for (const ruleset of input.nativeControls?.rulesets ?? []) {
+    if (ruleset.enforcement !== "active" || !ruleset.applicable) continue;
+    if (ruleset.requiredApprovals > 0) {
+      if (!groupAvailable(input, "reviews")) addGate(ruleset.id, "required_approvals", `Ruleset ${ruleset.name} requires ${ruleset.requiredApprovals} approving review(s).`, [], ruleset.requiredApprovals, "unknown", { requiredCount: ruleset.requiredApprovals, resolution: "observation_incomplete" }, "Retrieve complete review and reviewer-qualification evidence before evaluating the ruleset approval gate.", []);
+      else if (hasUnknownQualification(input.reviews, input.revisions.testedSha, [])) addGate(ruleset.id, "required_approvals", `Ruleset ${ruleset.name} requires ${ruleset.requiredApprovals} approving review(s).`, [], ruleset.requiredApprovals, "unknown", { requiredCount: ruleset.requiredApprovals, resolution: "qualification_unavailable" }, "Retrieve sufficient collaborator qualification for current approving reviews before evaluating the ruleset approval gate.", []);
+      else {
+        const approvals = qualifiedApprovals(input.reviews, input.revisions.testedSha, []);
+        addGate(ruleset.id, "required_approvals", `Ruleset ${ruleset.name} requires ${ruleset.requiredApprovals} approving review(s).`, [], ruleset.requiredApprovals, approvals.length >= ruleset.requiredApprovals ? "passed" : "failed", { requiredCount: ruleset.requiredApprovals, approvedCount: approvals.length }, `Obtain ${ruleset.requiredApprovals} active, qualified, non-author approval(s) on ${input.revisions.testedSha}.`, approvals);
+      }
+    }
+    if (ruleset.requireCodeOwnerReviews) {
+      if (!groupAvailable(input, "ownership")) addGate(ruleset.id, "codeowners", `Ruleset ${ruleset.name} requires applicable CODEOWNERS approval.`, [], 1, "unknown", { resolution: "ownership_observation_incomplete" }, "Retrieve complete CODEOWNERS evidence from the trusted base revision before evaluating the ruleset code-owner gate.", []);
+      else for (const ownerRule of input.ownershipRequirements) {
+        const reason = `Ruleset ${ruleset.name} requires applicable CODEOWNERS approval for ${ownerRule.id}.`;
+        if (hasUnknownQualification(input.reviews, input.revisions.testedSha, ownerRule.owners)) addGate(ruleset.id, `codeowners.${ownerRule.id}`, reason, ownerRule.owners, ownerRule.requiredCount, "unknown", { requiredCount: ownerRule.requiredCount, resolution: "qualification_unavailable" }, `Retrieve sufficient qualification for the configured CODEOWNERS principal(s): ${ownerRule.owners.join(", ")}.`, []);
+        else {
+          const approvals = qualifiedApprovals(input.reviews, input.revisions.testedSha, ownerRule.owners);
+          addGate(ruleset.id, `codeowners.${ownerRule.id}`, reason, ownerRule.owners, ownerRule.requiredCount, approvals.length >= ownerRule.requiredCount ? "passed" : "failed", { requiredCount: ownerRule.requiredCount, approvedCount: approvals.length }, `Obtain ${ownerRule.requiredCount} active, qualified CODEOWNERS approval(s) for ${ownerRule.id}.`, approvals);
+        }
+      }
+    }
+    if (ruleset.requireLastPushApproval) addGate(ruleset.id, "last_push_approval", `Ruleset ${ruleset.name} requires approval from someone other than the last pusher.`, [], 1, "unknown", { resolution: "last_pusher_identity_unavailable" }, "Provide immutable last-pusher identity evidence before evaluating this ruleset control.", []);
+    if (ruleset.requiredReviewThreadResolution) addGate(ruleset.id, "review_thread_resolution", `Ruleset ${ruleset.name} requires all review threads to be resolved.`, [], 1, "unknown", { resolution: "review_thread_observation_unavailable" }, "Provide complete review-thread resolution evidence before evaluating this ruleset control.", []);
   }
   return { requirements, gates };
 }
@@ -427,6 +482,9 @@ export function evaluateValidated(input: EvaluationInput): ContributionReceiptCo
   const nativeHandoff = nativeReviewRequirements(input);
   handoff.requirements.push(...nativeHandoff.requirements);
   handoff.gates.push(...nativeHandoff.gates);
+  const nativeRulesetHandoff = nativeRulesetReviewRequirements(input);
+  handoff.requirements.push(...nativeRulesetHandoff.requirements);
+  handoff.gates.push(...nativeRulesetHandoff.gates);
   if (input.policy !== null && hasPatchgateSource(input)) {
     requirements.push(...issueRequirements(input, input.policy));
     requirements.push(...checkRequirements(input, input.policy));

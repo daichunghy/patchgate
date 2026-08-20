@@ -59,8 +59,9 @@ GitHub control was bypassed.
   membership; merge-group requests are explicitly unsupported.
 - Branch protection required checks, required approvals and applicable
   CODEOWNERS gates are represented in the versioned native-control contract and
-  remain bound to the base revision. Active decision-bearing rulesets are still
-  rejected until their rule semantics have an equivalent contract. The
+  remain bound to the base revision. Rulesets with `required_status_checks` and
+  `pull_request` review parameters use the same contract; active rulesets with
+  unsupported rule semantics are rejected. The
   `require_last_push_approval` setting remains an explicit evidence-missing
   result because this snapshot does not yet include immutable last-pusher data.
 

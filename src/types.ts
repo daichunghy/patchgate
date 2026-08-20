@@ -173,18 +173,34 @@ export interface OwnershipRequirement {
   requiredCount: number;
 }
 
-export interface NativeBranchProtection {
-  requiredChecks: Array<{ context: string; appId?: number | undefined }>;
+export interface NativeReviewControls {
   requiredApprovals: number;
   requireCodeOwnerReviews: boolean;
   requireLastPushApproval: boolean;
   staleReviews: boolean;
+  requiredReviewThreadResolution: boolean;
   bypassVisible: boolean;
   decisionBearing: boolean;
 }
 
+export interface NativeBranchProtection extends NativeReviewControls {
+  requiredChecks: Array<{ context: string; appId?: number | undefined }>;
+}
+
+export interface NativeRuleset extends NativeReviewControls {
+  id: number;
+  name: string;
+  sourceType: string;
+  source: string;
+  enforcement: "active" | "evaluate" | "disabled" | "unknown";
+  applicable: boolean;
+  ruleTypes: string[];
+  requiredChecks: Array<{ context: string; appId?: number | undefined }>;
+}
+
 export interface NativeControls {
   branchProtection?: NativeBranchProtection | undefined;
+  rulesets?: NativeRuleset[] | undefined;
 }
 
 export interface ReviewabilitySnapshot {
