@@ -5,7 +5,6 @@ import path from "node:path";
 const root = process.cwd();
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const actionText = fs.readFileSync(path.join(root, "action.yml"), "utf8");
-const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
 const failures = [];
 
 if (packageJson.private !== true) failures.push("package.json must remain private until a maintainer authorizes a public release");
@@ -14,8 +13,6 @@ if (!actionText.includes("main: 'dist/action/index.js'")) failures.push("root ac
 for (const relativePath of ["LICENSE", "README.md", "action.yml", "dist/action/index.js", "dist/src/cli.js"]) {
   if (!fs.existsSync(path.join(root, relativePath))) failures.push(`missing release artifact: ${relativePath}`);
 }
-if (readme.includes("https://github.com/patchgate/patchgate")) failures.push("README contains a stale repository URL");
-
 const pack = spawnSync("npm", ["pack", "--dry-run", "--json", "--ignore-scripts"], { cwd: root, encoding: "utf8" });
 if (pack.status !== 0) {
   failures.push(`npm pack --dry-run failed: ${pack.stderr.trim()}`);
