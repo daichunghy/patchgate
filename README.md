@@ -172,6 +172,18 @@ The repository maintains a clean root directory structure (8 files max) with mod
 - [G0 maintainer decision brief](docs/decisions/2026-08-13-g0-maintainer-decision-brief.md)
 - [Codex for Open Source evidence dossier](docs/application/codex-for-open-source-evidence-dossier.md)
 
+## Evaluate or contribute
+
+PatchGate is still a public pre-release project. The clearest ways to help are
+to run the [evidence review packet](docs/community/evidence-review-packet.md),
+take one of the scoped [contribution issues](https://github.com/daichunghy/patchgate/issues),
+or review the [non-blocking shadow pilot brief](docs/pilots/patchgate-shadow-pilot-brief.md).
+
+Maintainers can follow the public [community Project](https://github.com/users/daichunghy/projects/1)
+and the [evidence index](docs/application/evidence-index.md). PatchGate does not
+claim downstream adoption, a public release or successful external pilots until
+those artifacts exist and can be checked independently.
+
 ## Product boundary
 
 PatchGate can report `ready_for_review`, `blocked`,
