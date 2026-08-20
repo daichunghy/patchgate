@@ -1,9 +1,15 @@
 # PatchGate user requirements
 
 **Version:** 0.2-draft  
-**Evidence baseline:** 2026-08-13  
+**Evidence baseline:** 2026-08-20
 **Authority:** `PROJECT_CONSTITUTION.md` remains higher authority. These
 requirements define user value and acceptance, not new enforcement authority.
+
+The current implementation checkpoint is maintained in the
+[implementation roadmap](../implementation-roadmap.md) and the
+[2026-08-20 G4/G0 audit](../reviews/2026-08-20-g4-g0-audit.md). The requirements
+remain acceptance targets; local or recorded evidence does not upgrade them to
+live, shadow, enforcement or external-pilot verification.
 
 ## Primary users and jobs
 

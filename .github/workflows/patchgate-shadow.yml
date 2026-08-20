@@ -39,7 +39,7 @@ jobs:
           npm run bundle:action
 
       - name: Run PatchGate in Shadow Mode
-        uses: ./.github
+        uses: ./
         with:
           fail-on: never
           create-check-run: true

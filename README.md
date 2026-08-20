@@ -79,12 +79,11 @@ that needs to run contributor code belongs in the unprivileged
 
 ## Repository Organization
 
-The repository maintains a clean root directory structure (8 files max) with modular subdirectories:
+The repository maintains a clean root directory structure (9 files max) with modular subdirectories:
 
 ```text
 .
 ├── .github/                 # GitHub workflows, actions, CODEOWNERS, templates, community health files
-│   ├── action.yml           # GitHub Action definition
 │   ├── CODEOWNERS           # Path ownership configuration
 │   ├── CODE_OF_CONDUCT.md   # Community Code of Conduct
 │   ├── CONTRIBUTING.md      # Contribution guidelines and development workflow
@@ -121,6 +120,7 @@ The repository maintains a clean root directory structure (8 files max) with mod
 ├── fixtures/                # Deterministic test fixtures and API exchange recordings
 ├── test/                    # Comprehensive unit, integration, security, and determinism tests
 ├── scripts/                 # Linters, budget checkers, and verification harnesses
+├── action.yml               # GitHub Marketplace Action metadata
 ├── AGENTS.md                # Repository guidance for automated contributors
 ├── LICENSE                  # Apache-2.0 License
 ├── README.md                # Project overview and quickstart
@@ -139,6 +139,14 @@ The repository maintains a clean root directory structure (8 files max) with mod
 - [Security policy](.github/SECURITY.md)
 - [Code of conduct](.github/CODE_OF_CONDUCT.md)
 - [Support guide](.github/SUPPORT.md)
+- [Community discussions](https://github.com/daichunghy/patchgate/discussions)
+- [Non-blocking pilot request](https://github.com/daichunghy/patchgate/issues/4)
+
+### Contribution opportunities
+
+- [Clean consumer-repository Action fixture](https://github.com/daichunghy/patchgate/issues/5)
+- [CODEOWNERS conformance fixtures](https://github.com/daichunghy/patchgate/issues/6)
+- [Beta release and rollback guide](https://github.com/daichunghy/patchgate/issues/7)
 - [Research and landscape review](docs/research/2026-08-12-patchgate-landscape.md)
 - [Deep-dive research: API, state, threat tests and pilot](docs/research/2026-08-13-patchgate-deep-dive.md)
 - [Architecture and evidence contract](docs/architecture.md)
@@ -171,6 +179,18 @@ The repository maintains a clean root directory structure (8 files max) with mod
 - [Prompt launcher for Prompt 4](docs/prompts/prompt-04-launcher.md)
 - [G0 maintainer decision brief](docs/decisions/2026-08-13-g0-maintainer-decision-brief.md)
 - [Codex for Open Source evidence dossier](docs/application/codex-for-open-source-evidence-dossier.md)
+
+## Evaluate or contribute
+
+PatchGate is still a public pre-release project. The clearest ways to help are
+to run the [evidence review packet](docs/community/evidence-review-packet.md),
+take one of the scoped [contribution issues](https://github.com/daichunghy/patchgate/issues),
+or review the [non-blocking shadow pilot brief](docs/pilots/patchgate-shadow-pilot-brief.md).
+
+Maintainers can follow the public [community Project](https://github.com/users/daichunghy/projects/1)
+and the [evidence index](docs/application/evidence-index.md). PatchGate does not
+claim downstream adoption, a public release or successful external pilots until
+those artifacts exist and can be checked independently.
 
 ## Product boundary
 

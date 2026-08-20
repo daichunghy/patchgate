@@ -1,7 +1,7 @@
 # Kế hoạch thực thi PatchGate cho quy trình tự động
 
 **Phiên bản kế hoạch:** 2.0  
-**Ngày chốt bằng chứng:** 2026-08-13  
+**Ngày chốt bằng chứng:** 2026-08-20
 **Phạm vi:** từ local evaluator prototype đến public OSS `v0.1`, hai pilot bên
 ngoài và hồ sơ Codex for Open Source có bằng chứng  
 **Authority cao nhất:** `PROJECT_CONSTITUTION.md`  
@@ -10,6 +10,26 @@ ngoài và hồ sơ Codex for Open Source có bằng chứng
 Khi phần cũ mâu thuẫn với roadmap 2.0 hoặc backlog version 2,
 `docs/implementation-roadmap.md` và `docs/agent-work-packages.yml` là nguồn
 thực thi mới hơn; constitution vẫn cao nhất.
+
+## Current checkpoint — 2026-08-20
+
+Đây là checkpoint vận hành mới nhất. Các bảng snapshot ngày 13/08 bên dưới
+được giữ lại để truy nguyên quyết định, nhưng không được dùng để phủ nhận bằng
+chứng mới hơn trong checkpoint này.
+
+| Gate/surface | Mức hiện tại | Bằng chứng | Phần còn thiếu |
+| --- | --- | --- | --- |
+| G0 public foundation | Đã có nền tảng public, chưa hoàn tất release | Remote `origin` trỏ tới public repo `daichunghy/patchgate`; Apache-2.0, community files, CI và public `main` run thành công | package vẫn `private`, chưa có release, chưa có hoạt động support/security public và chưa có usage/pilot |
+| G1 contract | Locally verified | evaluator, schema, digest, fixture, security và deterministic tests; `npm run verify` là lệnh kiểm chứng chính | live provenance |
+| G2 onboarding | Native local flow verified | preflight, validate, init, doctor, Git-ref, discovery, text/JSON và 5 CLI process tests | 3 task sessions, UR acceptance |
+| G3 adapter | Local/mock slice verified | snapshot recorded/mock, bounded API behavior, source/SHA binding, TOCTOU, redaction và 19 integration tests | authorized live read-only smoke; merge-group/native-control limitations |
+| G4 Action | Local candidate verified | source runner, committed ncc bundle, pinned workflows, clean-room `verify:dist`, idempotent check delivery | consumer E2E, fork/merge-group E2E và 2 shadow installations |
+| User value/release | Chưa được chứng minh | protocol, roadmap và product requirements | sessions, shadow, pilots, release và external feedback |
+
+Không được gọi dự án là đã live-integrated, đã pilot, đã phát hành hoặc
+merge-blocking từ các bằng chứng trên. `human_review_required` vẫn chỉ là trạng
+thái cho biết human gate được khai báo nhưng chưa thỏa, không phải bằng chứng
+con người đã review.
 
 ## 1. Kết luận điều hành
 
@@ -37,7 +57,11 @@ giải thích vai trò. Đây là điều kiện hướng dẫn, không phải c
 
 Nguồn chính thức: [Codex for Open Source](https://developers.openai.com/community/codex-for-oss).
 
-## 2. Baseline đã kiểm chứng
+## 2. Baseline kế hoạch ngày 2026-08-13 (lưu để truy nguyên)
+
+Các bảng trong mục này phản ánh snapshot trước khi repository public và Action
+candidate được bổ sung. Khi có mâu thuẫn, mục `Trạng thái hiện tại` và
+`docs/implementation-roadmap.md` có bằng chứng mới hơn được ưu tiên.
 
 ### 2.1 Phần đã hoạt động
 

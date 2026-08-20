@@ -1,0 +1,44 @@
+[
+  {
+    "date": "2026-08-21",
+    "category": "q-a",
+    "title": "What is the first PR signal you check before opening a review?",
+    "body": "I am trying to keep PatchGate focused on one small maintainer habit: deciding whether a pull request is ready to spend review time on.\n\nIn your repository, what is the first missing signal that makes you stop before reading the diff closely? It might be a missing issue link, a check that has not run, the wrong owner, or simply a change that has grown beyond the original request.\n\nI am not looking for a list of every repository rule. One real example is enough: what did you check, what did you expect to see, and what did you do when it was missing? I want to compare that habit with the signals PatchGate can actually verify."
+  },
+  {
+    "date": "2026-08-23",
+    "category": "general",
+    "title": "A green check from the wrong commit is still the wrong evidence",
+    "body": "One failure mode keeps coming up in the PatchGate design: a check can be green and still say nothing about the pull request currently waiting for review.\n\nFor example, a contributor pushes a new commit after CI finishes. The old check remains visible, but the evidence is now attached to a different SHA. A similar problem appears when a workflow reports against a test merge or merge-group revision and the evaluator assumes it was the branch head.\n\nHow do you make this distinction visible to maintainers today? Do you show the tested SHA in the PR UI, rely on GitHub's required-check behavior, or leave it to people to notice? I am interested in the cases where the current setup is easy to misunderstand."
+  },
+  {
+    "date": "2026-08-25",
+    "category": "q-a",
+    "title": "Should a policy change govern the pull request that changes it?",
+    "body": "PatchGate reads enforceable policy from the trusted base revision. That means a pull request changing `patchgate.yml` cannot use its proposed rules to relax the checks applied to itself.\n\nThe rule is easy to state, but the maintainer workflow around it is less obvious. A policy change may need a separate review, a staged rollout, or a deliberate handoff after merge. CODEOWNERS changes and branch-protection changes can create similar timing questions.\n\nHow does your team handle this today? I would especially like examples where the old policy and the proposed policy both need to be explained to reviewers."
+  },
+  {
+    "date": "2026-08-27",
+    "category": "general",
+    "title": "Where does CODEOWNERS stop being enough?",
+    "body": "CODEOWNERS gives a repository a useful ownership boundary, but it does not answer every review question. Generated files, overlapping patterns, unsupported syntax, missing permissions, and several matching teams can all change what a maintainer thinks the approval means.\n\nPatchGate currently documents a bounded subset instead of pretending to understand every CODEOWNERS behavior. That makes the result less complete, but it also makes unsupported cases visible.\n\nWhat is the CODEOWNERS edge case that has caused the most confusion in your repository? A small fixture or a link to the relevant GitHub behavior would be more useful than a general opinion."
+  },
+  {
+    "date": "2026-08-29",
+    "category": "show-and-tell",
+    "title": "What would make a non-blocking shadow pilot worth your time?",
+    "body": "I do not want a PatchGate pilot to start with \"install this and tell me what you think.\" A useful shadow run should answer a smaller question: did the result help a maintainer decide what to look at, or did it add another noisy check?\n\nThe current pilot idea is deliberately non-blocking. It should not change merge eligibility, request repository secrets, or execute pull-request code in the privileged metadata lane. The feedback I need is concrete: false blocks, unknown causes, unclear remediation, or a result that arrived too late to help.\n\nIf you have tried a similar shadow workflow, what did you measure before deciding whether to keep it?"
+  },
+  {
+    "date": "2026-08-31",
+    "category": "q-a",
+    "title": "An Action that is hard to roll back is not ready for a beta",
+    "body": "I am writing down the beta and rollback path before asking another repository to install the PatchGate Action. The part I care about most is not the release announcement. It is whether a maintainer can get back to a known-good commit without guessing which tag moved.\n\nThe guide should cover full-SHA references, moving major tags, required permissions, a safe non-blocking default, and the exact downgrade step. It should also say which parts are tested and which are still only documented.\n\nWhen you evaluate a new GitHub Action, what release detail do you check first? I am looking for the practical failure mode, not a preferred versioning slogan."
+  },
+  {
+    "date": "2026-09-02",
+    "category": "general",
+    "title": "What should an honest consumer-repository E2E test prove?",
+    "body": "When I say consumer-repository E2E, I do not mean another unit test with a different filename. The point is to use PatchGate the way an external repository would: from the committed Action bundle, with a pinned reference, limited permissions, and no access to the consumer's source schemas or `node_modules`.\n\nThe fixture should show the receipt and semantic check that a maintainer would see. It should also leave the fork-safe path and the current unsupported merge-group result visible instead of hiding them behind a green test.\n\nWhat would you consider the minimum proof that an Action is usable outside its own repository?"
+  }
+]

@@ -1,18 +1,19 @@
 # CODEOWNERS for PatchGate
 
-# Global maintainers
-* @patchgate/maintainers
+# The repository currently has one verified maintainer account. Replace these
+# entries with organization teams only after those teams exist on GitHub.
+* @daichunghy
 
 # Core Evaluator Engine & Pure Contract
-/src/contract/ @patchgate/security-maintainers
-/src/evaluator-core.ts @patchgate/security-maintainers
-/schemas/ @patchgate/security-maintainers
+/src/contract/ @daichunghy
+/src/evaluator-core.ts @daichunghy
+/schemas/ @daichunghy
 
 # GitHub Adapter & Security Boundary
-/src/github/ @patchgate/maintainers
-/test/security.test.ts @patchgate/security-maintainers
-/test/integration/ @patchgate/security-maintainers
+/src/github/ @daichunghy
+/test/security.test.ts @daichunghy
+/test/integration/ @daichunghy
 
 # Action Packaging
-/action.yml @patchgate/maintainers
-/src/action/ @patchgate/maintainers
+/action.yml @daichunghy
+/src/action/ @daichunghy
