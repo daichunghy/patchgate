@@ -43,4 +43,4 @@ jobs:
         with:
           fail-on: never
           create-check-run: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}

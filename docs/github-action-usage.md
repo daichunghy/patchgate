@@ -56,7 +56,7 @@ jobs:
         with:
           fail-on: never
           create-check-run: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
 ```
 
 ---
@@ -71,7 +71,7 @@ Once you have verified the policy and reviewed the shadow distribution, you can 
         with:
           fail-on: blocked
           create-check-run: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
 ```
 
 ---
