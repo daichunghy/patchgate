@@ -4,15 +4,15 @@
 [![TypeScript: Strict](https://img.shields.io/badge/TypeScript-Strict_100%25-blue.svg)](https://www.typescriptlang.org/)
 
 PatchGate is an open-source review-readiness gate for GitHub pull requests.
-It answers a narrower question than code review or AI-authorship detection:
+It answers a narrower question than code review or authorship analysis:
 
 > Has this contribution supplied the policy, evidence, ownership, and human
 > boundaries that the repository requires before a maintainer spends review
 > time?
 
-The evaluator is deterministic and explainable. It does not decide whether code
-is correct, safe, or merge-worthy, and it cannot force an external coding agent
-to stop working.
+The evaluator is deterministic and explainable. It does not determine who or
+what produced the code, whether the code is correct, safe, or merge-worthy, and
+it cannot force external automation to stop working.
 
 ## GitHub Action candidate
 
@@ -79,12 +79,11 @@ that needs to run contributor code belongs in the unprivileged
 
 ## Repository Organization
 
-The repository maintains a clean root directory structure (8 files max) with modular subdirectories:
+The repository maintains a clean root directory structure (9 files max) with modular subdirectories:
 
 ```text
 .
 ├── .github/                 # GitHub workflows, actions, CODEOWNERS, templates, community health files
-│   ├── action.yml           # GitHub Action definition
 │   ├── CODEOWNERS           # Path ownership configuration
 │   ├── CODE_OF_CONDUCT.md   # Community Code of Conduct
 │   ├── CONTRIBUTING.md      # Contribution guidelines and development workflow
@@ -121,7 +120,8 @@ The repository maintains a clean root directory structure (8 files max) with mod
 ├── fixtures/                # Deterministic test fixtures and API exchange recordings
 ├── test/                    # Comprehensive unit, integration, security, and determinism tests
 ├── scripts/                 # Linters, budget checkers, and verification harnesses
-├── AGENTS.md                # AI agent operating rules and context
+├── action.yml               # GitHub Marketplace Action metadata
+├── AGENTS.md                # Repository guidance for automated contributors
 ├── LICENSE                  # Apache-2.0 License
 ├── README.md                # Project overview and quickstart
 ├── package.json             # Node package manifest
@@ -139,6 +139,14 @@ The repository maintains a clean root directory structure (8 files max) with mod
 - [Security policy](.github/SECURITY.md)
 - [Code of conduct](.github/CODE_OF_CONDUCT.md)
 - [Support guide](.github/SUPPORT.md)
+- [Community discussions](https://github.com/daichunghy/patchgate/discussions)
+- [Non-blocking pilot request](https://github.com/daichunghy/patchgate/issues/4)
+
+### Contribution opportunities
+
+- [Clean consumer-repository Action fixture](https://github.com/daichunghy/patchgate/issues/5)
+- [CODEOWNERS conformance fixtures](https://github.com/daichunghy/patchgate/issues/6)
+- [Beta release and rollback guide](https://github.com/daichunghy/patchgate/issues/7)
 - [Research and landscape review](docs/research/2026-08-12-patchgate-landscape.md)
 - [Deep-dive research: API, state, threat tests and pilot](docs/research/2026-08-13-patchgate-deep-dive.md)
 - [Architecture and evidence contract](docs/architecture.md)

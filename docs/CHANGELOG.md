@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Status checkpoint — 2026-08-20
+- Public foundation is now observable: `origin` points to
+  `https://github.com/daichunghy/patchgate`, the repository is public, and the
+  default-branch CI run [32333914059](https://github.com/daichunghy/patchgate/actions/runs/32333914059)
+  succeeded on `main@a3745f6`.
+- The local Action candidate is bundled and clean-room verified, with pinned
+  workflow dependencies, idempotent check delivery, and explicit non-ready
+  handling for unsupported `merge_group` input.
+- G1, the local G2 onboarding slice, the narrowed G3 local/mock adapter, and
+  the local G4 Action candidate are verified only within their stated evidence
+  boundaries.
+- G2 usability sessions, G3 live read-only smoke, external G4 shadow
+  installations, enforcement pilots, a public release, and `v0.1` remain open.
+- `package.json` remains `private` at version `0.1.0-dev`; no public release or
+  downstream consumer evidence is claimed.
+- Repository hardening applied on GitHub: seven descriptive topics, Discussions,
+  private vulnerability reporting, Dependabot security updates, and `main`
+  branch protection with five required CI checks, one approving review, stale
+  review dismissal, linear history and conversation resolution. Force-pushes
+  and branch deletion are disabled.
+- Current public history contains no pull request or release. One pilot-request
+  issue and three Discussions are open outreach surfaces; they do not establish
+  external adoption or pilot evidence. The scheduled/manual Security Audit and
+  Pull Request-only PatchGate Shadow workflows have not produced a public run.
+- Local release preparation now includes root `action.yml`, pinned CodeQL
+  analysis, Dependabot configuration, valid owner/contact links, and workflow
+  pin enforcement for both `actions/*` and `github/*` actions.
+- Opened the first public GitHub Discussion to invite maintainer and
+  platform/security feedback without claiming adoption or pilot results.
+- Added two follow-up design/requirements Discussions and a labeled public
+  pilot request to make the next contribution path explicit.
+- Added three scoped contribution issues for the Action consumer fixture,
+  CODEOWNERS conformance and release/rollback documentation.
+
 ### Current audit boundary
 - Action candidate now has a self-contained ncc bundle and clean-room
   verification; it remains unreleased and unproven in external consumer repos.

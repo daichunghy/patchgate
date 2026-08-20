@@ -52,7 +52,7 @@ jobs:
           npm run build
 
       - name: Run PatchGate Shadow Gate
-   uses: ./.github
+        uses: ./
         with:
           fail-on: never
           create-check-run: true
@@ -67,7 +67,7 @@ Once you have verified the policy and reviewed the shadow distribution, you can 
 
 ```yaml
       - name: Run PatchGate Enforcing Gate
-   uses: ./.github
+        uses: ./
         with:
           fail-on: blocked
           create-check-run: true
