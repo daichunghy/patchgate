@@ -186,6 +186,7 @@ PatchGate is still a public pre-release project. The clearest ways to help are
 to run the [evidence review packet](docs/community/evidence-review-packet.md),
 take one of the scoped [contribution issues](https://github.com/daichunghy/patchgate/issues),
 or review the [non-blocking shadow pilot brief](docs/pilots/patchgate-shadow-pilot-brief.md).
+For usability research, use the [consent-safe G2 session record](docs/pilots/g2-session-record-template.md).
 
 Maintainers can follow the public [community Project](https://github.com/users/daichunghy/projects/1)
 and the [evidence index](docs/application/evidence-index.md). PatchGate does not
