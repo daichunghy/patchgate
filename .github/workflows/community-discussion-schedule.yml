@@ -36,18 +36,13 @@ jobs:
 
       - name: Publish due discussion
         env:
-          GH_TOKEN: ${{ secrets.PATCHGATE_DISCUSSION_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           TARGET_DATE: ${{ inputs.target_date }}
           PUBLISH: ${{ inputs.publish }}
           GH_REPO: ${{ github.repository }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
-
-          if [[ -z "${GH_TOKEN:-}" ]]; then
-            echo "PATCHGATE_DISCUSSION_TOKEN is not configured."
-            exit 1
-          fi
 
           if [[ "$EVENT_NAME" == "workflow_dispatch" && "${PUBLISH:-false}" != "true" ]]; then
             echo "Manual run selected. Nothing was published because publish=true was not supplied."
