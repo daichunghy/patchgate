@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Local preflight Git-ref default, non-JS doctor, Action usage — 2026-08-22
+- `preflight --base <ref>` uses Git-object loading when `--base` is not an
+  existing file or directory and the current work tree (or `--repo`) is a Git
+  repository, so `patchgate preflight --base origin/main` works without a
+  dummy `--repo`. Existing filesystem paths stay local-file mode. Policy is
+  still read with `git cat-file`; untrusted PR code is not checked out.
+- `doctor` treats missing `package.json` as informational, so a Git repository
+  with a valid policy and no Node package can be `ready_for_local_preflight`.
+- `init` draft comments point at `docs/patchgate.example.yml`.
+- Consumer Action quick start now pins `daichunghy/patchgate@v0.1.0-beta.2`
+  with `fail-on: never` and `create-check-run: true`; `npm ci` + `uses: ./`
+  is labeled as developing PatchGate itself. Native-control snapshots still
+  need a PAT or App token because `GITHUB_TOKEN` cannot have Administration.
+- Application dossier, evidence index and constitution matrix no longer
+  describe open PR #9 or zero tags; they record the merged hardening history
+  and `v0.1.0-beta.2` without claiming adoption or program selection.
+
 ### First-run path, CLI `--fail-on`, and receipt version decoupling — 2026-08-22
 - Documented the working stranger first-run as clone + `npm ci` +
   `npm run build` + `doctor`/`preflight`/`evaluate` fixture, with a short

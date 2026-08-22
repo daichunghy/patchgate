@@ -12,7 +12,18 @@ after the documented gates have been reviewed.
 
 ## 1. Quick Start: Shadow Mode (Recommended for Initial Setup)
 
-In **Shadow Mode**, PatchGate runs purely in observe-only mode (`fail-on: never`). It evaluates the PR, writes the `ContributionReceipt` artifact, and optionally publishes a GitHub Check Run summarizing the findings without blocking the PR merge.
+In **Shadow Mode**, PatchGate observes only (`fail-on: never`). It evaluates
+the PR, writes the `ContributionReceipt`, and can post a Check Run without
+blocking merge. Pin
+[`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
+for this pre-release; `v0.1.0-beta.1` is superseded because Action inputs were
+unreadable on real runners. This is not production and not a `v0.1` claim.
+
+The Action reads GitHub metadata through the API. Do **not** check out
+pull-request code in this workflow. `github.token` cannot be granted the
+Administration permission, so branch-protection/Rulesets snapshots are
+incomplete with `GITHUB_TOKEN` and fail closed. A complete native-control
+snapshot needs a PAT or GitHub App token with `administration: read`.
 
 Create `.github/workflows/patchgate-shadow.yml`:
 
@@ -39,6 +50,37 @@ jobs:
     name: Review-Readiness Shadow Gate
     runs-on: ubuntu-latest
     steps:
+      - name: Run PatchGate Shadow Gate
+        uses: daichunghy/patchgate@v0.1.0-beta.2
+        with:
+          fail-on: never
+          create-check-run: true
+          github-token: ${{ github.token }}
+```
+
+---
+
+## 2. Hardened Enforcement Mode (After Shadow Validation)
+
+Once you have verified the policy and reviewed the shadow distribution, you can configure PatchGate to fail when a PR is blocked. This is still not a production or `v0.1` claim.
+
+```yaml
+      - name: Run PatchGate Enforcing Gate
+        uses: daichunghy/patchgate@v0.1.0-beta.2
+        with:
+          fail-on: blocked
+          create-check-run: true
+          github-token: ${{ github.token }}
+```
+
+---
+
+## 2a. Developing PatchGate itself
+
+This section is only for this repository's own shadow workflow. External
+consumers should use the tagged Action above, not `uses: ./` after `npm ci`.
+
+```yaml
       - name: Checkout trusted base repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -60,21 +102,6 @@ jobs:
         uses: ./
         with:
           fail-on: never
-          create-check-run: true
-          github-token: ${{ github.token }}
-```
-
----
-
-## 2. Hardened Enforcement Mode (After Shadow Validation)
-
-Once you have verified the policy and reviewed the shadow distribution, you can configure PatchGate to fail when a PR is blocked:
-
-```yaml
-      - name: Run PatchGate Enforcing Gate
-        uses: ./
-        with:
-          fail-on: blocked
           create-check-run: true
           github-token: ${{ github.token }}
 ```

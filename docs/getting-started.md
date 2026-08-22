@@ -56,9 +56,17 @@ node dist/src/cli.js preflight --base docs/patchgate.example.yml --json
 ```
 
 `--base` may be a policy file, a directory that contains `patchgate.yml` or
-`.github/patchgate.yml`, or a Git ref (with `--repo`). Policy is read from
-the named revision; PatchGate does not check out or execute pull-request
-code. Discovery findings (`README.md`, `AGENTS.md`, …) are advisory,
+`.github/patchgate.yml`, or a Git ref. A filesystem path is local-file mode.
+Otherwise, if the current directory (or `--repo`) is a Git work tree, PatchGate
+reads `patchgate.yml` / `.github/patchgate.yml` from that revision with Git
+objects — it does not check out or execute pull-request code.
+
+```bash
+node dist/src/cli.js preflight --base main
+node dist/src/cli.js preflight --base origin/main --repo .
+```
+
+Discovery findings (`README.md`, `AGENTS.md`, …) are advisory,
 needs-confirmation, or unsupported — never enforcement by themselves.
 
 ## 5. Doctor
@@ -69,7 +77,8 @@ node dist/src/cli.js doctor --base docs/patchgate.example.yml --json
 ```
 
 `doctor` reports local capability without a GitHub token. Exit 0 means
-ready for local preflight; exit 1 means attention is needed.
+ready for local preflight; exit 1 means attention is needed. Missing
+`package.json` is informational and does not fail a non-JS repository.
 
 ## 6. Evaluate a fixture
 

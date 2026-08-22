@@ -18,9 +18,9 @@ and the program terms linked from that application.
 
 | Program signal | Evidence currently available | Strength | Missing before submission |
 | --- | --- | --- | --- |
-| Public active open-source project | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 `LICENSE`, community files, CI definitions, public Project #1, open PR #9 and a [successful public `main` CI run](https://github.com/daichunghy/patchgate/actions/runs/32333914059); `package.json` remains private | public foundation, pre-release | merged maintainer workflow, support/security operation and public release |
-| Meaningful usage or ecosystem importance | Product rationale, threat model, five self-authored Discussions including [#10](https://github.com/daichunghy/patchgate/discussions/10), a requirements question and context-specific questions on four related OSS repositories; live metrics are 0 stars, 0 forks, 0 tags/releases and no verified downstream users | ecosystem relevance hypothesis, not usage evidence | public release, real users/pilots, independent maintainer responses and concrete ecosystem references |
-| Active maintenance | Public Git history, current implementation, security review, deterministic verification, protected `main`, four scoped contribution issues with start paths, public Project #1, open PR #9 and passing required PR checks are recorded | public pre-release maintainer activity | merged external contributions, release history, live maintainer workflow and external pilots |
+| Public active open-source project | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 `LICENSE`, community files, CI definitions, public Project #1, merged hardening PR #9 (administrator merge, not independent review) and a [successful public `main` CI run](https://github.com/daichunghy/patchgate/actions/runs/32333914059); `package.json` remains private | public foundation, pre-release | independent review, public release |
+| Meaningful usage or ecosystem importance | Product rationale, threat model, five self-authored Discussions including [#10](https://github.com/daichunghy/patchgate/discussions/10), a requirements question and context-specific questions on four related OSS repositories; no verified downstream users or pilots. Pre-release tags `v0.1.0-beta.1` (superseded) and `v0.1.0-beta.2` exist — re-check live star/fork counts at submission time | ecosystem relevance hypothesis, not usage evidence | public release, real users/pilots, independent maintainer responses and concrete ecosystem references |
+| Active maintenance | Public Git history, current implementation, security review, deterministic verification, protected `main`, contribution issues, public Project #1, merged PR #9 and follow-ups, and passing required checks are recorded | public pre-release maintainer activity | merged external contributions, independent review and external pilots |
 | Maintainer role | Repository is public under `daichunghy/patchgate`; the application still requires the maintainer to state the role explicitly | partially verified | final applicant identity/role confirmation |
 | Security and quality | Local verification passes; no high-severity npm audit findings; security boundary and fail-closed tests exist; protected `main`, public PR checks, CodeQL, Security Audit and Full Verify runs are observable; current PR head passed an authorized GET-only live smoke | local/fixture plus public PR and live snapshot evidence | independent review/merge, post-merge default-branch verification and external review |
 | Codex use case | Clear fit for PR review-readiness, triage, security review and release maintenance | documented | explain concrete day-to-day workflow after publication |
@@ -37,8 +37,10 @@ It does not prove meaningful usage, broad adoption, external maintainer support
 or a completed pilot. The four outbound comments are outreach attempts, not
 responses or endorsements. Self-authored Discussions, a Project board and a
 scheduled-post workflow must not be counted as independent community activity.
-The current public repository has 0 stars, 0 forks, no tags/releases and no
-verified downloads or downstream users.
+The current public repository has no verified downloads, downstream users or
+external pilots. Pre-release tags `v0.1.0-beta.1` (superseded) and
+`v0.1.0-beta.2` exist; they are not adoption evidence. Re-check live star/fork
+counts at submission time.
 
 The correct application claim is therefore: “PatchGate has a public,
 security-conscious pre-release maintenance workflow and is seeking its first
@@ -110,7 +112,8 @@ the gate-by-gate status and the exact external evidence that is still missing.
 - [ ] Three G2 usability sessions with consenting participants.
 - [ ] Two G4 shadow installations.
 - [x] Confirm the repository is public and the maintainer-controlled remote is reachable.
-- [ ] Merge the public hardening PR and verify the resulting default-branch workflows.
+- [x] Merge the public hardening PR (#9) and follow-ups to `main` (administrator decision; not independent-review evidence).
+- [ ] Obtain an independent review of the current `main` history.
 - [ ] Fill and validate the [copy-ready form draft](codex-for-open-source-form-draft.md).
 - [ ] Confirm public support/security routes and maintainer role for the application.
 - [ ] Submit application form at `https://openai.com/form/codex-for-oss/`.
