@@ -28,6 +28,24 @@ function client(exchanges: readonly RecordedExchange[]): { client: GitHubClient;
   return { transport, client: new GitHubClient(transport) };
 }
 
+function branchProtectionBody(requiredApprovingReviewCount: number): Record<string, unknown> {
+  return {
+    required_status_checks: {
+      strict: true,
+      contexts: ["unit"],
+      checks: [{ context: "unit", app_id: null }],
+    },
+    required_pull_request_reviews: {
+      dismiss_stale_reviews: true,
+      require_code_owner_reviews: false,
+      required_approving_review_count: requiredApprovingReviewCount,
+      require_last_push_approval: false,
+      bypass_pull_request_allowances: { users: [], teams: [], apps: [] },
+    },
+    bypass_pull_request_allowances: { users: [], teams: [], apps: [] },
+  };
+}
+
 describe("authenticated GitHub adapter fixtures", () => {
   it("builds a complete base-bound head snapshot and evaluates it deterministically", async () => {
     const recorded = await fixture("happy-path.json");
@@ -54,6 +72,27 @@ describe("authenticated GitHub adapter fixtures", () => {
     const receipt = evaluateContribution(result.input, "2026-08-13T00:00:00.000Z");
     expect(receipt.final.status).toBe("ready_for_review");
     expect(receipt.requirements.filter((requirement) => requirement.result !== "passed")).toEqual([]);
+  });
+
+  it("falls back to the supported .github/patchgate.yml base-policy path", async () => {
+    const recorded = await fixture("happy-path.json");
+    const exchanges = structuredClone(recorded.exchanges);
+    const policyResponses = exchanges.filter((exchange) => exchange.request.path === "/repos/example/service/contents/patchgate.yml");
+    const policyBodies = policyResponses.map((exchange) => exchange.response.body as Record<string, unknown>);
+    for (const exchange of policyResponses) exchange.response = recordedResponse(404, { message: "Not Found" });
+    for (const body of policyBodies) {
+      exchanges.push({
+        request: { method: "GET", path: "/repos/example/service/contents/.github/patchgate.yml", query: { ref: "base-sha" } },
+        response: recordedResponse(200, { ...body, path: ".github/patchgate.yml" }),
+      });
+    }
+    const { client: github } = client(exchanges);
+    const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
+
+    expect(result.kind).toBe("built");
+    if (result.kind !== "built") return;
+    expect(result.input.policySources.find((source) => source.kind === "patchgate")?.identity).toBe(".github/patchgate.yml");
+    expect(evaluateContribution(result.input, "2026-08-13T00:00:00.000Z").final.status).toBe("ready_for_review");
   });
 
   it("rejects merge-group requests before making an API call", async () => {
@@ -86,7 +125,73 @@ describe("authenticated GitHub adapter fixtures", () => {
     }
     const { client: github } = client(exchanges);
     const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
-    expect(result).toMatchObject({ kind: "rejected", diagnostic: { id: "GITHUB_API_UNSUPPORTED" } });
+    expect(result).toMatchObject({ kind: "rejected", diagnostic: { id: "GITHUB_PROVENANCE_AMBIGUOUS" } });
+  });
+
+  it("evaluates the supported required-status-check and pull-request ruleset subset", async () => {
+    const recorded = await fixture("happy-path.json");
+    const exchanges = structuredClone(recorded.exchanges);
+    const ruleset = {
+      id: 90,
+      name: "protect-main",
+      target: "branch",
+      source_type: "Repository",
+      source: "example/service",
+      enforcement: "active",
+      conditions: { ref_name: { include: ["refs/heads/main"], exclude: [] } },
+      bypass_actors: [],
+      rules: [
+        { type: "required_status_checks", parameters: { required_status_checks: [{ context: "unit", integration_id: 15368 }], strict_required_status_checks_policy: true } },
+        { type: "pull_request", parameters: { allowed_merge_methods: ["merge", "squash", "rebase"], dismiss_stale_reviews_on_push: true, require_code_owner_review: false, require_last_push_approval: false, required_approving_review_count: 1, required_review_thread_resolution: false } },
+      ],
+    };
+    for (const exchange of exchanges) {
+      if (exchange.request.path === "/repos/example/service/rulesets") exchange.response = recordedResponse(200, [ruleset]);
+    }
+    const { client: github } = client(exchanges);
+    const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
+
+    expect(result.kind).toBe("built");
+    if (result.kind !== "built") return;
+    expect(result.input.nativeControls?.rulesets?.[0]).toMatchObject({ id: 90, applicable: true, requiredChecks: [{ context: "unit", appId: 15368 }], requiredApprovals: 1 });
+    const receipt = evaluateContribution(result.input, "2026-08-13T00:00:00.000Z");
+    expect(receipt.final.status).toBe("human_review_required");
+    expect(receipt.requirements).toEqual(expect.arrayContaining([expect.objectContaining({ id: "native.ruleset.90.check.1", result: "passed", authority: "ruleset" }), expect.objectContaining({ id: "handoff.native.ruleset.90.required_approvals", result: "failed", authority: "ruleset" })]));
+  });
+
+  it("evaluates branch-protection checks from a normalized, base-bound native contract", async () => {
+    const recorded = await fixture("happy-path.json");
+    const exchanges = structuredClone(recorded.exchanges);
+    for (const exchange of exchanges) {
+      if (exchange.request.path === "/repos/example/service/branches/main/protection") exchange.response = recordedResponse(200, branchProtectionBody(0));
+    }
+    const { client: github } = client(exchanges);
+    const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
+
+    expect(result.kind).toBe("built");
+    if (result.kind !== "built") return;
+    expect(result.input.nativeControls?.branchProtection?.requiredChecks).toEqual([{ context: "unit" }]);
+    expect(result.input.policySources.find((source) => source.kind === "branch_protection")?.digest).toBeDefined();
+    const receipt = evaluateContribution(result.input, "2026-08-13T00:00:00.000Z");
+    expect(receipt.final.status).toBe("ready_for_review");
+    expect(receipt.requirements).toEqual(expect.arrayContaining([expect.objectContaining({ id: "native.branch_protection.check.1", authority: "branch_protection", result: "passed" })]));
+  });
+
+  it("turns native branch-protection approval requirements into an explicit human gate", async () => {
+    const recorded = await fixture("happy-path.json");
+    const exchanges = structuredClone(recorded.exchanges);
+    for (const exchange of exchanges) {
+      if (exchange.request.path === "/repos/example/service/branches/main/protection") exchange.response = recordedResponse(200, branchProtectionBody(1));
+    }
+    const { client: github } = client(exchanges);
+    const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
+
+    expect(result.kind).toBe("built");
+    if (result.kind !== "built") return;
+    const receipt = evaluateContribution(result.input, "2026-08-13T00:00:00.000Z");
+    expect(receipt.final.status).toBe("human_review_required");
+    expect(receipt.requirements).toEqual(expect.arrayContaining([expect.objectContaining({ id: "handoff.native.branch_protection.required_approvals", result: "failed", authority: "branch_protection" })]));
+    expect(receipt.humanGates).toEqual(expect.arrayContaining([expect.objectContaining({ id: "native.branch_protection.required_approvals", satisfied: false, requiredCount: 1 })]));
   });
 
   it("does not treat an unconfirmed native-control 404 as absence", async () => {

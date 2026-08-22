@@ -4,15 +4,15 @@
 [![TypeScript: Strict](https://img.shields.io/badge/TypeScript-Strict_100%25-blue.svg)](https://www.typescriptlang.org/)
 
 PatchGate is an open-source review-readiness gate for GitHub pull requests.
-It answers a narrower question than code review or AI-authorship detection:
+It answers a narrower question than code review or authorship analysis:
 
 > Has this contribution supplied the policy, evidence, ownership, and human
 > boundaries that the repository requires before a maintainer spends review
 > time?
 
-The evaluator is deterministic and explainable. It does not decide whether code
-is correct, safe, or merge-worthy, and it cannot force an external coding agent
-to stop working.
+The evaluator is deterministic and explainable. It does not determine who or
+what produced the code, whether the code is correct, safe, or merge-worthy, and
+it cannot force external automation to stop working.
 
 ## GitHub Action candidate
 
@@ -24,7 +24,9 @@ For this checkout, the source-of-truth workflow is
 [`.github/workflows/patchgate-shadow.yml`](.github/workflows/patchgate-shadow.yml).
 It uses `pull_request_target`, checks out the trusted base revision, builds the
 Action bundle from that base, runs with `fail-on: never`, and updates one check
-run. External consumers must wait for a public immutable Action release.
+run. Production consumers must wait for a public immutable Action release. A
+consented non-blocking shadow pilot may use an explicitly approved full-SHA
+pre-release commit by following the [G4 shadow-installation runbook](docs/pilots/g4-shadow-installation-runbook.md).
 
 ## Local development
 
@@ -79,12 +81,11 @@ that needs to run contributor code belongs in the unprivileged
 
 ## Repository Organization
 
-The repository maintains a clean root directory structure (8 files max) with modular subdirectories:
+The repository maintains a clean root directory structure (9 files max) with modular subdirectories:
 
 ```text
 .
 ├── .github/                 # GitHub workflows, actions, CODEOWNERS, templates, community health files
-│   ├── action.yml           # GitHub Action definition
 │   ├── CODEOWNERS           # Path ownership configuration
 │   ├── CODE_OF_CONDUCT.md   # Community Code of Conduct
 │   ├── CONTRIBUTING.md      # Contribution guidelines and development workflow
@@ -121,7 +122,8 @@ The repository maintains a clean root directory structure (8 files max) with mod
 ├── fixtures/                # Deterministic test fixtures and API exchange recordings
 ├── test/                    # Comprehensive unit, integration, security, and determinism tests
 ├── scripts/                 # Linters, budget checkers, and verification harnesses
-├── AGENTS.md                # AI agent operating rules and context
+├── action.yml               # GitHub Marketplace Action metadata
+├── AGENTS.md                # Repository guidance for automated contributors
 ├── LICENSE                  # Apache-2.0 License
 ├── README.md                # Project overview and quickstart
 ├── package.json             # Node package manifest
@@ -139,6 +141,15 @@ The repository maintains a clean root directory structure (8 files max) with mod
 - [Security policy](.github/SECURITY.md)
 - [Code of conduct](.github/CODE_OF_CONDUCT.md)
 - [Support guide](.github/SUPPORT.md)
+- [Community discussions](https://github.com/daichunghy/patchgate/discussions)
+- [Non-blocking pilot request](https://github.com/daichunghy/patchgate/issues/4)
+- [Independent review and pilot outreach drafts](docs/community/independent-review-and-pilot-outreach.md)
+
+### Contribution opportunities
+
+- [Clean consumer-repository Action fixture](https://github.com/daichunghy/patchgate/issues/7)
+- [CODEOWNERS conformance fixtures](https://github.com/daichunghy/patchgate/issues/6)
+- [Beta release and rollback guide](https://github.com/daichunghy/patchgate/issues/5)
 - [Research and landscape review](docs/research/2026-08-12-patchgate-landscape.md)
 - [Deep-dive research: API, state, threat tests and pilot](docs/research/2026-08-13-patchgate-deep-dive.md)
 - [Architecture and evidence contract](docs/architecture.md)
@@ -163,6 +174,8 @@ The repository maintains a clean root directory structure (8 files max) with mod
 - [G2 local onboarding implementation report](docs/reviews/2026-08-13-g2-local-onboarding-implementation.md)
 - [G2 preflight, Git-ref and discovery checkpoint](docs/reviews/2026-08-13-g2-preflight-git-ref-discovery.md)
 - [G2 usability session protocol](docs/pilots/g2-usability-session-protocol.md)
+- [G4 shadow installation runbook](docs/pilots/g4-shadow-installation-runbook.md)
+- [Beta release and rollback runbook](docs/releases/beta-release-and-rollback.md)
 - [Prompt 2: observation contract and compatibility](docs/prompts/prompt-02-observation-contract-and-compatibility.md)
 - [Prompt launcher for Prompt 2](docs/prompts/prompt-02-launcher.md)
 - [Prompt 3: public foundation and maintainer decisions](docs/prompts/prompt-03-public-foundation-and-maintainer-decisions.md)
@@ -171,6 +184,21 @@ The repository maintains a clean root directory structure (8 files max) with mod
 - [Prompt launcher for Prompt 4](docs/prompts/prompt-04-launcher.md)
 - [G0 maintainer decision brief](docs/decisions/2026-08-13-g0-maintainer-decision-brief.md)
 - [Codex for Open Source evidence dossier](docs/application/codex-for-open-source-evidence-dossier.md)
+- [Constitution readiness matrix](docs/application/constitution-readiness-matrix.md)
+- [Codex for Open Source form draft](docs/application/codex-for-open-source-form-draft.md)
+
+## Evaluate or contribute
+
+PatchGate is still a public pre-release project. The clearest ways to help are
+to run the [evidence review packet](docs/community/evidence-review-packet.md),
+take one of the scoped [contribution issues](https://github.com/daichunghy/patchgate/issues),
+or review the [non-blocking shadow pilot brief](docs/pilots/patchgate-shadow-pilot-brief.md).
+For usability research, use the [consent-safe G2 session record](docs/pilots/g2-session-record-template.md).
+
+Maintainers can follow the public [community Project](https://github.com/users/daichunghy/projects/1)
+and the [evidence index](docs/application/evidence-index.md). PatchGate does not
+claim downstream adoption, a public release or successful external pilots until
+those artifacts exist and can be checked independently.
 
 ## Product boundary
 

@@ -4,7 +4,7 @@ import { BudgetLedger, type RequestPhase } from "./request-budget.js";
 import { boundedRetryDelay, type RetryClock } from "./retry.js";
 
 const GRAPHQL_DOCUMENTS: Record<string, string> = {
-  pullRequestClosingIssues: `query PullRequestClosingIssues($owner: String!, $name: String!, $number: Int!, $first: Int!, $after: String) { repository(owner: $owner, name: $name) { pullRequest(number: $number) { closingIssuesReferences(first: $first, after: $after, userLinkedOnly: true) { nodes { issue { id repository { nameWithOwner id } number } } pageInfo { hasNextPage endCursor } } } } }`,
+  pullRequestClosingIssues: `query PullRequestClosingIssues($owner: String!, $name: String!, $number: Int!, $first: Int!, $after: String) { repository(owner: $owner, name: $name) { pullRequest(number: $number) { closingIssuesReferences(first: $first, after: $after, userLinkedOnly: true) { nodes { id repository { nameWithOwner id } number } pageInfo { hasNextPage endCursor } } } } }`,
 };
 
 export interface GitHubClientOptions {
@@ -86,7 +86,7 @@ export function createFetchTransport(options: GitHubClientOptions = {}): GitHubR
           headers,
           redirect: "manual",
           signal: controller.signal,
-          ...(input.method === "POST" ? { body: JSON.stringify({ query: GRAPHQL_DOCUMENTS.pullRequestClosingIssues, operationName: "pullRequestClosingIssues", variables: input.variables }) } : {}),
+          ...(input.method === "POST" ? { body: JSON.stringify({ query: GRAPHQL_DOCUMENTS.pullRequestClosingIssues, operationName: "PullRequestClosingIssues", variables: input.variables }) } : {}),
         });
         const bytes = new Uint8Array(await response.arrayBuffer());
         if (bytes.byteLength > maxResponseBytes) throw new GitHubAdapterError(makeDiagnostic("GITHUB_RESPONSE_TOO_LARGE", "GitHub response exceeded the configured byte budget.", { remediation: "Reduce the requested collection or raise the bounded response limit after review." }));

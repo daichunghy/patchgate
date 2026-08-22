@@ -14,11 +14,10 @@ We take the security of PatchGate and the repositories that rely on it seriously
 If you believe you have found a security vulnerability in PatchGate:
 
 1. **Please do NOT disclose it publicly** via GitHub issues, PRs, or discussions.
-2. Use GitHub Private Vulnerability Reporting after the public repository and
-   security channel are provisioned.
-3. Until that channel exists, do not disclose a suspected vulnerability
-   publicly; preserve a local reproduction and contact the maintainer through
-   the private channel supplied with the release.
+2. Use [GitHub Private Vulnerability Reporting](https://github.com/daichunghy/patchgate/security/advisories/new).
+3. If the private reporting form is unavailable, do not disclose a suspected
+   vulnerability publicly; preserve a local reproduction and contact the
+   maintainer through the repository owner profile.
 
 ### Response Timelines (SLAs)
 - **Initial Acknowledgment:** Within 48 hours.

@@ -12,6 +12,7 @@ concurrency:
 
 permissions:
   checks: write
+  actions: read
   pull-requests: read
   contents: read
 
@@ -39,8 +40,8 @@ jobs:
           npm run bundle:action
 
       - name: Run PatchGate in Shadow Mode
-        uses: ./.github
+        uses: ./
         with:
           fail-on: never
           create-check-run: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}

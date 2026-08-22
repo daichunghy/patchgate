@@ -13,6 +13,6 @@ Thank you for using PatchGate.
 - Check existing issues and discussions before opening a new thread.
 
 ## 3. Reporting Issues & Feature Requests
-- **Bug Reports:** Use the [Bug Report Template](.github/ISSUE_TEMPLATE/bug_report.yml).
-- **Feature Requests:** Use the [Feature Request Template](.github/ISSUE_TEMPLATE/feature_request.yml).
+- **Bug Reports:** Use the [Bug Report Template](ISSUE_TEMPLATE/bug_report.yml).
+- **Feature Requests:** Use the [Feature Request Template](ISSUE_TEMPLATE/feature_request.yml).
 - **Security Vulnerabilities:** Follow [SECURITY.md](SECURITY.md) to report privately.

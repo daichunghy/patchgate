@@ -49,7 +49,8 @@ export async function collectLinkedIssues(client: GitHubClient, owner: string, n
       const pageInfo = connection.pageInfo;
       if (!isRecord(pageInfo) || typeof pageInfo.hasNextPage !== "boolean") throw new GitHubAdapterError(makeDiagnostic("GITHUB_RESPONSE_MALFORMED", "The linked-issue pageInfo was missing or malformed.", { observation: "linkedIssues", snapshotEvaluable: false, exitCode: 2 }));
       for (const node of nodes) {
-        const issue = isRecord(node) ? parseIssue(node.issue) : undefined;
+        const issueValue = isRecord(node) && node.issue !== undefined ? node.issue : node;
+        const issue = parseIssue(issueValue);
         if (issue === undefined) { complete = false; diagnostics.push(makeDiagnostic("GITHUB_RESPONSE_MALFORMED", "A linked-issue node lacked immutable repository/number identity.", { observation: "linkedIssues" })); continue; }
         if (issue.repository.nameWithOwner.toLowerCase() !== `${owner}/${name}`.toLowerCase()) { complete = false; diagnostics.push(makeDiagnostic("GITHUB_API_UNSUPPORTED", "Cross-repository linked issues are outside the current v0.1 evaluator contract.", { observation: "linkedIssues", remediation: "Use same-repository native linked issues or add a versioned cross-repository policy contract." })); continue; }
         const naturalKey = `${issue.repository.nameWithOwner.toLowerCase()}#${issue.number}`;

@@ -1,0 +1,100 @@
+name: Community discussion schedule
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: "Scheduled post date in YYYY-MM-DD format"
+        required: false
+        type: string
+      publish:
+        description: "Publish the selected post"
+        required: true
+        default: false
+        type: boolean
+
+concurrency:
+  group: community-discussion-schedule
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  discussions: write
+
+jobs:
+  publish:
+    if: github.repository == 'daichunghy/patchgate'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out scheduled post copy
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Publish due discussion
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_DATE: ${{ inputs.target_date }}
+          PUBLISH: ${{ inputs.publish }}
+          GH_REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && "${PUBLISH:-false}" != "true" ]]; then
+            echo "Manual run selected. Nothing was published because publish=true was not supplied."
+            exit 0
+          fi
+
+          target_date="${TARGET_DATE:-$(TZ=Asia/Ho_Chi_Minh date +%F)}"
+          start_date="2026-08-22"
+          end_date="2026-09-04"
+
+          if [[ "$target_date" < "$start_date" || "$target_date" > "$end_date" ]]; then
+            echo "No scheduled post for $target_date."
+            exit 0
+          fi
+
+          post="$(jq -c --arg date "$target_date" '.[] | select(.date == $date)' .github/community-posts.json)"
+          if [[ -z "$post" ]]; then
+            echo "The schedule has no post for $target_date."
+            exit 0
+          fi
+
+          title="$(jq -r '.title' <<<"$post")"
+          body="$(jq -r '.body' <<<"$post")"
+          category_slug="$(jq -r '.category' <<<"$post")"
+          owner="${GH_REPO%%/*}"
+          name="${GH_REPO##*/}"
+
+          query='query($owner:String!,$name:String!){repository(owner:$owner,name:$name){id,discussionCategories(first:20){nodes{id,slug}},discussions(first:100,orderBy:{field:CREATED_AT,direction:DESC}){nodes{title,url}}}}'
+          repository_data="$(gh api graphql -f query="$query" -f owner="$owner" -f name="$name")"
+          repository_id="$(jq -r '.data.repository.id' <<<"$repository_data")"
+          category_id="$(jq -r --arg slug "$category_slug" '.data.repository.discussionCategories.nodes[] | select(.slug == $slug) | .id' <<<"$repository_data")"
+
+          if [[ -z "$repository_id" || "$repository_id" == "null" ]]; then
+            echo "Could not resolve the repository ID."
+            exit 1
+          fi
+          if [[ -z "$category_id" ]]; then
+            echo "Could not resolve discussion category: $category_slug"
+            exit 1
+          fi
+
+          if jq -e --arg title "$title" '.data.repository.discussions.nodes[] | select(.title == $title)' <<<"$repository_data" >/dev/null; then
+            echo "A discussion with this title already exists. Nothing was published."
+            exit 0
+          fi
+
+          mutation='mutation($repositoryId:ID!,$categoryId:ID!,$title:String!,$body:String!){createDiscussion(input:{repositoryId:$repositoryId,categoryId:$categoryId,title:$title,body:$body}){discussion{id,url}}}'
+          result="$(gh api graphql -f query="$mutation" -F repositoryId="$repository_id" -F categoryId="$category_id" -f title="$title" -f body="$body")"
+
+          if jq -e '.errors? | length > 0' <<<"$result" >/dev/null; then
+            jq -r '.errors[]?.message' <<<"$result"
+            exit 1
+          fi
+
+          jq -r '.data.createDiscussion.discussion.url' <<<"$result"

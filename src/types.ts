@@ -173,6 +173,36 @@ export interface OwnershipRequirement {
   requiredCount: number;
 }
 
+export interface NativeReviewControls {
+  requiredApprovals: number;
+  requireCodeOwnerReviews: boolean;
+  requireLastPushApproval: boolean;
+  staleReviews: boolean;
+  requiredReviewThreadResolution: boolean;
+  bypassVisible: boolean;
+  decisionBearing: boolean;
+}
+
+export interface NativeBranchProtection extends NativeReviewControls {
+  requiredChecks: Array<{ context: string; appId?: number | undefined }>;
+}
+
+export interface NativeRuleset extends NativeReviewControls {
+  id: number;
+  name: string;
+  sourceType: string;
+  source: string;
+  enforcement: "active" | "evaluate" | "disabled" | "unknown";
+  applicable: boolean;
+  ruleTypes: string[];
+  requiredChecks: Array<{ context: string; appId?: number | undefined }>;
+}
+
+export interface NativeControls {
+  branchProtection?: NativeBranchProtection | undefined;
+  rulesets?: NativeRuleset[] | undefined;
+}
+
 export interface ReviewabilitySnapshot {
   fileCount: number;
   ownershipDomains: string[];
@@ -199,6 +229,7 @@ export interface EvaluationInput {
   reviews: ReviewSnapshot[];
   checks: CheckEvidence[];
   ownershipRequirements: OwnershipRequirement[];
+  nativeControls?: NativeControls | undefined;
   reviewability?: ReviewabilitySnapshot;
   observations: EvaluationObservations;
 }
@@ -249,6 +280,7 @@ export interface ContributionReceiptCore {
   receiptDigest: string;
   changedPaths: string[];
   policySources: PolicySource[];
+  nativeControls?: NativeControls | undefined;
   observations: EvaluationObservations;
   evidence: ReceiptEvidence;
   requirements: Requirement[];

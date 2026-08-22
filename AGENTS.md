@@ -6,12 +6,11 @@ Read `docs/PROJECT_CONSTITUTION.md` completely before substantive work.
 
 ## Repository Layout & Agent Deep-Dive Guide
 
-The repository enforces a clean root structure (maximum 8 files) with well-defined subdirectories:
+The repository enforces a clean root structure (maximum 9 files) with well-defined subdirectories:
 
 ```text
 .
 ├── .github/                 # GitHub Action, workflows, CODEOWNERS, templates & community health files
-│   ├── action.yml           # GitHub Action entrypoint & metadata
 │   ├── CODEOWNERS           # Path ownership configuration
 │   ├── CODE_OF_CONDUCT.md   # Community Code of Conduct
 │   ├── CONTRIBUTING.md      # Contribution guidelines & architecture invariants
@@ -58,6 +57,7 @@ The repository enforces a clean root structure (maximum 8 files) with well-defin
 ├── fixtures/                # Deterministic test fixtures and API exchange recordings
 ├── test/                    # Comprehensive unit, integration, security, and determinism tests
 ├── scripts/                 # Linters, budget checkers, and verification harnesses
+├── action.yml               # GitHub Marketplace Action metadata and entrypoint
 ├── AGENTS.md                # AI agent operating rules and context (this file)
 ├── LICENSE                  # Apache-2.0 License
 ├── README.md                # Project overview and quickstart
@@ -75,6 +75,48 @@ The repository enforces a clean root structure (maximum 8 files) with well-defin
 3. **Core Engine**: Pure deterministic logic lives in [src/evaluator-core.ts](file:///Users/macos/Desktop/Github/src/evaluator-core.ts) and [src/evidence/](file:///Users/macos/Desktop/Github/src/evidence).
 4. **Adapter & Security**: GitHub integration logic lives in [src/github/](file:///Users/macos/Desktop/Github/src/github) and follows [docs/threat-model.md](file:///Users/macos/Desktop/Github/docs/threat-model.md).
 5. **Validation**: Run `npm run verify` before completing any change.
+
+## Current project status
+
+This section is the operating snapshot for the repository. It was revalidated
+on 2026-08-22 and must be kept separate from the constitutional definition of
+done below. A local test, a recorded fixture, or a configured remote is not by
+itself evidence of live GitHub behavior, external adoption, or release
+readiness.
+
+| Area | Current evidence | Status and limit |
+| --- | --- | --- |
+| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI run `32333914059` | Foundation is present; `main` requires six CI contexts and one approving review, while `0.1.0-dev` remains private and there is no release, merged PR history or downstream usage; public PR #9 contains the hardening and Full Verify changes but remains unmerged |
+| G1 deterministic contract | TypeScript evaluator, schemas, receipt digests, recorded fixtures, security coverage, and deterministic tests | Locally verified; this does not prove a live GitHub integration |
+| G2 local preflight | `preflight`, `validate`, `init`, `doctor`, Git-ref loading, discovery classification, text/JSON parity, and five CLI process tests | Local user flow is verified; three consented usability sessions and UR acceptance evidence are still open |
+| G3 GitHub adapter | Recorded/mock authenticated snapshot flow, bounded requests, source and SHA binding, TOCTOU re-read, redaction, branch-protection and Rulesets subset contract, 25 integration tests and the latest recorded GET-only smoke for PR #9 head `5f9ccb5` | The tested head built a schema-valid live snapshot and receipt with final status `human_review_required`; missing approval/ownership/linkage evidence remains explicit; unsupported Ruleset semantics and merge-group membership remain fail-closed |
+| G4 Action | Root `action.yml`, `src/action/index.ts`, committed ncc bundle, pinned workflows, required CI/CodeQL merge-group triggers, clean-room bundle verification, idempotent check delivery, consumer fixture smoke and explicit non-ready merge-group handling are public on PR #9 | Local consumer boundary is verified; no live external consumer E2E, public release or two consenting non-blocking shadow installations |
+| User value and release | Protocols, roadmap, five public Discussions including [#10](https://github.com/daichunghy/patchgate/discussions/10), a [pilot request](https://github.com/daichunghy/patchgate/issues/4), three contribution issues, public Project #1 and open PR #9 exist; four context-specific questions were posted to related OSS repositories | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, public release, or `v0.1` claim |
+
+The public default branch is currently `main@a3745f6` and the only completed
+default-branch workflow run is [CI #1](https://github.com/daichunghy/patchgate/actions/runs/32333914059),
+which passed on the publication commit. Live branch protection also requires
+one approving pull-request review, dismisses stale reviews, requires six CI
+contexts including `CI / Full Verify`, enforces linear history and conversation resolution, and disables
+force-pushes and branch deletion. PR [#9](https://github.com/daichunghy/patchgate/pull/9)
+is open but not merged; the
+`test/patchgate-shadow-smoke` and `docs/clean-ai-isms` branches remain
+unmerged. PR #9 is public and its required CI, CodeQL and Full Verify checks
+pass on the public hardening PR; the root Action migration, CodeQL/Dependabot files and
+application checks are therefore inspectable on the PR, but are not yet part
+of the default branch until the PR is merged.
+
+The current audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The latest verification command to rerun after a change is:
+
+```bash
+npm run verify
+```
+
+Agents must not describe the repository as released, externally piloted,
+live-integrated, merge-blocking, or eligible/selected for Codex for Open Source
+unless the corresponding evidence has been added and independently checked.
+When a change affects one of the open gates, update the roadmap and the
+relevant review record in the same change.
 
 ## Product identity
 
@@ -259,4 +301,3 @@ The Open Contribution Governance Corpus is a later research asset. It must use l
 - documentation gives a safe GitHub workflow and minimal-permission configuration;
 - at least two external public repositories have piloted the CLI or Action and supplied feedback;
 - supported and unsupported policy behavior is documented without claiming universal repository-rule interpretation.
-

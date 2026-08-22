@@ -28,7 +28,7 @@ export function evidenceReference(check: CheckEvidence): string {
     check.workflowRunId !== undefined &&
     check.workflowRunAttempt !== undefined
   ) {
-    return `workflow-run:${check.workflowRunId}:attempt:${check.workflowRunAttempt}`;
+    return `workflow-run:${check.workflowRunId}:attempt:${check.workflowRunAttempt}:check:${encodeURIComponent(check.name)}`;
   }
   return "";
 }

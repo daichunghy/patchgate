@@ -1,11 +1,11 @@
 import { sha256Digest } from "../canonical-json.js";
-import type { ObservationMeta, PolicySource } from "../types.js";
+import type { NativeBranchProtection, ObservationMeta, PolicySource } from "../types.js";
 import type { RawBranchProtection } from "./api-types.js";
 import { isRecord } from "./api-types.js";
 import { GitHubClient } from "./client.js";
 import { GitHubAdapterError, makeDiagnostic, type GitHubDiagnostic } from "./diagnostics.js";
 
-export interface NormalizedBranchProtection { requiredChecks: Array<{ context: string; appId?: number }>; requiredApprovals: number; requireCodeOwnerReviews: boolean; requireLastPushApproval: boolean; staleReviews: boolean; bypassVisible: boolean; decisionBearing: boolean }
+export type NormalizedBranchProtection = NativeBranchProtection & { decisionBearing: boolean };
 export interface BranchProtectionResult { protection?: NormalizedBranchProtection; source?: PolicySource; meta: ObservationMeta; diagnostics: GitHubDiagnostic[]; decisionBearing: boolean }
 
 function parseProtection(body: unknown): RawBranchProtection {
@@ -46,9 +46,18 @@ export async function collectBranchProtection(client: GitHubClient, owner: strin
   if (response.status === 403 || response.status === 404) return { meta: { source: { kind: "github", identity: "branch-protection" }, revision: baseSha, retrievedAt, complete: false, permissionState: response.status === 403 ? "insufficient" : "unknown" }, diagnostics: [makeDiagnostic(response.status === 403 ? "GITHUB_PERMISSION_INSUFFICIENT" : "GITHUB_RESOURCE_NOT_VISIBLE", "Branch-protection visibility is not sufficient to prove native control absence.", { observation: "branchProtection", permissionState: response.status === 403 ? "insufficient" : "unknown", remediation: "Grant the documented read capability or keep the native-control snapshot rejected." })], decisionBearing: false };
   try {
     const raw = parseProtection(response.body);
-    const requiredChecks = [...(raw.required_status_checks?.checks?.flatMap((item) => item.context === undefined ? [] : [{ context: item.context, ...(item.app_id === undefined || item.app_id === null ? {} : { appId: item.app_id }) }]) ?? []), ...(raw.required_status_checks?.contexts?.map((context) => ({ context })) ?? [])];
+    const requiredChecksByContext = new Map<string, { context: string; appId?: number }>();
+    for (const item of raw.required_status_checks?.checks ?? []) {
+      if (item.context === undefined) continue;
+      const existing = requiredChecksByContext.get(item.context);
+      if (existing === undefined || (existing.appId === undefined && item.app_id !== undefined && item.app_id !== null)) {
+        requiredChecksByContext.set(item.context, { context: item.context, ...(item.app_id === undefined || item.app_id === null ? {} : { appId: item.app_id }) });
+      }
+    }
+    for (const context of raw.required_status_checks?.contexts ?? []) if (!requiredChecksByContext.has(context)) requiredChecksByContext.set(context, { context });
+    const requiredChecks = [...requiredChecksByContext.values()].sort((left, right) => left.context.localeCompare(right.context) || (left.appId ?? 0) - (right.appId ?? 0));
     const review = raw.required_pull_request_reviews;
-    const protection: NormalizedBranchProtection = { requiredChecks, requiredApprovals: review?.required_approving_review_count ?? 0, requireCodeOwnerReviews: review?.require_code_owner_reviews ?? false, requireLastPushApproval: review?.require_last_push_approval ?? false, staleReviews: review?.dismiss_stale_reviews ?? false, bypassVisible: review?.bypass_pull_request_allowances !== undefined, decisionBearing: requiredChecks.length > 0 || (review?.required_approving_review_count ?? 0) > 0 || review?.require_code_owner_reviews === true || review?.require_last_push_approval === true };
+    const protection: NormalizedBranchProtection = { requiredChecks, requiredApprovals: review?.required_approving_review_count ?? 0, requireCodeOwnerReviews: review?.require_code_owner_reviews ?? false, requireLastPushApproval: review?.require_last_push_approval ?? false, staleReviews: review?.dismiss_stale_reviews ?? false, requiredReviewThreadResolution: false, bypassVisible: review?.bypass_pull_request_allowances !== undefined, decisionBearing: requiredChecks.length > 0 || (review?.required_approving_review_count ?? 0) > 0 || review?.require_code_owner_reviews === true || review?.require_last_push_approval === true };
     return { protection, source: { kind: "branch_protection", identity: `branch-protection:${baseRef}`, revision: baseSha, digest: sha256Digest(protection), authority: "enforced" }, meta: { source: { kind: "github", identity: "branch-protection" }, revision: baseSha, retrievedAt, complete: true, permissionState: "sufficient", responseDigest: sha256Digest(response.body) }, diagnostics: [], decisionBearing: protection.decisionBearing };
   } catch (error) {
     const diagnostic = error instanceof GitHubAdapterError ? error.diagnostic : makeDiagnostic("GITHUB_RESPONSE_MALFORMED", "Branch-protection normalization failed.", { observation: "branchProtection", snapshotEvaluable: false, exitCode: 2 });

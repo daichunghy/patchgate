@@ -1,16 +1,22 @@
 # PatchGate user requirements
 
 **Version:** 0.2-draft  
-**Evidence baseline:** 2026-08-13  
+**Evidence baseline:** 2026-08-20
 **Authority:** `PROJECT_CONSTITUTION.md` remains higher authority. These
 requirements define user value and acceptance, not new enforcement authority.
+
+The current implementation checkpoint is maintained in the
+[implementation roadmap](../implementation-roadmap.md) and the
+[2026-08-20 G4/G0 audit](../reviews/2026-08-20-g4-g0-audit.md). The requirements
+remain acceptance targets; local or recorded evidence does not upgrade them to
+live, shadow, enforcement or external-pilot verification.
 
 ## Primary users and jobs
 
 | Persona | Job to be done | Failure PatchGate must prevent |
 | --- | --- | --- |
 | OSS maintainer | Decide quickly whether a contribution has earned scarce human review time | A green result built from missing, stale, foreign or contributor-controlled evidence |
-| Contributor or coding agent | Learn requirements before opening a PR and remediate without privileged access | Discovering an avoidable rule only after waiting for a maintainer |
+| Contributor or automated tool | Learn requirements before opening a PR and remediate without privileged access | Discovering an avoidable rule only after waiting for a maintainer |
 | Repository security/platform owner | Deploy a deterministic gate with minimal permissions and auditable source identity | Privileged execution of PR code, status spoofing or silent permission gaps |
 | Monorepo/domain owner | Route sensitive changes to qualified owners without reviewing unrelated changes | Incorrect CODEOWNERS/path semantics, incomplete pagination or excessive noise |
 
@@ -135,7 +141,7 @@ PatchGate complements GitHub Rulesets, branch protection, CODEOWNERS,
 policy-bot, Mergify, OPA/Conftest and GitHub pull-request limits. Its
 differentiated promise is a deterministic trusted-base, evidence-bound
 explanation of whether a contribution has earned human review time, plus local
-preflight for people and coding agents.
+preflight for people and automated tools.
 
 ## Validation ladder
 

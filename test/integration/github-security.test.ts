@@ -52,6 +52,22 @@ describe("GitHub adapter trust-boundary probes", () => {
     await expect(client.request({ method: "GET", path: "/repos/example/service" }, "test")).rejects.toMatchObject({ diagnostic: { id: "GITHUB_RESPONSE_TOO_LARGE" } });
   });
 
+  it("sends the allowlisted GraphQL operation name that matches the document", async () => {
+    const originalFetch = globalThis.fetch;
+    let requestBody: Record<string, unknown> | undefined;
+    globalThis.fetch = (async (_input: RequestInfo | URL, init?: RequestInit) => {
+      requestBody = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return new Response(JSON.stringify({ data: { repository: { pullRequest: { closingIssuesReferences: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }), { status: 200, headers: { "content-type": "application/json" } });
+    }) as typeof fetch;
+    try {
+      const transport = createFetchTransport({ token: "test-token" });
+      await transport.request({ method: "POST", path: "/graphql", operation: "pullRequestClosingIssues", variables: { owner: "example", name: "service", number: 7, first: 100, after: null } });
+      expect(requestBody).toMatchObject({ operationName: "PullRequestClosingIssues" });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it("keeps 403 incomplete and enforces the documented changed-file ceiling", async () => {
     const denied = new GitHubClient(new RecordedGitHubTransport([{ request: { method: "GET", path: "/repos/example/service/pulls/7/files", query: { per_page: 100 } }, response: recordedResponse(403, { message: "Forbidden" }) }]));
     const deniedResult = await collectChangedPaths(denied, "example", "service", 7, "head-sha");
@@ -70,12 +86,20 @@ describe("GitHub adapter trust-boundary probes", () => {
     const secondRequest = { method: "GET" as const, path: "/repos/example/service/rulesets", query: { includes_parents: "true", per_page: "100", page: "2" } };
     const client = new GitHubClient(new RecordedGitHubTransport([
       { request: firstRequest, response: recordedResponse(200, [], { link: '<https://api.github.com/repos/example/service/rulesets?includes_parents=true&per_page=100&page=2>; rel="next"' }) },
-      { request: secondRequest, response: recordedResponse(200, [{ id: 90, name: "protect-main", target: "branch", enforcement: "active", conditions: { ref_name: { include: ["refs/heads/main"] } }, rules: [{ type: "required_status_checks" }], bypass_actors: [] }]) },
+      { request: secondRequest, response: recordedResponse(200, [{ id: 90, name: "protect-main", target: "branch", enforcement: "active", conditions: { ref_name: { include: ["refs/heads/main"], exclude: [] } }, rules: [{ type: "required_status_checks", parameters: { required_status_checks: [{ context: "unit" }], strict_required_status_checks_policy: true } }], bypass_actors: [] }]) },
     ]));
     const result = await collectRulesets(client, "example", "service", "main", "base-sha", true);
     expect(result.meta).toMatchObject({ complete: true, permissionState: "sufficient" });
     expect(result.rulesets).toHaveLength(1);
     expect(result.decisionBearing).toBe(true);
+  });
+
+  it("accepts GitHub's current direct Issue nodes for closingIssuesReferences", async () => {
+    const request = { method: "POST" as const, path: "/graphql", operation: "pullRequestClosingIssues" as const, variables: { owner: "example", name: "service", number: 7, first: 100, after: null } };
+    const client = new GitHubClient(new RecordedGitHubTransport([{ request, response: recordedResponse(200, { data: { repository: { pullRequest: { closingIssuesReferences: { nodes: [{ id: "issue-12", repository: { nameWithOwner: "example/service", id: "issue-repo" }, number: 12 }], pageInfo: { hasNextPage: false, endCursor: null } } } } } }) }]));
+    const result = await collectLinkedIssues(client, "example", "service", 7, "head-sha");
+    expect(result.meta).toMatchObject({ complete: true, permissionState: "sufficient" });
+    expect(result.issues).toEqual([{ repository: "example/service", number: 12, repositoryId: "issue-repo", issueId: "issue-12", linked: true }]);
   });
 
   it("derives current review state by submitted time rather than response order", async () => {

@@ -6,7 +6,7 @@ const workflowFiles = (await readdir(workflowRoot)).filter((file) => file.endsWi
 const findings = [];
 for (const file of workflowFiles) {
   const contents = await readFile(resolve(workflowRoot, file), "utf8");
-  const usesPattern = /uses:\s*actions\/[^\s@]+@([^\s#]+)/g;
+  const usesPattern = /uses:\s*(?:actions|github)\/[^\s@]+@([^\s#]+)/g;
   for (const match of contents.matchAll(usesPattern)) {
     const ref = match[1] ?? "";
     if (!/^[0-9a-f]{40}$/i.test(ref)) findings.push(`${file}: third-party Action ref '${ref}' is not pinned to a 40-character commit SHA`);

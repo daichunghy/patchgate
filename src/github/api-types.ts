@@ -179,7 +179,7 @@ export interface RawGraphQlClosingIssues {
     repository?: {
       pullRequest?: {
         closingIssuesReferences?: {
-          nodes?: Array<{ issue?: RawGraphQlIssue | null } | null>;
+          nodes?: Array<RawGraphQlIssue | { issue?: RawGraphQlIssue | null } | null>;
           pageInfo?: { hasNextPage: boolean; endCursor?: string | null };
         };
       } | null;

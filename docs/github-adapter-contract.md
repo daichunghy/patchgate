@@ -31,7 +31,9 @@ PATCHGATE_GITHUB_TOKEN='read-only-token' \
 ```
 
 The command refuses live mode without `--live` and refuses to run without the
-environment token. This workspace did not execute that command.
+environment token. An authorized GET-only run against public
+`daichunghy/patchgate#9` is recorded in
+[`docs/reviews/2026-08-20-g3-live-smoke.md`](reviews/2026-08-20-g3-live-smoke.md).
 
 ## Envelope and status
 
@@ -53,11 +55,19 @@ GitHub control was bypassed.
 - Initial identity and decision-bearing observations are re-read during
   finalization. A changed identity or normalized observation discards the
   snapshot.
-- The current scalar evaluator cannot represent authenticated merge-group
-  membership; merge-group requests are explicitly unsupported.
-- Rulesets and branch protection are normalized for capability reporting. An
-  applicable active decision-bearing native control is rejected until the
-  evaluator has a versioned native requirement contract.
+- Required CI and CodeQL workflows also trigger on
+  `merge_group/checks_requested`, so a future merge queue will not wait for
+  missing required checks. The current scalar evaluator still cannot represent
+  authenticated merge-group membership; merge-group requests remain explicitly
+  unsupported and the Action reports `evidence_missing` rather than treating a
+  merge-group SHA as an ordinary PR head.
+- Branch protection required checks, required approvals and applicable
+  CODEOWNERS gates are represented in the versioned native-control contract and
+  remain bound to the base revision. Rulesets with `required_status_checks` and
+  `pull_request` review parameters use the same contract; active rulesets with
+  unsupported rule semantics are rejected. The
+  `require_last_push_approval` setting remains an explicit evidence-missing
+  result because this snapshot does not yet include immutable last-pusher data.
 
 The contract decisions are recorded in
 [`docs/decisions/2026-08-13-g3-contract.md`](decisions/2026-08-13-g3-contract.md).

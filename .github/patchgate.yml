@@ -22,7 +22,7 @@ ownership:
 sensitive_paths:
   - id: core-and-security
     patterns: [".github/workflows/**", "src/github/**", "src/evaluator.ts"]
-    required_reviewers: ["@patchgate/maintainers"]
+    required_reviewers: ["@daichunghy"]
     required_count: 1
     human_gate: true
 

@@ -5,7 +5,7 @@
 
 ## Purpose
 
-Measure whether a maintainer or coding agent can reach a useful, correctly
+Measure whether a maintainer or automated tool can reach a useful, correctly
 interpreted local preflight without needing raw JSON or privileged credentials.
 The session tests the interface and documentation, not repository quality and
 not the participant.

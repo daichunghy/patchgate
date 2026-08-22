@@ -86,6 +86,12 @@ function buildInput(identity: SnapshotIdentity, collected: CollectedSnapshot): E
     reviews: collected.reviews.reviews,
     checks: collected.checks.checks,
     ownershipRequirements: collected.codeowners.requirements,
+    ...((collected.branchProtection.protection === undefined && collected.rulesets.rulesets.length === 0)
+      ? {}
+      : { nativeControls: {
+        ...(collected.branchProtection.protection === undefined ? {} : { branchProtection: collected.branchProtection.protection }),
+        ...(collected.rulesets.rulesets.length === 0 ? {} : { rulesets: collected.rulesets.rulesets }),
+      } }),
     reviewability: collected.reviewability,
   };
   const observationsWithoutDigests: EvaluationObservations = {
@@ -135,14 +141,13 @@ function inputGroupDigests(input: EvaluationInput): Record<string, string> {
 }
 
 function fatalNativeDiagnostic(collected: CollectedSnapshot): GitHubDiagnostic | undefined {
-  if (!collected.rulesets.meta.complete || !collected.branchProtection.meta.complete) return makeDiagnostic("GITHUB_PROVENANCE_AMBIGUOUS", "Native ruleset or branch-protection visibility is incomplete; the current evaluator cannot safely treat unknown native controls as absent.", { remediation: "Grant the documented native-control read permissions and rerun, or implement a versioned native requirement contract.", snapshotEvaluable: false, exitCode: 2 });
-  if (collected.rulesets.decisionBearing || collected.branchProtection.decisionBearing) return makeDiagnostic("GITHUB_API_UNSUPPORTED", "An applicable decision-bearing native control cannot be represented by the current EvaluationInput/evaluator contract.", { remediation: "Use the explicit patchgate.yml rule path or extend the versioned evaluator contract before evaluating this repository.", snapshotEvaluable: false, exitCode: 2 });
+  if (!collected.rulesets.meta.complete || !collected.branchProtection.meta.complete) return makeDiagnostic("GITHUB_PROVENANCE_AMBIGUOUS", "Native ruleset or branch-protection visibility is incomplete; the current evaluator cannot safely treat unknown native controls as absent.", { remediation: "Grant the documented native-control read permissions and rerun, or keep the native-control snapshot rejected.", snapshotEvaluable: false, exitCode: 2 });
   return undefined;
 }
 
 function capabilityObservations(collected: CollectedSnapshot): Array<Parameters<typeof capabilityReport>[4][number]> {
   return [
-    { endpoint: "contents/patchgate.yml", capability: "contents:read", state: collected.policy.meta.permissionState, affectedRequirements: ["policy.base_revision"], remediation: "Grant Contents: read or keep policy authority ambiguous." },
+    { endpoint: "contents/patchgate.yml or .github/patchgate.yml", capability: "contents:read", state: collected.policy.meta.permissionState, affectedRequirements: ["policy.base_revision"], remediation: "Grant Contents: read or keep policy authority ambiguous." },
     { endpoint: "pulls/files", capability: "pull requests:read", state: collected.changed.meta.permissionState, affectedRequirements: ["changed_paths", "ownership", "human_handoff"], remediation: "Grant Pull requests: read." },
     { endpoint: "graphql:closingIssuesReferences", capability: "pull requests:read", state: collected.linked.meta.permissionState, affectedRequirements: ["issue.linkage"], remediation: "Grant the documented GraphQL/pull-request read capability; body-only issue text is not a substitute." },
     { endpoint: "commits/{testedSha}/check-runs", capability: "checks:read", state: collected.checks.checkRunsMeta.permissionState, affectedRequirements: ["required_check"], remediation: "Grant Checks: read for the exact tested SHA." },

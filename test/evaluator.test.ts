@@ -19,7 +19,7 @@ describe("evaluateContribution", () => {
     const receipt = evaluate(await fixture());
     expect(receipt.final.status).toBe("ready_for_review");
     expect(receipt.requirements.find((item) => item.id === "check.unit")?.evidenceRefs).toEqual([
-      "workflow-run:101:attempt:1",
+      "workflow-run:101:attempt:1:check:unit",
     ]);
   });
 

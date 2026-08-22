@@ -1,9 +1,12 @@
 # Implementation roadmap
 
 **Roadmap version:** 2.0  
-**Status:** deterministic local core verified; public foundation and real user
-flows not yet proven  
-**Evidence baseline:** 2026-08-13  
+**Status:** G1 local contract, G2 local onboarding, G3 authenticated snapshot
+and the G4 Action candidate are verified within their documented boundaries;
+G0 public foundation and PR publication are present, but default-branch
+publication, user sessions, shadow installations, pilots and release readiness
+remain open
+**Evidence baseline:** 2026-08-22
 **Product requirements:** [User requirements](product/user-requirements.md)  
 **Detailed execution:** [Agent execution plan](agent-execution-plan.md)  
 **Machine backlog:** [Agent work packages](agent-work-packages.yml)
@@ -26,12 +29,12 @@ authority.
 
 | Surface | Highest proven level | Evidence | Open dependency |
 | --- | --- | --- | --- |
-| Contract/evaluator | static and fixture verified | 49 non-CLI tests, 4 CLI process tests, 50 manifest entries | authenticated provenance |
-| Local preflight/onboarding | local user-flow verified | local-file/Git-ref preflight, validate, safe init, doctor, discovery and fixture CLI smoke | task sessions and UR acceptance evidence |
-| GitHub adapter | local/mock technically verified | bounded adapter, recorded API fixtures, capability/permission docs | authorized live read-only smoke |
-| GitHub Action | documented | workflow design | bundle, permissions and E2E |
+| Contract/evaluator | static and fixture verified | 94 non-CLI tests across 10 files, deterministic fixtures, security coverage and receipt validation | external review and adoption |
+| Local preflight/onboarding | native user-flow verified | local-file/Git-ref preflight, validate, safe init, doctor, discovery and five CLI process tests | three task sessions and UR acceptance evidence |
+| GitHub adapter | complete live snapshot on current PR head; result remains non-ready on real missing evidence | bounded adapter, base-policy path fallback, direct GraphQL Issue-node normalization, branch-protection and Rulesets subset contract, recorded fixtures, source/SHA binding, TOCTOU re-read and [current G3 live smoke record](reviews/2026-08-20-g3-live-smoke.md) | post-merge default-branch smoke, unsupported Ruleset semantics, merge-group contract and external consumer |
+| GitHub Action | static and clean-room verified public PR candidate | `action.yml`, committed ncc bundle, pinned workflows, idempotent check delivery, `verify:dist` and `test:consumer-fixture` | post-merge default-branch run, live consumer E2E, fork/merge-group E2E and two shadow installations |
 | User value | hypothesis | research and constitution | task sessions and pilots |
-| Public OSS/release | not authorized | no Git, license or remote | maintainer decisions/live evidence |
+| Public OSS/release | public foundation present; release not authorized | public `daichunghy/patchgate` repository, Apache-2.0, community files and successful public `main` CI run; package remains private and no release exists | release decision, public support/security operation, compatibility and external usage |
 
 ## User-value principles
 
@@ -64,7 +67,7 @@ The first local onboarding vertical slice is implemented and verified:
   advisory-only;
 - committed fixture repositories cover missing policy, base-versus-working-tree
   policy, conflicting prose and unsupported guidance;
-- CLI smoke coverage now includes four process tests.
+- CLI smoke coverage now includes five process tests.
 
 This is `native_user_flow_verified` for local CLI behavior only. G2 is not
 complete until three task sessions and the remaining UR acceptance evidence
@@ -112,9 +115,57 @@ budgets, and a finalization re-read.
 
 The CLI supports deterministic fixture replay through `github snapshot
 --mock-fixture`. The adapter deliberately rejects merge-group requests and
-active decision-bearing native controls that the current scalar evaluator
-cannot represent. No live API call was made; G3 remains open for an explicitly
-authorized read-only smoke and current permission evidence.
+active decision-bearing rulesets that the current scalar evaluator cannot
+represent. Branch-protection and the supported Rulesets required-check/review
+subset are now represented in the versioned native-control contract;
+unsupported last-pusher, review-thread and other rule semantics remain
+evidence-missing. The authorized GET-only smoke was rerun at implementation
+head `5f9ccb5` and built a complete schema-valid snapshot and receipt; the
+result remained non-ready because the real PR lacks its required
+approval/ownership/linkage evidence. See the [live smoke record](reviews/2026-08-20-g3-live-smoke.md).
+
+## Current checkpoint — 2026-08-22
+
+The repository now has a public GitHub remote at
+`https://github.com/daichunghy/patchgate`, Apache-2.0 licensing, Community
+Profile 100%, descriptive topics, Discussions, protected `main`, CI workflows
+and a successful public `main` CI run. Dependabot security updates and private
+vulnerability reporting are enabled on GitHub. Root Action metadata, CodeQL,
+Dependabot and Full Verify are public on PR #9 and absent from
+`origin/main@a3745f6` until merge. PR checks for these surfaces pass, while a
+post-merge default-branch run is still required. This closes the earlier
+local-only description of the G0 foundation, but it does not authorize a
+release or claim external adoption. A public community Project #1, five
+Discussions including the backfilled #10, three contribution-issue start paths
+and open PR #9 now provide
+additional maintenance evidence, but they remain self-authored or pre-release
+signals until an external maintainer replies, contributes or runs a consented
+pilot. Discussion #10 was later published as a backfilled Q&A on 2026-08-22;
+it has no comments and does not establish independent participation.
+
+The Action work has also reached a public Marketplace-shaped candidate state on
+PR #9.
+The root metadata, source runner, committed ncc bundle, immutable workflow
+pins, clean-room startup check, single-check update/create behavior, safe
+multiline outputs, consumer bundle smoke and explicit `merge_group` non-ready
+handling are present and covered by local verification. Required CI and CodeQL
+also declare `merge_group/checks_requested` triggers, preventing a future
+merge queue from waiting on workflows that never start. The consumer smoke
+does not use a live repository or publish a check-run.
+G4 remains open because no external consumer repository, fork E2E,
+merge-group E2E or consenting shadow installation has been verified.
+
+The current gate position is:
+
+- G1: locally verified.
+- G2: local onboarding slice verified; three consented task sessions remain.
+- G3: branch-protection subset and latest recorded authorized live snapshot verified on implementation head `5f9ccb5`; post-merge default-branch and external consumer proof remain open.
+- G4: public PR Action candidate verified; consumer and shadow evidence remain.
+- G5 through G8: not started as release gates because their upstream evidence is incomplete.
+
+The authoritative local command is `npm run verify`. The latest project review
+and the live/public-state caveats are recorded in
+[the G4/G0 continuation audit](reviews/2026-08-20-g4-g0-audit.md).
 
 ## Project-wide review checkpoint — 2026-08-13
 
@@ -196,17 +247,18 @@ requires privileged PR-code execution; or adoption claims require fabrication.
 
 ## Immediate sequence
 
-1. Complete Prompt 3 G0 decision gate without inferring consent.
-2. Record G1 as locally technically verified, not G0-dependent.
-3. Build G2 thin slice: `preflight --base`, `validate`, safe draft `init`,
-   `doctor`, Git-ref loading, discovery classification and text/JSON parity.
-4. Commit fixture repositories and run three task sessions before freezing
-   CLI/config wording.
-5. Execute [Prompt 4](prompts/prompt-04-authenticated-github-adapter.md) to
-   build G3 by endpoint with request/completeness budgets; keep overall G3 open
-   until an authorized read-only live smoke exists.
-6. Ship G4 shadow before any required-check setup.
-7. Let shadow findings determine G5 enforcement scope.
+1. Run three consented G2 task sessions and record raw task time,
+   comprehension, remediation clarity and UR mapping.
+2. Re-run the authorized G3 live read-only smoke after the native-control PR is
+   merged; retain only the agreed redacted evidence and actual non-ready causes.
+3. Reconcile the G0 publication surface: package privacy, security reporting,
+   support links, maintainer ownership and release/rollback policy.
+4. Run two non-blocking G4 shadow installations in consenting consumer
+   repositories, including fork and merge-queue cases where supported.
+5. Review shadow distribution, unknown causes, false blocks and noise before
+   any required-check configuration.
+6. Only after explicit maintainer consent, begin G5 enforcement hardening and
+   the public beta evidence work.
 
 ## Program boundary
 
