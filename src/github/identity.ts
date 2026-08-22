@@ -98,7 +98,7 @@ function parsePullRequest(value: unknown): RawPullRequest {
 
 function normalizedName(value: string, label: string): string {
   const normalized = safeAllowlistedString(value.trim(), label, 200);
-  if (normalized.includes("/") || normalized.includes("\\") || normalized.includes("\0")) throw new GitHubAdapterError(makeDiagnostic("GITHUB_IDENTITY_MISMATCH", `${label} is not a repository segment.`, { snapshotEvaluable: false, exitCode: 2 }));
+  if (!/^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/.test(normalized)) throw new GitHubAdapterError(makeDiagnostic("GITHUB_IDENTITY_MISMATCH", `${label} must be a GitHub-compatible repository segment.`, { snapshotEvaluable: false, exitCode: 2 }));
   return normalized;
 }
 
