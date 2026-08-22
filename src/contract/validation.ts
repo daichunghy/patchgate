@@ -461,7 +461,7 @@ export function assertContributionReceipt(value: unknown): asserts value is Cont
 }
 
 function assertUtcTimestamp(value: string, label: string): void {
-  const match = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{3}))?Z$/.exec(value);
+  const match = value.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{3}))?Z$/);
   if (match === null) fail(`${label} must be a UTC ISO-8601 timestamp`, "TIMESTAMP_INVALID");
   const timestamp = Date.parse(value);
   if (!Number.isFinite(timestamp)) fail(`${label} must be a valid timestamp`, "TIMESTAMP_INVALID");
