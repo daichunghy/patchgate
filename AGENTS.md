@@ -79,26 +79,26 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 ## Current project status
 
 This section is the operating snapshot for the repository. It was revalidated
-on 2026-08-20 and must be kept separate from the constitutional definition of
+on 2026-08-22 and must be kept separate from the constitutional definition of
 done below. A local test, a recorded fixture, or a configured remote is not by
 itself evidence of live GitHub behavior, external adoption, or release
 readiness.
 
 | Area | Current evidence | Status and limit |
 | --- | --- | --- |
-| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI run `32333914059` | Foundation is present; `main` requires five CI contexts and one approving review, while `0.1.0-dev` remains private and there is no release, merged PR history, or downstream usage; draft PR #9 is open |
+| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI run `32333914059` | Foundation is present; `main` requires five CI contexts and one approving review, while `0.1.0-dev` remains private and there is no release, merged PR history or downstream usage; open PR #9 remains unmerged |
 | G1 deterministic contract | TypeScript evaluator, schemas, receipt digests, recorded fixtures, security coverage, and deterministic tests | Locally verified; this does not prove a live GitHub integration |
 | G2 local preflight | `preflight`, `validate`, `init`, `doctor`, Git-ref loading, discovery classification, text/JSON parity, and five CLI process tests | Local user flow is verified; three consented usability sessions and UR acceptance evidence are still open |
 | G3 GitHub adapter | Recorded/mock authenticated snapshot flow, bounded requests, source and SHA binding, TOCTOU re-read, redaction, branch-protection and Rulesets subset contract, 25 integration tests and a live smoke record for `daichunghy/patchgate#9` | Public PR head `2a28e82` built a complete schema-valid live snapshot and receipt with final status `human_review_required`; missing approval/ownership/linkage evidence remains explicit; unsupported Ruleset semantics and merge-group membership remain fail-closed |
 | G4 Action | Root `action.yml`, `src/action/index.ts`, committed ncc bundle, pinned workflows, required CI/CodeQL merge-group triggers, clean-room bundle verification, idempotent check delivery, consumer fixture smoke and explicit non-ready merge-group handling are public on the hardening branch/PR | Local consumer boundary is verified; no live external consumer E2E, public release or two consenting non-blocking shadow installations |
-| User value and release | Protocols, roadmap, four public Discussions, a [pilot request](https://github.com/daichunghy/patchgate/issues/4), three contribution issues, public Project #1 and draft PR #9 exist; four context-specific questions were posted to related OSS repositories | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, public release, or `v0.1` claim |
+| User value and release | Protocols, roadmap, five public Discussions including [#10](https://github.com/daichunghy/patchgate/discussions/10), a [pilot request](https://github.com/daichunghy/patchgate/issues/4), three contribution issues, public Project #1 and open PR #9 exist; four context-specific questions were posted to related OSS repositories | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, public release, or `v0.1` claim |
 
 The public default branch is currently `main@a3745f6` and the only completed
 default-branch workflow run is [CI #1](https://github.com/daichunghy/patchgate/actions/runs/32333914059),
 which passed on the publication commit. Live branch protection also requires
 one approving pull-request review, dismisses stale reviews, requires five CI
 contexts, enforces linear history and conversation resolution, and disables
-force-pushes and branch deletion. Draft PR [#9](https://github.com/daichunghy/patchgate/pull/9)
+force-pushes and branch deletion. PR [#9](https://github.com/daichunghy/patchgate/pull/9)
 is open but not merged; the
 `test/patchgate-shadow-smoke` and `docs/clean-ai-isms` branches remain
 unmerged. The local

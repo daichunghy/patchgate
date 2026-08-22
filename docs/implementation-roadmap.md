@@ -133,11 +133,13 @@ vulnerability reporting are enabled on GitHub. CodeQL and root Action metadata
 are prepared in the local working tree but are absent from `origin/main@a3745f6`.
 No public CodeQL or Security Audit run has been recorded yet. This closes the
 earlier local-only description of the G0 foundation, but it does not authorize
-a release or claim external adoption. A public community Project #1, fourth
-Discussion, three contribution-issue start paths and draft PR #9 now provide
+a release or claim external adoption. A public community Project #1, five
+Discussions including the backfilled #10, three contribution-issue start paths
+and open PR #9 now provide
 additional maintenance evidence, but they remain self-authored or pre-release
 signals until an external maintainer replies, contributes or runs a consented
-pilot.
+pilot. Discussion #10 was later published as a backfilled Q&A on 2026-08-22;
+it has no comments and does not establish independent participation.
 
 The Action work has also reached a local Marketplace-shaped candidate state.
 The root metadata, source runner, committed ncc bundle, immutable workflow
