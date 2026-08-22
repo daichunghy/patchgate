@@ -126,13 +126,16 @@ remain. Dependabot PRs #11 (`@types/node` 26), #13 (`vitest` 4) and #14
 (`@vitest/coverage-v8` 4) were merged on 2026-08-22 after local
 re-verification; PR #12 (`typescript` 7) stays open because `@vercel/ncc`
 cannot bundle under TS 7. The pre-release
-[`v0.1.0-beta.1`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.1)
-was tagged at `main@301c700` on 2026-08-22 with maintainer approval and a
-recorded shadow-installation no-go decision
-([release record](docs/releases/2026-08-22-beta-candidate.md)); it is beta
+[`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
+was tagged at `main@edab0ec` on 2026-08-22 after a live maintainer smoke
+([daichunghy/patchgate-beta-smoke](https://github.com/daichunghy/patchgate-beta-smoke))
+found and fixed a critical Action input-parsing bug that made `v0.1.0-beta.1`
+unusable on real runners
+([findings](docs/reviews/2026-08-22-live-smoke-findings.md),
+[release record](docs/releases/2026-08-22-beta-candidate.md)); it is beta
 shadow-evidence scope only — not production, adoption or a `v0.1` claim.
 
-The current milestone audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The newest records are the [2026-08-22 Mimosa static-advisory adjudication](docs/reviews/2026-08-22-mimosa-static-advisory-adjudication.md) — re-run the sealed scan after any change to `src/github/client.ts` transport handling — and the [v0.1.0-beta.1 release record](docs/releases/2026-08-22-beta-candidate.md). The latest verification command to rerun after a change is:
+The current milestone audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The newest records are the [2026-08-22 live consumer smoke findings](docs/reviews/2026-08-22-live-smoke-findings.md) and the [2026-08-22 Mimosa static-advisory adjudication](docs/reviews/2026-08-22-mimosa-static-advisory-adjudication.md) — re-run the sealed scan after any change to `src/github/client.ts` transport handling. The latest verification command to rerun after a change is:
 
 ```bash
 npm run verify

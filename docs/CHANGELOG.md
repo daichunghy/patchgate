@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Live consumer smoke fixes — 2026-08-22
+- Released [`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
+  at `main@edab0ec` carrying the critical input fix; the maintainer smoke
+  repository then produced a green live consumer run with the fail-closed
+  native-control boundary observed and recorded.
+- Documented that the workflow `GITHUB_TOKEN` cannot be granted the
+  Administration permission, so complete native-control snapshots need a PAT
+  or GitHub App token with `administration: read`; the usage guide now states
+  this boundary instead of implying `contents/pull-requests/checks` suffice.
+- Recorded the improvement candidate that rejected snapshots post no
+  PatchGate Check Run (workflow status only).
 - Fixed a critical input-parsing bug found by the first live consumer smoke:
   the Action read `INPUT_GITHUB_TOKEN`-style underscore names, but the GitHub
   runner exports dashed names (`INPUT_GITHUB-TOKEN`), so every input —

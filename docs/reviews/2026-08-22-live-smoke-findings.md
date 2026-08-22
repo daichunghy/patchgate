@@ -51,6 +51,41 @@ The runner warns that `using: node20` actions are forced onto Node 24.
 `action.yml` now declares `node24` directly; the bundle is unchanged apart
 from the input fix.
 
+## Finding 5 — native-control visibility is unreachable with `github.token` (documented)
+
+With the input fix in place, the smoke run reached real snapshot building and
+was rejected with `GITHUB_PROVENANCE_AMBIGUOUS` because branch-protection /
+Rulesets visibility was incomplete. Root cause: the workflow `permissions`
+syntax has no `administration` key (a workflow file declaring it is rejected
+outright), and the GitHub Actions `GITHUB_TOKEN` cannot be granted the
+Administration permission at all. A consumer that wants a complete snapshot
+must supply a PAT or GitHub App token with `administration: read` (or the
+repository must make native controls visible to a token shape that can read
+them). The fail-closed rejection is correct behavior; the usage guide implied
+`contents/pull-requests/checks` alone were sufficient, which the live run
+disproved. The guide now states the boundary and the token options.
+
+## Finding 6 — rejected snapshots post no PatchGate Check Run (improvement item)
+
+When the snapshot is rejected (for example on provenance ambiguity), the
+Action exits according to `fail-on` but does not deliver a `PatchGate Review
+Gate` Check Run; the PR surface shows only the workflow job status. Consumers
+cannot distinguish "PatchGate ran and rejected the snapshot safely" from
+"PatchGate did not run" without opening the logs. Recorded as a follow-up
+improvement candidate (post a neutral-skipped check run on rejection); not
+fixed in beta.2.
+
+## Final validated state (2026-08-22)
+
+- Smoke repository run `32562083388`→`32562216635` lineage, final run green
+  on `v0.1.0-beta.2` (`edab0ec`): workflow triggers, action downloads, inputs
+  parse (fix verified live), authenticated snapshot build begins, native
+  control gap fails closed with `GITHUB_PROVENANCE_AMBIGUOUS`, and
+  `fail-on: never` maps the rejection to exit 0.
+- The internal `PatchGate Shadow` gate can only turn green for the same reason
+  after the fix reached `main`; its earlier failures remain void per
+  Finding 3.
+
 ## Verification after fixes
 
 Fresh `npm run verify` on the fix commit: 94 unit (incl. 16 action tests with

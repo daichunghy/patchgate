@@ -109,6 +109,6 @@ Once you have verified the policy and reviewed the shadow distribution, you can 
 
 1. **Hostile Boundary Isolation**: PatchGate never executes contributor code inside the decision lane.
 2. **Base Revision Authority**: Policy rules and `CODEOWNERS` are exclusively loaded from the trusted base commit (`baseSha`), preventing pull requests from relaxing their own rules.
-3. **Minimal Permissions**: The action requires `contents: read` and `pull-requests: read`; add `checks: write` only when check runs are enabled.
+3. **Minimal Permissions**: The action requires `contents: read` and `pull-requests: read`; add `checks: write` only when check runs are enabled. **Native-control boundary:** the `GITHUB_TOKEN` cannot be granted the Administration permission (the workflow `permissions` syntax has no `administration` key), so branch-protection/Rulesets visibility is incomplete with `github.token` and the evaluation fails closed with `GITHUB_PROVENANCE_AMBIGUOUS`. A complete snapshot requires a PAT or GitHub App token with `administration: read`; see the [live smoke findings](reviews/2026-08-22-live-smoke-findings.md).
 4. **Merge-group boundary**: `merge_group` is recognized and returns an explicit
    `evidence_missing` result until authenticated multi-PR membership is supported.
