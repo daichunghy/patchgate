@@ -6,6 +6,12 @@ body:
     attributes:
       value: |
         Thanks for filing a bug report. Please provide reproducible details.
+
+        If the Action reports `GITHUB_PROVENANCE_AMBIGUOUS` on a native-control
+        snapshot, that is fail-closed: `GITHUB_TOKEN` cannot hold Administration.
+        Complete Ruleset/branch-protection snapshots need a PAT or GitHub App
+        token. PatchGate will not treat incomplete visibility as a missing
+        Ruleset. See SUPPORT.md and docs/github-action-usage.md.
   - type: input
     id: version
     attributes:

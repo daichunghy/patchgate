@@ -36,6 +36,11 @@
         "authority": { "enum": ["patchgate", "codeowners", "ruleset", "branch_protection", "derived"] }, "source": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "result": { "enum": ["passed", "failed", "unknown", "advisory"] }, "severity": { "enum": ["block", "human_gate", "evidence", "advisory"] },
         "observed": { "type": "object", "additionalProperties": { "anyOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }, { "type": "array", "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" } }] } },
         "remediation": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "evidenceRefs": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "uniqueItems": true }
+      },
+      "$comment": "failed + evidence is never emitted; status precedence would otherwise treat it as ready_for_review",
+      "not": {
+        "properties": { "result": { "const": "failed" }, "severity": { "const": "evidence" } },
+        "required": ["result", "severity"]
       }
     },
     "humanGate": {

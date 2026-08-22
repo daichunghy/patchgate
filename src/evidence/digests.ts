@@ -4,7 +4,7 @@ import type {
   EvaluationObservations,
   ObservationMeta,
 } from "../types.js";
-import { canonicalJson, sha256Digest } from "../canonical-json.js";
+import { canonicalJson, compareTextUnit, sha256Digest } from "../canonical-json.js";
 
 export type SemanticCheckEvidence = Omit<EvaluationInput["checks"][number], "retrievedAt">;
 
@@ -25,18 +25,12 @@ export interface SemanticObservations {
   reviewability: SemanticObservationMeta;
 }
 
-function compareText(left: string, right: string): number {
-  if (left < right) return -1;
-  if (left > right) return 1;
-  return 0;
-}
-
 function sortCanonical<T>(values: readonly T[]): T[] {
-  return [...values].sort((left, right) => compareText(canonicalJson(left), canonicalJson(right)));
+  return [...values].sort((left, right) => compareTextUnit(canonicalJson(left), canonicalJson(right)));
 }
 
 function sortText(values: readonly string[]): string[] {
-  return [...values].sort(compareText);
+  return [...values].sort(compareTextUnit);
 }
 
 function normalizePolicy(policy: EvaluationInput["policy"]): EvaluationInput["policy"] {
@@ -76,7 +70,14 @@ function normalizeObservations(observations: EvaluationObservations): SemanticOb
   };
 }
 
-function normalizedItems(input: EvaluationInput, group: keyof EvaluationObservations): unknown {
+export type ObservationDigestInput = Pick<
+  EvaluationInput,
+  "policySources" | "changedPaths" | "linkedIssues" | "reviews" | "checks" | "ownershipRequirements"
+> & {
+  reviewability?: EvaluationInput["reviewability"];
+};
+
+function normalizedItems(input: ObservationDigestInput, group: keyof EvaluationObservations): unknown {
   switch (group) {
     case "policySources":
       return sortCanonical(input.policySources);
@@ -95,7 +96,7 @@ function normalizedItems(input: EvaluationInput, group: keyof EvaluationObservat
   }
 }
 
-export function normalizedObservationDigest(input: EvaluationInput, group: keyof EvaluationObservations): string {
+export function normalizedObservationDigest(input: ObservationDigestInput, group: keyof EvaluationObservations): string {
   return sha256Digest(normalizedItems(input, group));
 }
 

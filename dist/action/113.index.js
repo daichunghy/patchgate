@@ -92,6 +92,7 @@ async function fetchTrustedBasePolicy(client, owner, name, baseSha, allowConfirm
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createTrustedPolicyArtifact = createTrustedPolicyArtifact;
 exports.loadPatchgatePolicy = loadPatchgatePolicy;
+exports.isGitWorkTree = isGitWorkTree;
 exports.loadPatchgatePolicyFromGitRefWithFallback = loadPatchgatePolicyFromGitRefWithFallback;
 exports.loadPatchgatePolicyFromGitRef = loadPatchgatePolicyFromGitRef;
 const promises_1 = __webpack_require__(1455);
@@ -320,17 +321,31 @@ async function loadPatchgatePolicy(basePath, expected = {}) {
     }
     throw new Error(`ENOENT: no supported patchgate.yml found in ${basePath} (tried patchgate.yml and .github/patchgate.yml)`);
 }
+async function isGitWorkTree(repositoryPath) {
+    try {
+        const result = await execFileAsync("git", ["-C", repositoryPath, "rev-parse", "--is-inside-work-tree"], { encoding: "utf8", maxBuffer: 64 * 1024 });
+        return result.stdout.trim() === "true";
+    }
+    catch {
+        return false;
+    }
+}
+function isMissingGitBlob(error) {
+    const err = error;
+    const text = `${err.stderr ?? ""} ${err.message ?? ""}`.toLowerCase();
+    return (text.includes("not a valid object name") ||
+        text.includes("does not exist") ||
+        text.includes("exists on disk, but not in") ||
+        text.includes("bad file"));
+}
 async function loadPatchgatePolicyFromGitRefWithFallback(repositoryPath, ref) {
     try {
         return await loadPatchgatePolicyFromGitRef(repositoryPath, ref, "patchgate.yml");
     }
     catch (rootError) {
-        try {
-            return await loadPatchgatePolicyFromGitRef(repositoryPath, ref, (0, node_path_1.join)(".github", "patchgate.yml"));
-        }
-        catch {
+        if (!isMissingGitBlob(rootError))
             throw rootError;
-        }
+        return await loadPatchgatePolicyFromGitRef(repositoryPath, ref, (0, node_path_1.join)(".github", "patchgate.yml"));
     }
 }
 async function loadPatchgatePolicyFromGitRef(repositoryPath, ref, identity = "patchgate.yml") {

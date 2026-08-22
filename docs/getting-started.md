@@ -36,8 +36,10 @@ does not fail until the threshold is raised.
 node dist/src/cli.js init --path /tmp/patchgate-try
 ```
 
-`init` writes a version-1 draft and refuses to overwrite an existing file.
-The draft does not enable a GitHub check or change a ruleset.
+`init` writes a version-1 draft with commented copies of the six supported
+rule classes and refuses to overwrite an existing file. Comments are
+documentation only; the parsed policy is `version: 1` until you uncomment a
+block. The draft does not enable a GitHub check or change a ruleset.
 
 To write `.github/patchgate.yml` instead of a root file:
 

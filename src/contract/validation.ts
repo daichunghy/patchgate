@@ -1,8 +1,8 @@
 import { Ajv2020, type ErrorObject, type ValidateFunction } from "ajv/dist/2020.js";
 import { determineFinalStatus } from "./status-precedence.js";
 import { MAX_COLLECTION_ITEMS, MAX_NESTED_ENTRIES, MAX_STRING_LENGTH } from "./bounds.js";
-import { canonicalJson, sha256Digest } from "../canonical-json.js";
-import { receiptDigest } from "../evidence/digests.js";
+import { sha256Digest } from "../canonical-json.js";
+import { normalizedObservationDigest, receiptDigest } from "../evidence/digests.js";
 import { evidenceReference } from "../evidence/source-verifier.js";
 import type { ContributionReceipt, EvaluationInput, EvaluationObservations, ObservationMeta, PatchgatePolicy, ReceiptEvidence } from "../types.js";
 import policySchema from "../../schemas/patchgate-policy.schema.json" with { type: "json" };
@@ -124,30 +124,6 @@ function assertNativeControlsContract(nativeControls: EvaluationInput["nativeCon
   }
 }
 
-function compareText(left: string, right: string): number {
-  return left < right ? -1 : left > right ? 1 : 0;
-}
-
-function sortCanonical<T>(values: readonly T[]): T[] {
-  return [...values].sort((left, right) => compareText(canonicalJson(left), canonicalJson(right)));
-}
-
-function sortText(values: readonly string[]): string[] {
-  return [...values].sort(compareText);
-}
-
-function expectedObservationDigest(input: Pick<EvaluationInput, "policySources" | "changedPaths" | "linkedIssues" | "reviews" | "checks" | "ownershipRequirements"> & { reviewability?: EvaluationInput["reviewability"] | undefined }, group: keyof EvaluationObservations): string {
-  switch (group) {
-    case "policySources": return sha256Digest(sortCanonical(input.policySources));
-    case "changedPaths": return sha256Digest(sortText(input.changedPaths));
-    case "linkedIssues": return sha256Digest(sortCanonical(input.linkedIssues));
-    case "reviews": return sha256Digest(sortCanonical(input.reviews.map((review) => ({ ...review, teams: sortText(review.teams), teamIds: [...review.teamIds].sort((a, b) => a - b) }))));
-    case "checks": return sha256Digest(sortCanonical(input.checks.map(({ retrievedAt: _retrievedAt, ...check }) => check)));
-    case "ownership": return sha256Digest(sortCanonical(input.ownershipRequirements.map((item) => ({ ...item, owners: sortText(item.owners) }))));
-    case "reviewability": return sha256Digest(input.reviewability === undefined ? null : { ...input.reviewability, ownershipDomains: sortText(input.reviewability.ownershipDomains) });
-  }
-}
-
 function validateObservationMeta(meta: ObservationMeta | ObservationMeta[], label: string, expectedDigest: string): void {
   const entries = Array.isArray(meta) ? meta : [meta];
   assertCollectionSize(entries, `${label} observation metadata`);
@@ -176,7 +152,7 @@ function assertObservationContract(input: EvaluationInput): void {
     const source = input.policySources[index]!;
     if (meta.source.identity !== source.identity) fail("policy source observation metadata cannot be swapped between source records", "OBSERVATION_INVARIANT");
     assertObservationRevision(meta, source.revision, `observations.policySources[${index}]`);
-    validateObservationMeta(meta, `observations.policySources[${index}]`, expectedObservationDigest(input, "policySources"));
+    validateObservationMeta(meta, `observations.policySources[${index}]`, normalizedObservationDigest(input, "policySources"));
   }
   const groups: Array<[keyof EvaluationObservations, EvaluationObservations[keyof EvaluationObservations]]> = [
     ["changedPaths", observation.changedPaths], ["linkedIssues", observation.linkedIssues], ["reviews", observation.reviews], ["checks", observation.checks], ["ownership", observation.ownership], ["reviewability", observation.reviewability],
@@ -185,7 +161,7 @@ function assertObservationContract(input: EvaluationInput): void {
     if (Array.isArray(meta)) fail(`observations.${group} must contain one observation metadata record`, "OBSERVATION_INVARIANT");
     const expectedRevision = group === "ownership" ? input.revisions.baseSha : group === "changedPaths" || group === "linkedIssues" ? input.revisions.headSha : input.revisions.testedSha;
     assertObservationRevision(meta, expectedRevision, `observations.${group}`);
-    validateObservationMeta(meta, `observations.${group}`, expectedObservationDigest(input, group));
+    validateObservationMeta(meta, `observations.${group}`, normalizedObservationDigest(input, group));
   }
 }
 
@@ -416,7 +392,7 @@ function assertReceiptObservationContract(receipt: ContributionReceipt): void {
     ownershipRequirements: receipt.evidence.ownershipRequirements,
     reviewability: receipt.reviewability,
   };
-  const expected = (group: keyof EvaluationObservations): string => expectedObservationDigest(sourceInput, group);
+  const expected = (group: keyof EvaluationObservations): string => normalizedObservationDigest(sourceInput, group);
   if (receipt.observations.policySources.length !== receipt.policySources.length) fail("receipt policy source observation metadata must correspond one-to-one with policy sources", "OBSERVATION_INVARIANT");
   for (let index = 0; index < receipt.observations.policySources.length; index += 1) {
     const meta = receipt.observations.policySources[index]!;
