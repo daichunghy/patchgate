@@ -144,9 +144,9 @@ The repository maintains a clean root directory structure (9 files max) with mod
 
 ### Contribution opportunities
 
-- [Clean consumer-repository Action fixture](https://github.com/daichunghy/patchgate/issues/5)
+- [Clean consumer-repository Action fixture](https://github.com/daichunghy/patchgate/issues/7)
 - [CODEOWNERS conformance fixtures](https://github.com/daichunghy/patchgate/issues/6)
-- [Beta release and rollback guide](https://github.com/daichunghy/patchgate/issues/7)
+- [Beta release and rollback guide](https://github.com/daichunghy/patchgate/issues/5)
 - [Research and landscape review](docs/research/2026-08-12-patchgate-landscape.md)
 - [Deep-dive research: API, state, threat tests and pilot](docs/research/2026-08-13-patchgate-deep-dive.md)
 - [Architecture and evidence contract](docs/architecture.md)
@@ -171,6 +171,8 @@ The repository maintains a clean root directory structure (9 files max) with mod
 - [G2 local onboarding implementation report](docs/reviews/2026-08-13-g2-local-onboarding-implementation.md)
 - [G2 preflight, Git-ref and discovery checkpoint](docs/reviews/2026-08-13-g2-preflight-git-ref-discovery.md)
 - [G2 usability session protocol](docs/pilots/g2-usability-session-protocol.md)
+- [G4 shadow installation runbook](docs/pilots/g4-shadow-installation-runbook.md)
+- [Beta release and rollback runbook](docs/releases/beta-release-and-rollback.md)
 - [Prompt 2: observation contract and compatibility](docs/prompts/prompt-02-observation-contract-and-compatibility.md)
 - [Prompt launcher for Prompt 2](docs/prompts/prompt-02-launcher.md)
 - [Prompt 3: public foundation and maintainer decisions](docs/prompts/prompt-03-public-foundation-and-maintainer-decisions.md)
