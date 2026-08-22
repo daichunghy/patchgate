@@ -28,7 +28,7 @@ sensitive_paths:
 
 policy_changes:
   mode: human_review
-  paths: ["patchgate.yml"]
+  paths: [".github/patchgate.yml", "patchgate.yml"]
 
 reviewability:
   mode: advisory

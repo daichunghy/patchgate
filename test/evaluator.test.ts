@@ -101,6 +101,22 @@ describe("evaluateContribution", () => {
     expect(configured.final.status).toBe("human_review_required");
   });
 
+  it("derives policy change from the loaded policy source identity, not only the root path", async () => {
+    const input = await fixture();
+    const policy = policyWith({ policyChanges: { mode: "human_review", paths: ["docs/policy/*.md"] } });
+    const nested = withPolicy(input, policy);
+    const result = evaluate(withInput(nested, {
+      changedPaths: [".github/patchgate.yml"],
+      policySources: nested.policySources.map((source) => source.kind === "patchgate" ? { ...source, identity: ".github/patchgate.yml" } : source),
+      observations: {
+        ...nested.observations,
+        policySources: nested.observations.policySources.map((meta) => meta.source.identity === "patchgate.yml" ? { ...meta, source: { ...meta.source, identity: ".github/patchgate.yml" } } : meta),
+      },
+    }));
+    expect(result.final.status).toBe("human_review_required");
+    expect(result.final.reasonIds).toContain("policy.change");
+  });
+
   it("reports policy ambiguity when normalized policy does not match the trusted source contract digest", async () => {
     const input = await fixture();
     const relaxed = withInput(input, { policy: { version: 1 } });
