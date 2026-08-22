@@ -106,7 +106,12 @@ linear history and conversation resolution, and disables force-pushes and
 branch deletion. The merged `codex/community-interaction` and
 `docs/clean-ai-isms` branches were deleted after their content reached
 `main`; the stale pre-publication `test/patchgate-shadow-smoke` draft branch
-remains. Open Dependabot dependency PRs #11–#14 are not yet merged.
+remains. Dependabot PRs #11 (`@types/node` 26), #13 (`vitest` 4) and #14
+(`@vitest/coverage-v8` 4) were merged on 2026-08-22 after local
+re-verification; PR #12 (`typescript` 7) stays open because `@vercel/ncc`
+cannot bundle under TS 7. The prepared beta candidate record is
+[docs/releases/2026-08-22-beta-candidate.md](docs/releases/2026-08-22-beta-candidate.md);
+no tag or release exists yet.
 
 The current audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The latest verification command to rerun after a change is:
 
