@@ -4,6 +4,17 @@
   "private": true,
   "description": "Deterministic GitHub pull-request review-readiness evaluator",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daichunghy/patchgate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/daichunghy/patchgate/issues"
+  },
+  "homepage": "https://github.com/daichunghy/patchgate#readme",
+  "engines": {
+    "node": ">=20"
+  },
   "keywords": [
     "github-actions",
     "pull-requests",

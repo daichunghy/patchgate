@@ -92,6 +92,7 @@ async function fetchTrustedBasePolicy(client, owner, name, baseSha, allowConfirm
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createTrustedPolicyArtifact = createTrustedPolicyArtifact;
 exports.loadPatchgatePolicy = loadPatchgatePolicy;
+exports.loadPatchgatePolicyFromGitRefWithFallback = loadPatchgatePolicyFromGitRefWithFallback;
 exports.loadPatchgatePolicyFromGitRef = loadPatchgatePolicyFromGitRef;
 const promises_1 = __webpack_require__(1455);
 const node_child_process_1 = __webpack_require__(1421);
@@ -300,9 +301,37 @@ function createTrustedPolicyArtifact(contents, expected, path = expected.identit
 }
 async function loadPatchgatePolicy(basePath, expected = {}) {
     const baseStat = await (0, promises_1.stat)(basePath);
-    const policyPath = baseStat.isDirectory() ? (0, node_path_1.join)(basePath, "patchgate.yml") : basePath;
-    const contents = await (0, promises_1.readFile)(policyPath, "utf8");
-    return createTrustedPolicyArtifact(contents, { identity: expected.identity ?? "patchgate.yml", revision: expected.revision ?? "local" }, policyPath);
+    if (!baseStat.isDirectory()) {
+        const contents = await (0, promises_1.readFile)(basePath, "utf8");
+        return createTrustedPolicyArtifact(contents, { identity: expected.identity ?? "patchgate.yml", revision: expected.revision ?? "local" }, basePath);
+    }
+    // Match the adapter contract: the trusted policy may live at the repository
+    // root or under .github/, in that order.
+    for (const candidate of ["patchgate.yml", (0, node_path_1.join)(".github", "patchgate.yml")]) {
+        const policyPath = (0, node_path_1.join)(basePath, candidate);
+        let contents;
+        try {
+            contents = await (0, promises_1.readFile)(policyPath, "utf8");
+        }
+        catch {
+            continue;
+        }
+        return createTrustedPolicyArtifact(contents, { identity: expected.identity ?? candidate, revision: expected.revision ?? "local" }, policyPath);
+    }
+    throw new Error(`ENOENT: no supported patchgate.yml found in ${basePath} (tried patchgate.yml and .github/patchgate.yml)`);
+}
+async function loadPatchgatePolicyFromGitRefWithFallback(repositoryPath, ref) {
+    try {
+        return await loadPatchgatePolicyFromGitRef(repositoryPath, ref, "patchgate.yml");
+    }
+    catch (rootError) {
+        try {
+            return await loadPatchgatePolicyFromGitRef(repositoryPath, ref, (0, node_path_1.join)(".github", "patchgate.yml"));
+        }
+        catch {
+            throw rootError;
+        }
+    }
 }
 async function loadPatchgatePolicyFromGitRef(repositoryPath, ref, identity = "patchgate.yml") {
     if (ref.trim().length === 0)

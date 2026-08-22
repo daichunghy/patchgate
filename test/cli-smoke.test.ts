@@ -107,6 +107,12 @@ describe("CLI process smoke contract", () => {
     const doctorReady = runCommand(["doctor", "--base", resolve("docs/patchgate.example.yml"), "--json"]);
     expect(doctorReady.exit).toBe(0);
     expect(JSON.parse(doctorReady.stdout)).toMatchObject({ status: "ready_for_local_preflight", mode: "local" });
+    const githubDirDoctor = runCommand(["doctor", "--base", resolve("fixtures/repositories/github-dir-policy"), "--json"]);
+    expect(githubDirDoctor.exit).toBe(0);
+    expect(JSON.parse(githubDirDoctor.stdout)).toMatchObject({ status: "ready_for_local_preflight", mode: "local" });
+    const githubDirPreflight = runCommand(["preflight", "--base", resolve("fixtures/repositories/github-dir-policy"), "--json"]);
+    expect(githubDirPreflight.exit).toBe(0);
+    expect(JSON.parse(githubDirPreflight.stdout).policySource.identity).toBe(".github/patchgate.yml");
 
     const gitDirectory = mkdtempSync("/tmp/patchgate-cli-git-ref-");
     tempDirectories.push(gitDirectory);

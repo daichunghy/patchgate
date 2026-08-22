@@ -12,7 +12,7 @@ import { buildGitHubSnapshot } from "./github/snapshot-builder.js";
 import { buildSupportBundle } from "./support-bundle.js";
 import type { RecordedExchange } from "./github/mock-transport.js";
 import type { GitHubSnapshotRequest } from "./github/identity.js";
-import { loadPatchgatePolicy, loadPatchgatePolicyFromGitRef } from "./policy.js";
+import { loadPatchgatePolicy, loadPatchgatePolicyFromGitRefWithFallback } from "./policy.js";
 import { discoverGuidance, discoverGuidanceFromGitRef } from "./discovery.js";
 import { EVALUATOR_VERSION } from "./version.js";
 import {
@@ -210,7 +210,7 @@ async function policyCommand(path: string, command: "preflight" | "validate", re
   try {
     loaded = repositoryPath === undefined
       ? await loadPatchgatePolicy(path)
-      : await loadPatchgatePolicyFromGitRef(repositoryPath, path);
+      : await loadPatchgatePolicyFromGitRefWithFallback(repositoryPath, path);
   } catch (error) {
     const message = error instanceof Error ? error.message : "policy could not be loaded";
     throw new CliDiagnosticError("POLICY_INVALID", command + " could not load policy: " + message);
