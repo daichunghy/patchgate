@@ -69,7 +69,7 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 ├── fixtures/                # Deterministic test fixtures and API exchange recordings
 ├── test/                    # Comprehensive unit, integration, security, and determinism tests
 ├── scripts/                 # Linters, budget checkers, and verification harnesses
-├── action.yml               # GitHub Marketplace Action metadata and entrypoint
+├── action.yml               # GitHub Action metadata (not Marketplace-listed) and entrypoint
 ├── AGENTS.md                # AI agent operating rules and context (this file)
 ├── LICENSE                  # Apache-2.0 License
 ├── README.md                # Project overview and quickstart
@@ -189,25 +189,27 @@ The policy source is always the base commit. A change proposed in a PR does not 
 The first complete release provides a CLI and GitHub Action built on the same deterministic evaluator.
 
 ```bash
-patchgate preflight --base origin/main
-patchgate evaluate --event snapshot.json --report receipt.json
+node dist/src/cli.js preflight --base origin/main
+node dist/src/cli.js evaluate --event snapshot.json --report receipt.json
 ```
 
 `evaluate` consumes a normalized evaluation-input snapshot
 ([`schemas/evaluation-input.schema.json`](schemas/evaluation-input.schema.json))
 produced by the adapter — not a raw GitHub event payload.
 
+Current allowed Action form (shadow only):
+
 ```yaml
 - uses: daichunghy/patchgate@v0.1.0-beta.2
   with:
-    fail-on: blocked
+    fail-on: never
+    create-check-run: true
 ```
 
-The tagged beta reference is approved for shadow evaluation only
-(`fail-on: never` in the [shadow runbook](docs/pilots/g4-shadow-installation-runbook.md));
-`fail-on: blocked` above is the enforcement form intended for the first
-stable release. Pin `v0.1.0-beta.2` or later: `v0.1.0-beta.1` Action inputs
-were unreadable on real runners and the tag is superseded.
+`fail-on: blocked` is the enforcement form intended for the first stable
+release, not for this pre-release. Pin `v0.1.0-beta.2` or later:
+`v0.1.0-beta.1` Action inputs were unreadable on real runners and the tag
+is superseded.
 
 The first supported rule classes are:
 

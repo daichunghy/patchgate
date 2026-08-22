@@ -5,10 +5,10 @@ PatchGate is a public pre-release. The npm package is unpublished
 shadow evaluation only — not production, not a `v0.1` claim, and not
 evidence of external pilots.
 
-This walkthrough uses a clone and a local build. `npx patchgate` is not
-available yet. `npx github:daichunghy/patchgate` was tried against current
-`main` and failed: the committed `dist/` contains the Action bundle, not the
-CLI binary at `dist/src/cli.js`.
+This walkthrough uses a clone and a local build. Do not run `npx patchgate`:
+that npm name is a different project. This CLI is unpublished.
+`npx github:daichunghy/patchgate` also fails today: committed `dist/` is
+the Action bundle, not `dist/src/cli.js`.
 
 ## 1. Clone and build
 
@@ -83,24 +83,25 @@ ready for local preflight; exit 1 means attention is needed. Missing
 ## 6. Evaluate a fixture
 
 ```bash
-node dist/src/cli.js evaluate --event fixtures/pr-ready.json --report /tmp/patchgate-receipt.json
+node dist/src/cli.js evaluate --event fixtures/pr-ready.json
 ```
 
 This consumes a normalized evaluation-input snapshot, not a raw GitHub
-event. The ready fixture should print a receipt with
-`final.status: ready_for_review` and exit 0.
+event. Stdout is a receipt with `final.status: ready_for_review` (exit 0).
+Add `--report /tmp/patchgate-receipt.json` only if you want the same JSON
+written to a file (stdout is then empty).
 
 To inspect a blocked case without failing the process:
 
 ```bash
-node dist/src/cli.js evaluate --event fixtures/pr-ready.json --fail-on never
+node dist/src/cli.js evaluate --event fixtures/evaluator/evidence/complete-zero-linked-issues.json --fail-on never
 ```
 
 ## Next steps
 
 - [Example policy](patchgate.example.yml)
-- [Action usage (shadow only)](github-action-usage.md)
-- [G4 shadow-installation runbook](pilots/g4-shadow-installation-runbook.md)
+- Next: copy the shadow YAML in [Action usage](github-action-usage.md) (section 1 only). Do not copy section 2 yet.
+- The G4 runbook is for a consented install after that YAML works.
 
 Do not treat a local fixture run, a recorded adapter replay, or this
 repository's own shadow workflow as downstream adoption.

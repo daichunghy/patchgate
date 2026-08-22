@@ -67,6 +67,10 @@ describe("CLI process smoke contract", () => {
     expect(preflightHelp.exit).toBe(0);
     expect(preflightHelp.stdout).toContain("Usage: patchgate preflight");
 
+    const nestedInitDir = join(directory, "nested", "try");
+    const nestedInit = runCommand(["init", "--path", nestedInitDir, "--json"]);
+    expect(nestedInit.exit).toBe(0);
+    expect(JSON.parse(nestedInit.stdout)).toMatchObject({ status: "created", enforcement: "not_enabled" });
     const initialized = runCommand(["init", "--path", directory, "--json"]);
     expect(initialized.exit).toBe(0);
     expect(JSON.parse(initialized.stdout)).toMatchObject({ status: "created", enforcement: "not_enabled" });
@@ -168,9 +172,17 @@ describe("CLI process smoke contract", () => {
     const failOnNever = runCommand(["evaluate", "--event", writeInput(withInput(base, { linkedIssues: [] })), "--fail-on", "never"]);
     expect(failOnNever.exit).toBe(0);
     expect(JSON.parse(failOnNever.stdout).final.status).toBe("blocked");
+    const failOnEvidenceOnly = runCommand(["evaluate", "--event", writeInput(withInput(base, { linkedIssues: [] })), "--fail-on", "evidence_missing"]);
+    expect(failOnEvidenceOnly.exit).toBe(0);
+    expect(JSON.parse(failOnEvidenceOnly.stdout).final.status).toBe("blocked");
+    const missingFailOnValue = runCommand(["evaluate", "--event", writeInput(base), "--fail-on"]);
+    expect(missingFailOnValue.exit).toBe(2);
+    expect(missingFailOnValue.stderr).toContain("FAIL_ON_INVALID");
     const bogusFailOn = runCommand(["evaluate", "--event", writeInput(base), "--fail-on", "bogus"]);
     expect(bogusFailOn.exit).toBe(2);
     expect(bogusFailOn.stderr).toContain("FAIL_ON_INVALID");
+    const rejectedNever = runCommand(["github", "snapshot", "--mock-fixture", resolve("fixtures/api/merge-group-unsupported.json"), "--fail-on", "never"]);
+    expect(rejectedNever.exit).toBe(0);
     expect(runCli(writeInput(withInput(withPolicy(base, sensitivePolicy()), { changedPaths: ["src/auth/token.ts"], reviews: [] })))).toMatchObject({ exit: 0, status: "human_review_required" });
     expect(runCli(writeInput(withInput(base, { revisions: { ...base.revisions, testedSha: "foreign-sha" } })))).toMatchObject({ exit: 2 });
   }, CLI_PROCESS_TEST_TIMEOUT);
@@ -193,7 +205,7 @@ describe("CLI process smoke contract", () => {
     expect(supportBundle).not.toHaveProperty("snapshot");
 
     const unsupported = runCommand(["github", "snapshot", "--mock-fixture", resolve("fixtures/api/merge-group-unsupported.json")]);
-    expect(unsupported.exit).toBe(2);
+    expect(unsupported.exit).toBe(1);
     expect(JSON.parse(unsupported.stdout)).toMatchObject({ kind: "rejected", diagnostic: { id: "GITHUB_API_UNSUPPORTED" } });
 
     const malformedFixture = join(outputDirectory, "malformed-api-fixture.json");

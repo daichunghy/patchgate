@@ -25,10 +25,10 @@ and not evidence of external pilots or adoption.
 
 ## Try it locally
 
-The working first-run path is a clone and a local build. `npx patchgate` is
-not available (unpublished package). `npx --yes github:daichunghy/patchgate -- --help`
-was run against current `main` and failed: committed `dist/` contains the
-Action bundle only; the CLI at `dist/src/cli.js` is produced by `npm run build`.
+The working first-run path is a clone and a local build. Do not run
+`npx patchgate`: that npm name belongs to a different project. This package
+is unpublished. `npx github:daichunghy/patchgate` also fails today because
+committed `dist/` is the Action bundle only.
 
 ```bash
 git clone https://github.com/daichunghy/patchgate.git
@@ -181,7 +181,7 @@ The repository maintains a clean root directory structure (9 files max) with mod
 ├── fixtures/                # Deterministic test fixtures and API exchange recordings
 ├── test/                    # Comprehensive unit, integration, security, and determinism tests
 ├── scripts/                 # Linters, budget checkers, and verification harnesses
-├── action.yml               # GitHub Marketplace Action metadata
+├── action.yml               # GitHub Action metadata (not Marketplace-listed)
 ├── AGENTS.md                # Repository guidance for automated contributors
 ├── LICENSE                  # Apache-2.0 License
 ├── README.md                # Project overview and quickstart

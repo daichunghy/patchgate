@@ -150,8 +150,11 @@ Reviewability budget defaults to a warning. A repository may deliberately config
 
 Before code is written or a PR is opened:
 
+The npm name `patchgate` is already used by a different project. This CLI
+is unpublished (`private: true`). After `npm ci && npm run build` in a clone:
+
 ```bash
-npx patchgate preflight --base origin/main
+node dist/src/cli.js preflight --base origin/main
 ```
 
 The command reports trusted policy sources, policy digest, required checks, path ownership, declared human-only boundaries, advisory guidance, and unresolved policy ambiguity. It is designed for people and coding agents.

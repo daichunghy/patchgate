@@ -44,12 +44,20 @@ permissions:
   checks: write
   pull-requests: read
   contents: read
+  actions: read
 
 jobs:
   evaluate:
     name: Review-Readiness Shadow Gate
     runs-on: ubuntu-latest
     steps:
+      # Commit this file on the default branch first; pull_request_target
+      # only runs workflows already on that branch.
+      # github.token cannot read Administration, so native Rulesets /
+      # branch-protection snapshots fail closed (correct). A PAT/App token
+      # with administration:read is required for a complete native-control
+      # snapshot. beta.2 posts a Check Run for successful evaluations;
+      # snapshot-rejection Check Runs landed after that tag (see main).
       - name: Run PatchGate Shadow Gate
         uses: daichunghy/patchgate@v0.1.0-beta.2
         with:
@@ -60,9 +68,10 @@ jobs:
 
 ---
 
-## 2. Hardened Enforcement Mode (After Shadow Validation)
+## 2. Hardened Enforcement Mode (do not copy yet)
 
-Once you have verified the policy and reviewed the shadow distribution, you can configure PatchGate to fail when a PR is blocked. This is still not a production or `v0.1` claim.
+This is a later step after a consented shadow install, not a first-paste
+workflow. It is still not production or a `v0.1` claim.
 
 ```yaml
       - name: Run PatchGate Enforcing Gate

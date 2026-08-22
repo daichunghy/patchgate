@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Independent review follow-up — 2026-08-22
+- `init` creates a missing parent directory so `init --path /tmp/patchgate-try` works.
+- Git-ref policy fallback to `.github/patchgate.yml` only when the root blob is absent, not when root YAML is invalid.
+- `github snapshot --fail-on` applies to rejected snapshots (Action `snapshotRejectionExitCode` parity) and is validated before I/O.
+- Constitution / README / getting-started no longer advertise `npx patchgate` (that npm name is a different project).
+- Consumer Action YAML includes `actions: read` and labels enforcement as “do not copy yet.”
+
 ### Local preflight Git-ref default, non-JS doctor, Action usage — 2026-08-22
 - `preflight --base <ref>` uses Git-object loading when `--base` is not an
   existing file or directory and the current work tree (or `--repo`) is a Git

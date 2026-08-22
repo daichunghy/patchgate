@@ -1,4 +1,4 @@
-import { access, readFile, stat, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { loadPatchgatePolicy, type TrustedPolicyArtifact } from "../policy.js";
 import type { GuidanceFinding } from "../discovery.js";
@@ -154,7 +154,7 @@ export async function initPolicy(target = "."): Promise<{ path: string; status: 
   }
   const parent = dirname(targetPath);
   if (!(await exists(parent))) {
-    throw new CliDiagnosticError("INIT_PARENT_MISSING", "init parent directory does not exist: " + parent);
+    await mkdir(parent, { recursive: true });
   }
   try {
     await writeFile(targetPath, draftPolicy, { encoding: "utf8", flag: "wx" });
@@ -170,7 +170,7 @@ export async function initPolicy(target = "."): Promise<{ path: string; status: 
     enforcement: "not_enabled",
     nextSteps: [
       "Edit the draft with explicit rules and trusted source expectations.",
-      "Run `patchgate validate --policy <path>`.",
+      "Run `node dist/src/cli.js validate --policy <path>` from a built clone.",
       "A draft never enables enforcement or changes a GitHub ruleset.",
     ],
   };

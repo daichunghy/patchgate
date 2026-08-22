@@ -27,7 +27,7 @@ OpenAI Organization ID: [FILL BEFORE SUBMISSION]
 ### Why does this repository qualify? (maximum 500 characters)
 
 ```text
-PatchGate is an Apache-2.0 open-source developer-infrastructure project addressing a concrete maintainer problem: verifying trusted policy, commit-bound checks, ownership and human review boundaries before a pull request consumes review time. The public repository is pre-release with a deterministic CLI/Action candidate, security model, active issue triage and a documented pilot path. Usage is not yet broad, so this application makes an ecosystem-importance case without claiming adoption.
+PatchGate is an Apache-2.0 review-readiness gate: trusted policy, commit-bound checks, ownership and human boundaries before a PR consumes review time. Public pre-release CLI/Action, security model, documented shadow path. 0 GitHub stars, no npm package (name taken), no external pilots (2026-08-22). Applying on ecosystem importance, not adoption.
 ```
 
 ### How will you use API credits for your project? (maximum 500 characters)
@@ -39,7 +39,7 @@ API credits would support bounded issue triage, deterministic regression-fixture
 ### Anything else we should know? (maximum 500 characters)
 
 ```text
-PatchGate is designed for the review burden created when contributions and coding agents move faster than maintainer attention. It does not detect AI authorship or replace human approval. Current evidence is honest: public repository, merged hardening history, a tagged v0.1.0-beta.2 pre-release with reproducible verification, five self-authored Discussions and a scheduled community workflow; there are no external pilots or adoption yet.
+PatchGate addresses review burden when contributions move faster than maintainer attention. It does not detect AI authorship or replace human approval. Checkable evidence: public Apache-2.0 repo, v0.1.0-beta.2 shadow tag, CI on main, SECURITY.md. Discussions and issues are self-authored maintenance, not community adoption. No external pilots.
 ```
 
 ## Evidence snapshot for the application

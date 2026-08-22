@@ -15,7 +15,7 @@ import type { GitHubSnapshotRequest } from "./github/identity.js";
 import { isGitWorkTree, loadPatchgatePolicy, loadPatchgatePolicyFromGitRefWithFallback } from "./policy.js";
 import { discoverGuidance, discoverGuidanceFromGitRef } from "./discovery.js";
 import { EVALUATOR_VERSION } from "./version.js";
-import { shouldFailAction, type ActionInputs } from "./action/index.js";
+import { shouldFailAction, snapshotRejectionExitCode, type ActionInputs } from "./action/index.js";
 import {
   CliDiagnosticError,
   doctor,
@@ -48,9 +48,11 @@ function renderRootHelp(): string {
     "  -h, --help       Show help for PatchGate or a specific subcommand",
     "  -v, --version    Show current PatchGate evaluator version",
     "  --json           Machine-readable JSON output (preflight/validate/init/doctor)",
-    "  --fail-on <level>  Exit-code threshold for evaluate and github snapshot:",
+    "  --fail-on <level>  Same as the Action input (not a total severity order):",
     "                   never | blocked (default) | human_review_required |",
     "                   evidence_missing | policy_ambiguous",
+    "                   blocked fails blocked/evidence_missing/policy_ambiguous;",
+    "                   evidence_missing matches only that status",
     "  --report <path>  Write the evaluate receipt JSON (evaluate only)",
     "  --output <path>  Write github snapshot or support-bundle JSON",
     "",
@@ -171,14 +173,18 @@ function parsePullNumber(value: string | undefined): number {
 // Default "blocked" means blocked/evidence_missing/policy_ambiguous fail;
 // human_review_required does not until the threshold is raised.
 function parseFailOnArgument(): ActionInputs["failOn"] {
-  const raw = argument("--fail-on");
-  if (raw === undefined) return "blocked";
+  const index = process.argv.indexOf("--fail-on");
+  if (index === -1) return "blocked";
+  const raw = process.argv[index + 1];
   const valid = ["never", "blocked", "human_review_required", "evidence_missing", "policy_ambiguous"] as const;
-  if (!(valid as readonly string[]).includes(raw)) throw new CliDiagnosticError("FAIL_ON_INVALID", `--fail-on must be one of: ${valid.join(", ")}.`);
+  if (raw === undefined || raw.startsWith("-") || !(valid as readonly string[]).includes(raw)) {
+    throw new CliDiagnosticError("FAIL_ON_INVALID", `--fail-on must be one of: ${valid.join(", ")}.`);
+  }
   return raw as ActionInputs["failOn"];
 }
 
 async function githubSnapshotCommand(): Promise<void> {
+  const failOn = parseFailOnArgument();
   const fixturePath = argument("--mock-fixture");
   let request: GitHubSnapshotRequest;
   let client: GitHubClient;
@@ -211,8 +217,8 @@ async function githubSnapshotCommand(): Promise<void> {
   const outputPath = argument("--output");
   if (outputPath === undefined) print(safeReport);
   else await writeFile(outputPath, `${JSON.stringify(safeReport, null, 2)}\n`, "utf8");
-  if (result.kind === "rejected") process.exitCode = result.diagnostic.exitCode;
-  else if (evaluation !== undefined && shouldFailAction(evaluation.final.status, parseFailOnArgument())) process.exitCode = 1;
+  if (result.kind === "rejected") process.exitCode = snapshotRejectionExitCode(failOn);
+  else if (evaluation !== undefined && shouldFailAction(evaluation.final.status, failOn)) process.exitCode = 1;
 }
 
 async function supportBundleCommand(): Promise<void> {
@@ -355,12 +361,13 @@ async function main(): Promise<void> {
     process.exitCode = 2;
     return;
   }
+  const failOn = parseFailOnArgument();
   const input = parseEvaluationInputJson(await readFile(eventPath, "utf8"));
   const receipt = evaluateContribution(input, new Date().toISOString());
   const output = `${JSON.stringify(receipt, null, 2)}\n`;
   if (reportPath === undefined) process.stdout.write(output);
   else await writeFile(reportPath, output, "utf8");
-  if (shouldFailAction(receipt.final.status, parseFailOnArgument())) process.exitCode = 1;
+  if (shouldFailAction(receipt.final.status, failOn)) process.exitCode = 1;
 }
 
 try {
