@@ -28,6 +28,29 @@ describe("GitHub Action runner unit tests", () => {
       expect(inputs.checkName).toBe("Custom Gate");
     });
 
+    it("parses runner-native dashed input names (INPUT_GITHUB-TOKEN et al.)", () => {
+      const inputs = parseActionInputs({
+        "INPUT_FAIL-ON": "never",
+        "INPUT_GITHUB-TOKEN": "runner-token-placeholder",
+        "INPUT_REPORT-PATH": "runner/receipt.json",
+        "INPUT_CREATE-CHECK-RUN": "true",
+        "INPUT_CHECK-NAME": "Runner Gate",
+      });
+      expect(inputs.failOn).toBe("never");
+      expect(inputs.githubToken).toBe("runner-token-placeholder");
+      expect(inputs.reportPath).toBe("runner/receipt.json");
+      expect(inputs.createCheckRun).toBe(true);
+      expect(inputs.checkName).toBe("Runner Gate");
+    });
+
+    it("prefers the runner-native dashed form over the underscore fallback", () => {
+      const inputs = parseActionInputs({
+        "INPUT_GITHUB-TOKEN": "dashed-token",
+        INPUT_GITHUB_TOKEN: "underscore-token",
+      });
+      expect(inputs.githubToken).toBe("dashed-token");
+    });
+
     it("falls back to default when fail-on is an invalid string", () => {
       const inputs = parseActionInputs({
         INPUT_FAIL_ON: "invalid_status",

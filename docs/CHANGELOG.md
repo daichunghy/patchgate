@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Live consumer smoke fixes — 2026-08-22
+- Fixed a critical input-parsing bug found by the first live consumer smoke:
+  the Action read `INPUT_GITHUB_TOKEN`-style underscore names, but the GitHub
+  runner exports dashed names (`INPUT_GITHUB-TOKEN`), so every input —
+  including `github-token`, `fail-on` and `create-check-run` — was unreadable
+  on real runners. The parser now prefers runner-native dashed names with the
+  underscore forms as fallback, locked by new regression tests
+  ([findings record](reviews/2026-08-22-live-smoke-findings.md)).
+- Corrected the beta.1 release notes consumer reference from the invalid
+  `daichunghy/patchgate/action@<SHA>` subpath form to the root
+  `daichunghy/patchgate@<SHA>` form the runbooks already used.
+- Migrated `action.yml` from `node20` to `node24` after the runner
+  deprecation warning.
+- Recorded that recent internal Shadow Gate failures were caused by the same
+  input bug, not the documented non-ready transition boundary; earlier
+  shadow-run evidence for those runs is void.
+
 ### Beta release — 2026-08-22
 - Tagged [`v0.1.0-beta.1`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.1)
   at `main@301c700` with maintainer approval, fresh-checkout verification
@@ -30,8 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   merged history and the beta tag.
 
 ### Live continuation — 2026-08-22
-- PR #9 remains open and unmerged, but its required CI matrix, CodeQL and the
-  dedicated `CI / Full Verify` job pass on the current public head.
+- PR #9's required CI matrix, CodeQL and the dedicated `CI / Full Verify` job
+  passed on the public head while it remained open; it was merged later the
+  same day (see the beta release entry above).
 - `main` protection now requires six strict CI contexts, including `CI / Full Verify`,
   plus one approving review; no force-push or branch-deletion bypass was added.
 - Discussion #10 was backfilled as the first real scheduled community prompt;
