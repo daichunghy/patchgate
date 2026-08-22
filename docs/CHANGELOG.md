@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Working git install and glob hardening — 2026-08-22
+- `npx github:daichunghy/patchgate` now actually works: a `prepare` script
+  builds `dist/` when the package is installed from GitHub, closing the gap
+  the README honestly documented ("npx also fails today"). Verified by a real
+  clean-directory install smoke — the binary runs `--version`, `--help` and
+  `doctor` end to end and correctly finds `.github/patchgate.yml`. The smoke
+  also caught the runtime JSON Schema directory being dropped during
+  git-dependency packing; the explicit `files` field from PR #27 fixes that
+  half and `prepare` completes it. Registry publication stays a
+  maintainer-gated decision; `prepublishOnly` now runs the full verification
+  chain so a future publish cannot skip it.
+- Path patterns treat `?` as a literal character rather than a regex
+  quantifier in `matchedPath`, with a regression test.
+- Added [docs/demo.md](demo.md) — a walkthrough with real captured CLI output.
+
 ### Init draft comments, contributor health, receipt schema — 2026-08-22
 - `init` writes a commented map of the six supported rule classes from
   `docs/patchgate.example.yml`. Only `version: 1` is live YAML; comments are

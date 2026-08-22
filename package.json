@@ -36,6 +36,8 @@
     "docs/patchgate.example.yml"
   ],
   "scripts": {
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run verify",
     "build": "tsc -p tsconfig.json",
     "bundle:action": "ncc build src/action/index.ts -o dist/action --minify --transpile-only",
     "audit": "npm audit --audit-level=high",
