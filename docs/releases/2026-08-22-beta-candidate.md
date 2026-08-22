@@ -1,16 +1,28 @@
-# Beta release record — v0.1.0-beta.1 (2026-08-22)
+# Beta release records — 2026-08-22
 
-**Status:** released as a pre-release for shadow evaluation. Tag:
-[`v0.1.0-beta.1`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.1).
+**Current tag:** [`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
+(supersedes beta.1, which is unusable on real runners — see the
+[live smoke findings](../reviews/2026-08-22-live-smoke-findings.md)).
 This is a beta, not a production declaration, not external adoption evidence,
 and not merge-blocking anywhere unless a maintainer configures it as a
 required status check.
 
-## Released candidate
+## Released candidate — v0.1.0-beta.2
 
 | Field | Value |
 | --- | --- |
-| Tag | `v0.1.0-beta.1` (pre-release) |
+| Tag | `v0.1.0-beta.2` (pre-release, latest) |
+| Source commit | `edab0ece5dd404bbe05cd349d60d9ccb190b57c8` (`main`, merge of PR #20) |
+| Package lockfile digest | `sha256:128084db3cc7da298bab38b5127ebb06dec45f8a8e18f9b6e41e7fc1ab98a526` |
+| Action bundle digest | `sha256:1e7b4a570e92e8b74489f49e0d851c006858654a7a996684a986f618e353d698` (`dist/action/index.js`) |
+| Live consumer smoke | [daichunghy/patchgate-beta-smoke](https://github.com/daichunghy/patchgate-beta-smoke) run `32562216635`: green end-to-end with the fail-closed native-control boundary (`GITHUB_PROVENANCE_AMBIGUOUS` under `github.token`) recorded |
+| Maintainer approval and date | Approved 2026-08-22 by the repository maintainer (`daichunghy`) to supersede beta.1 after the smoke findings |
+
+## Superseded candidate — v0.1.0-beta.1
+
+| Field | Value |
+| --- | --- |
+| Tag | `v0.1.0-beta.1` (pre-release, superseded) |
 | Source commit | `301c7001e34fa4eee705b2a8a83e8e2a65797049` (`main`, merge of PR #18) |
 | Package lockfile digest | `sha256:128084db3cc7da298bab38b5127ebb06dec45f8a8e18f9b6e41e7fc1ab98a526` |
 | Action bundle digest | `sha256:c43ae463b2321df30c1b7df520fb20b8d0468a4b8a29fd549f0bb17897d1f409` (`dist/action/index.js`) |
