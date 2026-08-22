@@ -15,6 +15,7 @@ import type { GitHubSnapshotRequest } from "./github/identity.js";
 import { loadPatchgatePolicy, loadPatchgatePolicyFromGitRefWithFallback } from "./policy.js";
 import { discoverGuidance, discoverGuidanceFromGitRef } from "./discovery.js";
 import { EVALUATOR_VERSION } from "./version.js";
+import { shouldFailAction, type ActionInputs } from "./action/index.js";
 import {
   CliDiagnosticError,
   doctor,
@@ -46,6 +47,12 @@ function renderRootHelp(): string {
     "Flags:",
     "  -h, --help       Show help for PatchGate or a specific subcommand",
     "  -v, --version    Show current PatchGate evaluator version",
+    "  --json           Machine-readable JSON output (preflight/validate/init/doctor)",
+    "  --fail-on <level>  Exit-code threshold for evaluate and github snapshot:",
+    "                   never | blocked (default) | human_review_required |",
+    "                   evidence_missing | policy_ambiguous",
+    "  --report <path>  Write the evaluate receipt JSON (evaluate only)",
+    "  --output <path>  Write github snapshot or support-bundle JSON",
     "",
     "Examples:",
     "  patchgate preflight --base .",
@@ -53,7 +60,9 @@ function renderRootHelp(): string {
     "  patchgate doctor --base .",
     "  patchgate init --path .",
     "  patchgate validate --policy patchgate.yml",
+    "  patchgate validate --base patchgate.yml",
     "  patchgate evaluate --event snapshot.json --report receipt.json",
+    "  patchgate evaluate --event snapshot.json --fail-on never",
   ].join("\n");
 }
 
@@ -157,6 +166,17 @@ function parsePullNumber(value: string | undefined): number {
   return pullNumber;
 }
 
+// Mirrors the Action input contract so CLI and Action failures agree.
+// Default "blocked" means blocked/evidence_missing/policy_ambiguous fail;
+// human_review_required does not until the threshold is raised.
+function parseFailOnArgument(): ActionInputs["failOn"] {
+  const raw = argument("--fail-on");
+  if (raw === undefined) return "blocked";
+  const valid = ["never", "blocked", "human_review_required", "evidence_missing", "policy_ambiguous"] as const;
+  if (!(valid as readonly string[]).includes(raw)) throw new CliDiagnosticError("FAIL_ON_INVALID", `--fail-on must be one of: ${valid.join(", ")}.`);
+  return raw as ActionInputs["failOn"];
+}
+
 async function githubSnapshotCommand(): Promise<void> {
   const fixturePath = argument("--mock-fixture");
   let request: GitHubSnapshotRequest;
@@ -191,7 +211,7 @@ async function githubSnapshotCommand(): Promise<void> {
   if (outputPath === undefined) print(safeReport);
   else await writeFile(outputPath, `${JSON.stringify(safeReport, null, 2)}\n`, "utf8");
   if (result.kind === "rejected") process.exitCode = result.diagnostic.exitCode;
-  else if (evaluation?.final.status !== "ready_for_review") process.exitCode = 1;
+  else if (evaluation !== undefined && shouldFailAction(evaluation.final.status, parseFailOnArgument())) process.exitCode = 1;
 }
 
 async function supportBundleCommand(): Promise<void> {
@@ -238,7 +258,7 @@ async function main(): Promise<void> {
 
   if (hasFlag("--help") || hasFlag("-h")) {
     if (command === "github" && process.argv[3] === "snapshot") {
-      process.stdout.write("Usage: patchgate github snapshot (--mock-fixture <path> | --live --repo <owner/name> --pull <number> [--target <head|merge>]) [--output <path>]\n");
+      process.stdout.write("Usage: patchgate github snapshot (--mock-fixture <path> | --live --repo <owner/name> --pull <number> [--target <head|merge>]) [--output <path>] [--fail-on <never|blocked|human_review_required|evidence_missing|policy_ambiguous>]\n");
       return;
     }
     if (command === "support-bundle") {
@@ -250,7 +270,7 @@ async function main(): Promise<void> {
       return;
     }
     if (command === "validate") {
-      process.stdout.write("Usage: patchgate validate --policy <policy-file-or-directory> [--json]\n");
+      process.stdout.write("Usage: patchgate validate (--policy|--base) <policy-file-or-directory> [--json]\n");
       return;
     }
     if (command === "doctor") {
@@ -262,7 +282,7 @@ async function main(): Promise<void> {
       return;
     }
     if (command === "evaluate") {
-      process.stdout.write("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json>]\n");
+      process.stdout.write("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json>] [--fail-on <never|blocked|human_review_required|evidence_missing|policy_ambiguous>]\n");
       return;
     }
     process.stdout.write(renderRootHelp() + "\n");
@@ -286,7 +306,7 @@ async function main(): Promise<void> {
   if (command === "validate") {
     const policyPath = argument("--policy") ?? argument("--base");
     if (policyPath === undefined) {
-      console.error("Usage: patchgate validate --policy <policy-file-or-directory> [--json]");
+      console.error("Usage: patchgate validate (--policy|--base) <policy-file-or-directory> [--json]");
       process.exitCode = 2;
       return;
     }
@@ -313,7 +333,7 @@ async function main(): Promise<void> {
   const eventPath = argument("--event");
   const reportPath = argument("--report");
   if (command !== "evaluate" || eventPath === undefined) {
-    console.error("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json>]\nRun 'patchgate --help' to see all available commands.");
+    console.error("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json>] [--fail-on <never|blocked|human_review_required|evidence_missing|policy_ambiguous>]\nRun 'patchgate --help' to see all available commands.");
     process.exitCode = 2;
     return;
   }
@@ -322,7 +342,7 @@ async function main(): Promise<void> {
   const output = `${JSON.stringify(receipt, null, 2)}\n`;
   if (reportPath === undefined) process.stdout.write(output);
   else await writeFile(reportPath, output, "utf8");
-  if (receipt.final.status !== "ready_for_review") process.exitCode = 1;
+  if (shouldFailAction(receipt.final.status, parseFailOnArgument())) process.exitCode = 1;
 }
 
 try {

@@ -54,6 +54,10 @@ describe("CLI process smoke contract", () => {
     expect(rootHelp.stdout).toContain("PatchGate CLI");
     expect(rootHelp.stdout).toContain("preflight");
     expect(rootHelp.stdout).toContain("doctor");
+    expect(rootHelp.stdout).toContain("--json");
+    expect(rootHelp.stdout).toContain("--fail-on");
+    expect(rootHelp.stdout).toContain("--report");
+    expect(rootHelp.stdout).toContain("--output");
 
     const rootVersion = runCommand(["--version"]);
     expect(rootVersion.exit).toBe(0);
@@ -69,6 +73,9 @@ describe("CLI process smoke contract", () => {
     const validated = runCommand(["validate", "--policy", join(directory, "patchgate.yml"), "--json"]);
     expect(validated.exit).toBe(0);
     expect(JSON.parse(validated.stdout)).toMatchObject({ policy: { version: 1 } });
+    const validatedViaBase = runCommand(["validate", "--base", join(directory, "patchgate.yml"), "--json"]);
+    expect(validatedViaBase.exit).toBe(0);
+    expect(JSON.parse(validatedViaBase.stdout)).toMatchObject({ policy: { version: 1 } });
     const overwrite = runCommand(["init", "--path", directory]);
     expect(overwrite.exit).toBe(2);
     expect(overwrite.stderr).toContain("INIT_TARGET_EXISTS");
@@ -136,8 +143,18 @@ describe("CLI process smoke contract", () => {
     const base = await fixture();
     expect(runCli(writeInput(base))).toMatchObject({ exit: 0, status: "ready_for_review" });
     expect(runCli(writeInput(withInput(base, { linkedIssues: [] })))).toMatchObject({ exit: 1, status: "blocked" });
+    // Default --fail-on is "blocked" with Action precedence semantics:
+    // blocked, evidence_missing and policy_ambiguous exit 1, while
+    // human_review_required stays non-failing until the threshold is raised.
     expect(runCli(writeInput(withInput(base, { policy: { version: 1 } })))).toMatchObject({ exit: 1, status: "policy_ambiguous" });
     expect(runCli(writeInput(withInput(base, { observations: { ...base.observations, linkedIssues: { ...base.observations.linkedIssues, complete: false, permissionState: "unknown", normalizedDigest: undefined } } })))).toMatchObject({ exit: 1, status: "evidence_missing" });
+    const failOnNever = runCommand(["evaluate", "--event", writeInput(withInput(base, { linkedIssues: [] })), "--fail-on", "never"]);
+    expect(failOnNever.exit).toBe(0);
+    expect(JSON.parse(failOnNever.stdout).final.status).toBe("blocked");
+    const bogusFailOn = runCommand(["evaluate", "--event", writeInput(base), "--fail-on", "bogus"]);
+    expect(bogusFailOn.exit).toBe(2);
+    expect(bogusFailOn.stderr).toContain("FAIL_ON_INVALID");
+    expect(runCli(writeInput(withInput(withPolicy(base, sensitivePolicy()), { changedPaths: ["src/auth/token.ts"], reviews: [] })))).toMatchObject({ exit: 0, status: "human_review_required" });
     expect(runCli(writeInput(withInput(base, { revisions: { ...base.revisions, testedSha: "foreign-sha" } })))).toMatchObject({ exit: 2 });
   }, CLI_PROCESS_TEST_TIMEOUT);
 
