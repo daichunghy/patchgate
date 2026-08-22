@@ -24,7 +24,9 @@ For this checkout, the source-of-truth workflow is
 [`.github/workflows/patchgate-shadow.yml`](.github/workflows/patchgate-shadow.yml).
 It uses `pull_request_target`, checks out the trusted base revision, builds the
 Action bundle from that base, runs with `fail-on: never`, and updates one check
-run. External consumers must wait for a public immutable Action release.
+run. Production consumers must wait for a public immutable Action release. A
+consented non-blocking shadow pilot may use an explicitly approved full-SHA
+pre-release commit by following the [G4 shadow-installation runbook](docs/pilots/g4-shadow-installation-runbook.md).
 
 ## Local development
 
