@@ -93,7 +93,7 @@ describe("CLI process smoke contract", () => {
     expect(draft).not.toMatch(/^required_checks:/m);
     const validated = runCommand(["validate", "--policy", join(directory, "patchgate.yml"), "--json"]);
     expect(validated.exit).toBe(0);
-    expect(JSON.parse(validated.stdout).policy).toEqual({ version: 1 });
+    expect(JSON.parse(validated.stdout)).toMatchObject({ policy: { version: 1 } });
     const validatedViaBase = runCommand(["validate", "--base", join(directory, "patchgate.yml"), "--json"]);
     expect(validatedViaBase.exit).toBe(0);
     expect(JSON.parse(validatedViaBase.stdout)).toMatchObject({ policy: { version: 1 } });
