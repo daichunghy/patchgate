@@ -62,6 +62,7 @@ function renderRootHelp(): string {
     "  patchgate preflight --base main --repo .",
     "  patchgate doctor --base .",
     "  patchgate init --path .",
+    "  patchgate init --path . --github-dir",
     "  patchgate validate --policy patchgate.yml",
     "  patchgate validate --base patchgate.yml",
     "  patchgate evaluate --event snapshot.json --report receipt.json",
@@ -290,7 +291,7 @@ async function main(): Promise<void> {
       return;
     }
     if (command === "init") {
-      process.stdout.write("Usage: patchgate init [--path <directory-or-file>] [--json]\n");
+      process.stdout.write("Usage: patchgate init [--path <directory-or-file>] [--github-dir] [--json]\n");
       return;
     }
     if (command === "validate") {
@@ -322,7 +323,7 @@ async function main(): Promise<void> {
     return;
   }
   if (command === "init") {
-    const result = await initPolicy(argument("--path") ?? ".");
+    const result = await initPolicy(argument("--path") ?? ".", { githubDir: hasFlag("--github-dir") });
     if (hasFlag("--json")) print(result);
     else process.stdout.write(renderInitHuman(result) + "\n");
     return;

@@ -6,7 +6,8 @@ shadow evaluation only — not production, not a `v0.1` claim, and not
 evidence of external pilots.
 
 This walkthrough uses a clone and a local build. Do not run `npx patchgate`:
-that npm name is a different project. This CLI is unpublished.
+that npm name is a different project. This CLI is unpublished. A later
+publish, if any, would use a scoped name such as `@daichunghy/patchgate`.
 `npx github:daichunghy/patchgate` also fails today: committed `dist/` is
 the Action bundle, not `dist/src/cli.js`.
 
@@ -37,6 +38,12 @@ node dist/src/cli.js init --path /tmp/patchgate-try
 
 `init` writes a version-1 draft and refuses to overwrite an existing file.
 The draft does not enable a GitHub check or change a ruleset.
+
+To write `.github/patchgate.yml` instead of a root file:
+
+```bash
+node dist/src/cli.js init --path /tmp/patchgate-try --github-dir
+```
 
 ## 3. Validate
 

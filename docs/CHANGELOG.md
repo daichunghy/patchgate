@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### init --github-dir and local-file doctor without Git — 2026-08-22
+- `init --github-dir` writes `.github/patchgate.yml` and still refuses overwrite.
+- Missing Git is informational for local-file `doctor`, so a draft directory
+  without `.git` can be `ready_for_local_preflight`.
+
 ### Independent review follow-up — 2026-08-22
 - `init` creates a missing parent directory so `init --path /tmp/patchgate-try` works.
 - Git-ref policy fallback to `.github/patchgate.yml` only when the root blob is absent, not when root YAML is invalid.

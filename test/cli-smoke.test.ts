@@ -71,6 +71,13 @@ describe("CLI process smoke contract", () => {
     const nestedInit = runCommand(["init", "--path", nestedInitDir, "--json"]);
     expect(nestedInit.exit).toBe(0);
     expect(JSON.parse(nestedInit.stdout)).toMatchObject({ status: "created", enforcement: "not_enabled" });
+    const githubInitDir = join(directory, "github-init");
+    const githubInit = runCommand(["init", "--path", githubInitDir, "--github-dir", "--json"]);
+    expect(githubInit.exit).toBe(0);
+    expect(JSON.parse(githubInit.stdout).path).toContain(`${join(".github", "patchgate.yml")}`);
+    const noGitDoctor = runCommand(["doctor", "--base", nestedInitDir, "--json"]);
+    expect(noGitDoctor.exit).toBe(0);
+    expect(JSON.parse(noGitDoctor.stdout)).toMatchObject({ status: "ready_for_local_preflight" });
     const initialized = runCommand(["init", "--path", directory, "--json"]);
     expect(initialized.exit).toBe(0);
     expect(JSON.parse(initialized.stdout)).toMatchObject({ status: "created", enforcement: "not_enabled" });

@@ -139,7 +139,10 @@ async function exists(path: string): Promise<boolean> {
   }
 }
 
-export async function initPolicy(target = "."): Promise<{ path: string; status: "created"; enforcement: "not_enabled"; nextSteps: string[] }> {
+export async function initPolicy(
+  target = ".",
+  options: { githubDir?: boolean } = {},
+): Promise<{ path: string; status: "created"; enforcement: "not_enabled"; nextSteps: string[] }> {
   const requested = pathForTarget(target);
   let targetPath = requested;
   if (!requested.endsWith(".yml") && !requested.endsWith(".yaml")) {
@@ -147,7 +150,11 @@ export async function initPolicy(target = "."): Promise<{ path: string; status: 
     if (targetStat !== undefined && !targetStat.isDirectory()) {
       throw new CliDiagnosticError("INIT_TARGET_NOT_DIRECTORY", "init target must be a directory or .yml file: " + target);
     }
-    targetPath = join(requested, "patchgate.yml");
+    targetPath = options.githubDir
+      ? join(requested, ".github", "patchgate.yml")
+      : join(requested, "patchgate.yml");
+  } else if (options.githubDir) {
+    throw new CliDiagnosticError("INIT_GITHUB_DIR_FILE_TARGET", "--github-dir cannot be combined with a .yml file path");
   }
   if (await exists(targetPath)) {
     throw new CliDiagnosticError("INIT_TARGET_EXISTS", "refusing to overwrite existing policy: " + targetPath);
@@ -223,7 +230,7 @@ export async function doctor(target = "."): Promise<DoctorResult> {
   const gitPath = await findUp(root, ".git");
   checks.push(gitPath !== undefined
     ? { id: "git_repository", status: "passed", message: "Git repository metadata is present", detail: gitPath }
-    : { id: "git_repository", status: "attention", message: "No local Git repository was detected", detail: "Local preflight still works; Git-ref mode needs a repository." });
+    : { id: "git_repository", status: "passed", message: "Git is optional for local-file doctor", detail: "Git-ref preflight still needs a repository." });
   const packagePath = await findUp(root, "package.json");
   if (packagePath !== undefined) {
     try {
@@ -260,7 +267,7 @@ export async function doctor(target = "."): Promise<DoctorResult> {
         "Use a Git repository for trusted Git-ref preflight when available.",
         "A doctor result does not configure GitHub or prove authenticated API access.",
       ]
-      : ["Run `patchgate preflight --base <policy-path>` to inspect the validated policy."],
+      : ["Run `node dist/src/cli.js preflight --base <policy-path>` from a built clone."],
   };
 }
 
