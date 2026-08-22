@@ -248,6 +248,15 @@ export async function loadPatchgatePolicy(
   throw new Error(`ENOENT: no supported patchgate.yml found in ${basePath} (tried patchgate.yml and .github/patchgate.yml)`);
 }
 
+export async function isGitWorkTree(repositoryPath: string): Promise<boolean> {
+  try {
+    const result = await execFileAsync("git", ["-C", repositoryPath, "rev-parse", "--is-inside-work-tree"], { encoding: "utf8", maxBuffer: 64 * 1024 });
+    return result.stdout.trim() === "true";
+  } catch {
+    return false;
+  }
+}
+
 export async function loadPatchgatePolicyFromGitRefWithFallback(
   repositoryPath: string,
   ref: string,

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fixture, review, withInput, withPolicy } from "./helpers.js";
@@ -19,8 +19,8 @@ function runCli(inputPath: string): { exit: number | null; status?: string; stde
   return { exit: result.status, ...(status === undefined ? {} : { status }), stderr: result.stderr.trim() };
 }
 
-function runCommand(args: string[]): { exit: number | null; stdout: string; stderr: string } {
-  const result = spawnSync(process.execPath, [resolve("dist/src/cli.js"), ...args], { encoding: "utf8" });
+function runCommand(args: string[], cwd?: string): { exit: number | null; stdout: string; stderr: string } {
+  const result = spawnSync(process.execPath, [resolve("dist/src/cli.js"), ...args], { encoding: "utf8", ...(cwd === undefined ? {} : { cwd }) });
   return { exit: result.status, stdout: result.stdout.trim(), stderr: result.stderr.trim() };
 }
 
@@ -70,6 +70,7 @@ describe("CLI process smoke contract", () => {
     const initialized = runCommand(["init", "--path", directory, "--json"]);
     expect(initialized.exit).toBe(0);
     expect(JSON.parse(initialized.stdout)).toMatchObject({ status: "created", enforcement: "not_enabled" });
+    expect(readFileSync(join(directory, "patchgate.yml"), "utf8")).toContain("docs/patchgate.example.yml");
     const validated = runCommand(["validate", "--policy", join(directory, "patchgate.yml"), "--json"]);
     expect(validated.exit).toBe(0);
     expect(JSON.parse(validated.stdout)).toMatchObject({ policy: { version: 1 } });
@@ -135,6 +136,22 @@ describe("CLI process smoke contract", () => {
     expect(JSON.parse(gitPreflight.stdout)).toMatchObject({ mode: "git_ref", policySource: { revision: expect.stringMatching(/^[0-9a-f]{40}$/) } });
     expect(JSON.parse(gitPreflight.stdout).guidance).toEqual(expect.arrayContaining([expect.objectContaining({ path: "README.md", classification: "needs_confirmation", diagnosticId: "DISCOVERY_POLICY_CONFLICT" })]));
     writeFileSync(join(gitDirectory, "patchgate.yml"), "version: 1\nissueLinkage:\n  required: true\n", "utf8");
+    const cwdGitDirectory = mkdtempSync("/tmp/patchgate-cli-git-ref-cwd-");
+    tempDirectories.push(cwdGitDirectory);
+    mkdirSync(join(cwdGitDirectory, ".github"));
+    writeFileSync(join(cwdGitDirectory, ".github", "patchgate.yml"), "version: 1\n", "utf8");
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "init", "-q", "-b", "main"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "config", "user.email", "test@example.invalid"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "config", "user.name", "PatchGate Test"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "add", ".github/patchgate.yml"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "commit", "-q", "-m", "baseline"], { encoding: "utf8" }).status).toBe(0);
+    const cwdGitPreflight = runCommand(["preflight", "--base", "main", "--json"], cwdGitDirectory);
+    expect(cwdGitPreflight.exit).toBe(0);
+    expect(JSON.parse(cwdGitPreflight.stdout)).toMatchObject({ mode: "git_ref", policySource: { identity: ".github/patchgate.yml", revision: expect.stringMatching(/^[0-9a-f]{40}$/) } });
+    const nonJsDoctor = runCommand(["doctor", "--base", cwdGitDirectory, "--json"]);
+    expect(nonJsDoctor.exit).toBe(0);
+    expect(JSON.parse(nonJsDoctor.stdout)).toMatchObject({ status: "ready_for_local_preflight", mode: "local" });
+    expect(JSON.parse(nonJsDoctor.stdout).checks).toEqual(expect.arrayContaining([expect.objectContaining({ id: "package", status: "passed" })]));
     const headChangeIgnored = runCommand(["preflight", "--base", "HEAD", "--repo", gitDirectory, "--json"]);
     expect(JSON.parse(headChangeIgnored.stdout).policy).toEqual({ version: 1 });
   }, CLI_PROCESS_TEST_TIMEOUT);

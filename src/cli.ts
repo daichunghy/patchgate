@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, stat, writeFile } from "node:fs/promises";
 import { canonicalJson } from "./canonical-json.js";
 import { ContractValidationError, parseEvaluationInputJson } from "./contract/validation.js";
 import { evaluateContribution } from "./evaluator.js";
@@ -12,7 +12,7 @@ import { buildGitHubSnapshot } from "./github/snapshot-builder.js";
 import { buildSupportBundle } from "./support-bundle.js";
 import type { RecordedExchange } from "./github/mock-transport.js";
 import type { GitHubSnapshotRequest } from "./github/identity.js";
-import { loadPatchgatePolicy, loadPatchgatePolicyFromGitRefWithFallback } from "./policy.js";
+import { isGitWorkTree, loadPatchgatePolicy, loadPatchgatePolicyFromGitRefWithFallback } from "./policy.js";
 import { discoverGuidance, discoverGuidanceFromGitRef } from "./discovery.js";
 import { EVALUATOR_VERSION } from "./version.js";
 import { shouldFailAction, type ActionInputs } from "./action/index.js";
@@ -56,6 +56,7 @@ function renderRootHelp(): string {
     "",
     "Examples:",
     "  patchgate preflight --base .",
+    "  patchgate preflight --base main",
     "  patchgate preflight --base main --repo .",
     "  patchgate doctor --base .",
     "  patchgate init --path .",
@@ -225,6 +226,23 @@ async function supportBundleCommand(): Promise<void> {
   else await writeFile(outputPath, `${JSON.stringify(bundle, null, 2)}\n`, "utf8");
 }
 
+async function existingFilesystemTarget(path: string): Promise<boolean> {
+  try {
+    const info = await stat(path);
+    return info.isFile() || info.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+async function resolvePreflightGitRepository(base: string, explicitRepo: string | undefined): Promise<string | undefined> {
+  if (explicitRepo !== undefined) return explicitRepo;
+  if (await existingFilesystemTarget(base)) return undefined;
+  const cwd = process.cwd();
+  if (await isGitWorkTree(cwd)) return cwd;
+  return undefined;
+}
+
 async function policyCommand(path: string, command: "preflight" | "validate", repositoryPath?: string): Promise<void> {
   let loaded;
   try {
@@ -327,7 +345,7 @@ async function main(): Promise<void> {
       process.exitCode = 2;
       return;
     }
-    await policyCommand(basePath, "preflight", argument("--repo"));
+    await policyCommand(basePath, "preflight", await resolvePreflightGitRepository(basePath, argument("--repo")));
     return;
   }
   const eventPath = argument("--event");

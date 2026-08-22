@@ -51,6 +51,7 @@ const draftPolicy = [
   "",
   "# Draft only: this file does not enable a GitHub check or change a ruleset.",
   "# Add explicit rules after reviewing the policy contract and trusted-base model.",
+  "# See docs/patchgate.example.yml for a complete illustrative policy.",
   "",
 ].join("\n");
 
@@ -239,7 +240,12 @@ export async function doctor(target = "."): Promise<DoctorResult> {
       checks.push({ id: "package", status: "attention", message: "package.json is not valid JSON", detail: error instanceof Error ? error.message : "invalid JSON" });
     }
   } else {
-    checks.push({ id: "package", status: "attention", message: "No package.json found", detail: join(root, "package.json") });
+    checks.push({
+      id: "package",
+      status: "passed",
+      message: "package.json is not required for local preflight",
+      detail: "Node/package metadata is informational; non-JS repositories can still run doctor and preflight.",
+    });
   }
   checks.push({ id: "network", status: "passed", message: "Network is not required for local doctor checks", detail: "Authenticated GitHub retrieval is not being claimed." });
   const attention = checks.some((check) => check.status === "attention");
