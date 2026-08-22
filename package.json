@@ -44,7 +44,7 @@
     "usability:session": "npm run build && node dist/scripts/run-usability-session.js",
     "lint": "node scripts/lint.mjs",
     "verify:dist": "node scripts/verify-dist.mjs",
-    "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm run check:workflow-pins && npm run check:workflow-events && npm run check:community-schedule && npm run check:application-dossier && npm run audit && npm test && npm run test:security && npm run test:github && npm run bundle:action && npm run test:consumer-fixture && npm run check:release-candidate && npm run test:cli && npm run verify:dist"
+    "verify": "npm run lint && npm run typecheck && npm run check:fixture-budgets && npm run check:workflow-pins && npm run check:workflow-events && npm run check:community-schedule && npm run check:application-dossier && npm run audit && npm test && npm run test:security && npm run test:github && npm run build && npm run bundle:action && npm run test:consumer-fixture && npm run check:release-candidate && npm run test:cli && npm run verify:dist"
   },
   "dependencies": {
     "ajv": "^8.20.0",
