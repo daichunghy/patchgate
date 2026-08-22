@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Live continuation — 2026-08-22
+- PR #9 remains open and unmerged, but its required CI matrix, CodeQL and the
+  dedicated `CI / Full Verify` job pass on the current public head.
+- `main` protection now requires six strict CI contexts, including `CI / Full Verify`,
+  plus one approving review; no force-push or branch-deletion bypass was added.
+- Discussion #10 was backfilled as the first real scheduled community prompt;
+  the remaining six prompts are staged for an exact two-day cadence.
+- The Codex for Open Source form pack records live 0-star/0-fork/no-release
+  metrics and validates all three 500-character form fields. It remains a
+  preparation artifact, not an eligibility or selection claim.
+- The Full Verify pass fixed two clean-checkout defects: Action auto-run during
+  imported tests and release validation before the CLI build. A CodeQL URL
+  substring alert in the dossier validator was also corrected by exact-line
+  matching.
+
 ### Status checkpoint — 2026-08-20
 - Public foundation is now observable: `origin` points to
   `https://github.com/daichunghy/patchgate`, the repository is public, and the
