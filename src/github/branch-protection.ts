@@ -1,4 +1,4 @@
-import { sha256Digest } from "../canonical-json.js";
+import { compareTextUnit, sha256Digest } from "../canonical-json.js";
 import type { NativeBranchProtection, ObservationMeta, PolicySource } from "../types.js";
 import type { RawBranchProtection } from "./api-types.js";
 import { isRecord } from "./api-types.js";
@@ -55,7 +55,7 @@ export async function collectBranchProtection(client: GitHubClient, owner: strin
       }
     }
     for (const context of raw.required_status_checks?.contexts ?? []) if (!requiredChecksByContext.has(context)) requiredChecksByContext.set(context, { context });
-    const requiredChecks = [...requiredChecksByContext.values()].sort((left, right) => left.context.localeCompare(right.context) || (left.appId ?? 0) - (right.appId ?? 0));
+    const requiredChecks = [...requiredChecksByContext.values()].sort((left, right) => compareTextUnit(left.context, right.context) || (left.appId ?? 0) - (right.appId ?? 0));
     const review = raw.required_pull_request_reviews;
     const protection: NormalizedBranchProtection = { requiredChecks, requiredApprovals: review?.required_approving_review_count ?? 0, requireCodeOwnerReviews: review?.require_code_owner_reviews ?? false, requireLastPushApproval: review?.require_last_push_approval ?? false, staleReviews: review?.dismiss_stale_reviews ?? false, requiredReviewThreadResolution: false, bypassVisible: review?.bypass_pull_request_allowances !== undefined, decisionBearing: requiredChecks.length > 0 || (review?.required_approving_review_count ?? 0) > 0 || review?.require_code_owner_reviews === true || review?.require_last_push_approval === true };
     return { protection, source: { kind: "branch_protection", identity: `branch-protection:${baseRef}`, revision: baseSha, digest: sha256Digest(protection), authority: "enforced" }, meta: { source: { kind: "github", identity: "branch-protection" }, revision: baseSha, retrievedAt, complete: true, permissionState: "sufficient", responseDigest: sha256Digest(response.body) }, diagnostics: [], decisionBearing: protection.decisionBearing };

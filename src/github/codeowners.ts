@@ -3,7 +3,7 @@ import { isRecord, readString, readPositiveInt } from "./api-types.js";
 import { GitHubClient } from "./client.js";
 import { GitHubAdapterError, makeDiagnostic, type GitHubDiagnostic } from "./diagnostics.js";
 import { safeAllowlistedString } from "./redaction.js";
-import { sha256Digest, sha256Text } from "../canonical-json.js";
+import { compareTextUnit, sha256Digest, sha256Text } from "../canonical-json.js";
 
 const CODEOWNERS_PATHS = [".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"] as const;
 
@@ -105,7 +105,7 @@ export async function collectCodeowners(client: GitHubClient, owner: string, nam
     existing.push(path);
     grouped.set(key, existing);
   }
-  const requirements: OwnershipRequirement[] = [...grouped.entries()].sort(([left], [right]) => left.localeCompare(right)).map(([key], index) => ({ id: `codeowners.${index + 1}`, owners: JSON.parse(key) as string[], requiredCount: 1 }));
+  const requirements: OwnershipRequirement[] = [...grouped.entries()].sort(([left], [right]) => compareTextUnit(left, right)).map(([key], index) => ({ id: `codeowners.${index + 1}`, owners: JSON.parse(key) as string[], requiredCount: 1 }));
   const complete = diagnostics.length === 0;
   return { requirements, selectedPath, source: { kind: "codeowners", identity: selectedPath, revision: baseSha, digest: rawDigest, authority: "enforced" }, meta: { source: { kind: "github", identity: selectedPath }, revision: baseSha, retrievedAt, complete, permissionState: complete ? "sufficient" : "unknown", responseDigest: sha256Digest({ rawDigest, rules: parsed.rules }) }, diagnostics };
 }

@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Multi-persona review round — 2026-08-22
+- Fixed the local/live policy-discovery divergence found by the new-user
+  persona: `doctor`, local `preflight` and git-ref loading now accept
+  `.github/patchgate.yml` with the same root-first order as the GitHub
+  adapter, locked by CLI smoke regressions
+  ([review record](reviews/2026-08-22-multi-persona-review.md)).
+- Removed locale-dependent sorting from the adapter (contract-reviewer
+  finding): five `localeCompare` collection sorts whose order feeds
+  positional requirement IDs and native-control digests now use the exported
+  code-unit comparator `compareTextUnit`, keeping receipts reproducible
+  across runtimes with different ICU collation.
+- Receipts now include `nativeControls` when present in the input, so
+  `decisionInputDigest` is recomputable from the receipt alone and the
+  native-controls receipt validation branch is reachable.
+- Hardened `formatMarkdownSummary` cell escaping against markup breakout
+  (HTML-encoding; the first backtick-to-quote attempt was correctly
+  rejected by CodeQL as incomplete sanitization).
+- Recorded the remaining persona findings: no `npx` install path until the
+  npm package is published (top adoption blocker), `evaluatorVersion` schema
+  `const` coupling, CLI exit-code/flag ergonomics, and the program-evaluator
+  action list (npm publish, external shadow pilot, independent review
+  exchange, first external contributor, demo media).
+
 ### Policy-change detection — 2026-08-22
 - Policy-change detection now also matches the loaded policy source identity,
   so a repository whose policy lives at `.github/patchgate.yml` is flagged
