@@ -9,7 +9,9 @@ export type RequirementResult = "passed" | "failed" | "unknown" | "advisory";
 
 export type SchemaVersion = "0.1";
 export type ReceiptSchemaVersion = "0.1";
-export type EvaluatorVersion = "0.1.0-dev";
+// Semantic-version-shaped; the receipt schema and RECEIPT_VERSION_UNSUPPORTED
+// enforce the shape so version bumps never invalidate the receipt contract.
+export type EvaluatorVersion = `${number}.${number}.${number}${"" | `-${string}` | `+${string}`}`;
 
 export type TargetKind = "head" | "merge" | "merge_group";
 
