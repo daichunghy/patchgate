@@ -75,7 +75,7 @@ export function appendStepSummary(markdown: string, env: NodeJS.ProcessEnv = pro
 }
 
 function markdownCell(value: string): string {
-  return value.replace(/[\r\n]+/g, " ").replace(/\|/g, "\\|");
+  return value.replace(/[\r\n]+/g, " ").replace(/\|/g, "\\|").replace(/`/g, "'");
 }
 
 function resolveReportPath(reportPath: string, env: NodeJS.ProcessEnv): string {

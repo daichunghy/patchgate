@@ -2,6 +2,8 @@
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![TypeScript: Strict](https://img.shields.io/badge/TypeScript-Strict_100%25-blue.svg)](https://www.typescriptlang.org/)
+[![CI](https://github.com/daichunghy/patchgate/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/daichunghy/patchgate/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/daichunghy/patchgate/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/daichunghy/patchgate/actions/workflows/codeql.yml)
 
 PatchGate is an open-source review-readiness gate for GitHub pull requests.
 It answers a narrower question than code review or authorship analysis:
@@ -17,11 +19,13 @@ it cannot force external automation to stop working.
 ## GitHub Action candidate
 
 The Action is bundled for the repository's local shadow workflow. The tagged
-pre-release [`v0.1.0-beta.1`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.1)
-is the first immutable reference and is approved for shadow evaluation only;
-production consumers must still wait for a stable public release. Do not use
+pre-release [`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
+is the recommended immutable reference for shadow evaluation; `v0.1.0-beta.1`
+is superseded because its Action inputs were unreadable on real runners.
+Production consumers must still wait for a stable public release. Do not use
 the placeholder `patchgate/patchgate@v0.1.0-dev` as an installable public
-reference.
+reference. Consumer setup, permissions and the shadow workflow are documented
+in the [Action usage guide](docs/github-action-usage.md).
 
 For this checkout, the source-of-truth workflow is
 [`.github/workflows/patchgate-shadow.yml`](.github/workflows/patchgate-shadow.yml).
@@ -94,6 +98,8 @@ The repository maintains a clean root directory structure (9 files max) with mod
 │   ├── CONTRIBUTING.md      # Contribution guidelines and development workflow
 │   ├── SECURITY.md          # Vulnerability reporting and security boundary policy
 │   ├── SUPPORT.md           # Getting support and communication channels
+│   ├── dependabot.yml       # Dependency update configuration
+│   ├── community-posts.json # Scheduled community discussion content
 │   ├── patchgate.yml        # Repository review-readiness policy
 │   ├── ISSUE_TEMPLATE/      # GitHub Issue forms
 │   ├── PULL_REQUEST_TEMPLATE.md # PR description template
@@ -107,20 +113,35 @@ The repository maintains a clean root directory structure (9 files max) with mod
 │   ├── implementation-roadmap.md # Delivery roadmap (G0-G8)
 │   ├── receipt-contract.md  # ContributionReceipt specification
 │   ├── threat-model.md      # Security threat scenarios and mitigations
+│   ├── github-adapter-contract.md # Adapter specification and bounds
+│   ├── github-api-support-matrix.md # API endpoints and versioning
+│   ├── github-permissions.md # Permission model and least privilege
+│   ├── github-action-usage.md # Consumer Action usage & shadow-mode guide
+│   ├── support-bundle.md    # Redacted diagnostic bundle spec
 │   ├── research/            # Landscape and deep-dive research reports
 │   ├── decisions/           # Architecture Decision Records (ADRs)
 │   ├── product/             # User requirements and UX specs
-│   └── reviews/             # Milestone implementation reviews
+│   ├── pilots/              # Usability session protocols & pilot results
+│   ├── prompts/             # Task prompts and launcher specifications
+│   ├── reviews/             # Milestone implementation reviews
+│   ├── releases/            # Release records and the beta rollback runbook
+│   ├── application/         # Codex for Open Source application evidence
+│   ├── community/           # Community interaction and outreach records
+│   └── security/            # GitHub adapter security boundary notes
 ├── src/                     # Pure TypeScript implementation (Strict mode, zero `any`)
+│   ├── types.ts             # Canonical types and data models
 │   ├── evaluator-core.ts    # Deterministic requirement evaluation engine
+│   ├── evaluator.ts         # High-level evaluation runner with timestamping
 │   ├── policy.ts            # Policy parser and SHA-256 digest computation
 │   ├── discovery.ts         # Advisory guidance discovery
+│   ├── canonical-json.ts    # Deterministic JSON serialization and SHA-256
+│   ├── support-bundle.ts    # Diagnostics bundle generator
+│   ├── version.ts           # Evaluator version constant
 │   ├── contract/            # Schemas, status precedence, and validation
 │   ├── evidence/            # Digest computation and check evidence verification
 │   ├── github/              # Authenticated GitHub adapter, snapshot builder, and rate limiters
 │   ├── cli.ts & cli/        # Command-line interface
-│   ├── action/              # GitHub Action runner
-│   └── support-bundle.ts    # Diagnostics bundle generator
+│   └── action/              # GitHub Action runner
 ├── schemas/                 # Versioned JSON Schemas (receipt, policy, evaluation-input)
 ├── fixtures/                # Deterministic test fixtures and API exchange recordings
 ├── test/                    # Comprehensive unit, integration, security, and determinism tests
@@ -140,6 +161,8 @@ The repository maintains a clean root directory structure (9 files max) with mod
 
 - [Project constitution](docs/PROJECT_CONSTITUTION.md)
 - [Example policy](docs/patchgate.example.yml)
+- [Action usage guide](docs/github-action-usage.md)
+- [v0.1.0-beta.2 release record](docs/releases/2026-08-22-beta-candidate.md)
 - [Contributing](.github/CONTRIBUTING.md)
 - [Security policy](.github/SECURITY.md)
 - [Code of conduct](.github/CODE_OF_CONDUCT.md)
@@ -200,7 +223,7 @@ For usability research, use the [consent-safe G2 session record](docs/pilots/g2-
 
 Maintainers can follow the public [community Project](https://github.com/users/daichunghy/projects/1)
 and the [evidence index](docs/application/evidence-index.md). PatchGate does not
-claim downstream adoption, a public release or successful external pilots until
+claim downstream adoption, a production release or successful external pilots until
 those artifacts exist and can be checked independently.
 
 ## Product boundary

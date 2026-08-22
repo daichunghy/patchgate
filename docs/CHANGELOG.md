@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Policy-change detection — 2026-08-22
+- Policy-change detection now also matches the loaded policy source identity,
+  so a repository whose policy lives at `.github/patchgate.yml` is flagged
+  without manually duplicating that path under `policy_changes.paths`. The
+  repository's own policy listed both paths as a workaround; both locations
+  are now derived automatically, and a regression test covers the nested
+  identity.
+
 ### Live consumer smoke fixes — 2026-08-22
 - Released [`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
   at `main@edab0ec` carrying the critical input fix; the maintainer smoke

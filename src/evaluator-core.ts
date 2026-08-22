@@ -59,8 +59,9 @@ function matchedPath(paths: string[], patterns: string[]): boolean {
   });
 }
 
-function changedPolicyPaths(policy: PatchgatePolicy): string[] {
-  return [PATCHGATE_SOURCE, ...(policy.policyChanges?.paths ?? [])];
+function changedPolicyPaths(input: EvaluationInput, policy: PatchgatePolicy): string[] {
+  const identities = input.policySources.filter(isPatchgatePolicySource).map((source) => source.identity);
+  return [PATCHGATE_SOURCE, ...identities, ...(policy.policyChanges?.paths ?? [])];
 }
 
 function qualifiedApprovals(reviews: ReviewSnapshot[], targetSha: string, owners: string[]): ReviewSnapshot[] {
@@ -447,7 +448,7 @@ function humanHandoffRequirements(input: EvaluationInput, policy: PatchgatePolic
     requirements.push(requirement({ id: `handoff.${rule.id}`, ruleClass: "human_handoff", authority: "patchgate", source: PATCHGATE_SOURCE, result: satisfied ? "passed" : "failed", severity: rule.humanGate ? "human_gate" : "block", observed: { matched: true, requiredCount: rule.requiredCount, approvedCount: approvals.length }, remediation: `Obtain the configured human approval for ${rule.id}; PatchGate cannot force an agent to stop.`, evidenceRefs: approvals.map((review) => `review:${review.reviewId}:actor:${review.actorId}:${review.commitId}`) }));
   }
   if (policy.policyChanges !== undefined) {
-    if (!matchedPath(input.changedPaths, changedPolicyPaths(policy))) return { requirements, gates };
+    if (!matchedPath(input.changedPaths, changedPolicyPaths(input, policy))) return { requirements, gates };
     const result: RequirementResult = policy.policyChanges.mode === "advisory" ? "advisory" : "failed";
     requirements.push(requirement({ id: "policy.change", ruleClass: "human_handoff", authority: "patchgate", source: PATCHGATE_SOURCE, result, severity: policy.policyChanges.mode === "blocked" ? "block" : "human_gate", observed: { changedPaths: input.changedPaths }, remediation: "Review and merge the policy change under the trusted base policy; it cannot relax its own PR evaluation.", evidenceRefs: ["observation:changedPaths"] }));
   }
