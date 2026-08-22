@@ -3,6 +3,10 @@
 **Current state:** unpublished development package; no public Action tag or
 `v0.1` release is claimed.
 
+The publication and rollback procedure is documented separately in the [beta
+release and rollback runbook](releases/beta-release-and-rollback.md). This
+checklist is a prerequisite, not permission to publish.
+
 ## Local gate
 
 Run from a clean checkout after building the CLI and Action bundle:

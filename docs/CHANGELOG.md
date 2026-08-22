@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reran the authorized GET-only GitHub smoke against PR head `5f9ccb5`:
   24 bounded requests produced schema-valid input and receipt with the real
   non-ready result `human_review_required`; no GitHub write was performed.
+- Added a copy-ready G4 shadow-installation runbook with consent, full-SHA,
+  permission, stop and rollback guidance, plus a beta release/rollback runbook
+  that keeps release authorization with the maintainer.
+- Added an explicit `actions: read` permission to the shadow workflow and a
+  regression check so workflow-run provenance cannot silently become unknown.
+- Corrected the README links for the consumer fixture and beta rollback issues.
 
 ### Status checkpoint — 2026-08-20
 - Public foundation is now observable: `origin` points to

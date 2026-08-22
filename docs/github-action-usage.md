@@ -3,6 +3,11 @@
 PatchGate contains a local/shadow GitHub Action candidate. It is not yet a
 released Marketplace action or a proven public `v0.1` distribution.
 
+For a real external shadow installation, use the [G4 shadow-installation
+runbook](pilots/g4-shadow-installation-runbook.md). For beta publication and
+rollback, use the [beta release runbook](releases/beta-release-and-rollback.md)
+after the documented gates have been reviewed.
+
 ---
 
 ## 1. Quick Start: Shadow Mode (Recommended for Initial Setup)
