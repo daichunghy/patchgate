@@ -369,7 +369,12 @@ export async function upsertCheckRun(params: CheckRunParams, fetchImpl: typeof f
 const postCheckRun = upsertCheckRun;
 
 // Auto-run if executed directly as entrypoint
-if (process.env.GITHUB_ACTIONS === "true") {
+function isDirectActionEntrypoint(): boolean {
+  const entrypoint = process.argv[1];
+  return entrypoint !== undefined && /[\\/]dist[\\/]action[\\/]index\.js$/.test(entrypoint);
+}
+
+if (process.env.GITHUB_ACTIONS === "true" && isDirectActionEntrypoint()) {
   runAction().then((exitCode) => {
     if (exitCode !== 0) process.exit(exitCode);
   }).catch((err) => {
