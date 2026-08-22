@@ -195,7 +195,7 @@ patchgate evaluate --event snapshot.json --report receipt.json
 produced by the adapter — not a raw GitHub event payload.
 
 ```yaml
-- uses: daichunghy/patchgate@v0.1.0-beta.1
+- uses: daichunghy/patchgate@v0.1.0-beta.2
   with:
     fail-on: blocked
 ```
@@ -203,7 +203,8 @@ produced by the adapter — not a raw GitHub event payload.
 The tagged beta reference is approved for shadow evaluation only
 (`fail-on: never` in the [shadow runbook](docs/pilots/g4-shadow-installation-runbook.md));
 `fail-on: blocked` above is the enforcement form intended for the first
-stable release.
+stable release. Pin `v0.1.0-beta.2` or later: `v0.1.0-beta.1` Action inputs
+were unreadable on real runners and the tag is superseded.
 
 The first supported rule classes are:
 
