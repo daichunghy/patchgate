@@ -179,6 +179,7 @@ The repository maintains a clean root directory structure (9 files max) with mod
 - [Prompt launcher for Prompt 4](docs/prompts/prompt-04-launcher.md)
 - [G0 maintainer decision brief](docs/decisions/2026-08-13-g0-maintainer-decision-brief.md)
 - [Codex for Open Source evidence dossier](docs/application/codex-for-open-source-evidence-dossier.md)
+- [Codex for Open Source form draft](docs/application/codex-for-open-source-form-draft.md)
 
 ## Evaluate or contribute
 

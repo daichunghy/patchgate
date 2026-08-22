@@ -1,7 +1,7 @@
 # Codex for Open Source evidence dossier
 
 **Status:** preparation only; not submitted and not an approval claim  
-**Date:** 2026-08-20
+**Date:** 2026-08-22
 **Project:** PatchGate
 
 ## Purpose
@@ -18,24 +18,27 @@ and the program terms linked from that application.
 
 | Program signal | Evidence currently available | Strength | Missing before submission |
 | --- | --- | --- | --- |
-| Public active open-source project | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 `LICENSE`, community files, CI definitions, public Project #1, draft PR #9 and a [successful public `main` CI run](https://github.com/daichunghy/patchgate/actions/runs/32333914059); `package.json` remains private | public foundation, pre-release | merged maintainer workflow, support/security operation and public release |
-| Meaningful usage or ecosystem importance | Product rationale, threat model, four public Discussions, a poll-style requirements question and context-specific questions on four related OSS repositories; no public usage, stars, downloads, replies or downstream users are claimed | ecosystem relevance hypothesis, not usage evidence | public release, real users/pilots, independent maintainer responses and concrete ecosystem references |
-| Active maintenance | Public Git history, current implementation, security review, deterministic verification, protected `main`, four scoped contribution issues with start paths, public Project #1, draft PR #9 and a successful default-branch CI run are recorded | public pre-release maintainer activity | merged external contributions, release history, live maintainer workflow and external pilots |
+| Public active open-source project | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 `LICENSE`, community files, CI definitions, public Project #1, open PR #9 and a [successful public `main` CI run](https://github.com/daichunghy/patchgate/actions/runs/32333914059); `package.json` remains private | public foundation, pre-release | merged maintainer workflow, support/security operation and public release |
+| Meaningful usage or ecosystem importance | Product rationale, threat model, five self-authored Discussions including [#10](https://github.com/daichunghy/patchgate/discussions/10), a requirements question and context-specific questions on four related OSS repositories; live metrics are 0 stars, 0 forks, 0 tags/releases and no verified downstream users | ecosystem relevance hypothesis, not usage evidence | public release, real users/pilots, independent maintainer responses and concrete ecosystem references |
+| Active maintenance | Public Git history, current implementation, security review, deterministic verification, protected `main`, four scoped contribution issues with start paths, public Project #1, open PR #9 and passing required PR checks are recorded | public pre-release maintainer activity | merged external contributions, release history, live maintainer workflow and external pilots |
 | Maintainer role | Repository is public under `daichunghy/patchgate`; the application still requires the maintainer to state the role explicitly | partially verified | final applicant identity/role confirmation |
 | Security and quality | Local verification passes; no high-severity npm audit findings; security boundary and fail-closed tests exist; protected `main` and public CI run `32333914059` are observable | local/fixture plus public CI | publish pending hardening, then obtain public Security Audit/CodeQL runs, authorized live integration and external review |
 | Codex use case | Clear fit for PR review-readiness, triage, security review and release maintenance | documented | explain concrete day-to-day workflow after publication |
 
-## Effect of the 2026-08-20 community update
+## Effect of the 2026-08-20–2026-08-22 community update
 
 The update is useful as supporting evidence of active maintenance. It shows that
 the maintainer is organizing contribution paths, asking technically specific
 questions, and building a public workflow around issues, Discussions and a
-Project board. The draft PR and evidence packet also make the work inspectable.
+Project board. Discussion #10 is now public, and the hardening PR/evidence
+packet make the work inspectable.
 
 It does not prove meaningful usage, broad adoption, external maintainer support
 or a completed pilot. The four outbound comments are outreach attempts, not
 responses or endorsements. Self-authored Discussions, a Project board and a
 scheduled-post workflow must not be counted as independent community activity.
+The current public repository has 0 stars, 0 forks, no tags/releases and no
+verified downloads or downstream users.
 
 The correct application claim is therefore: “PatchGate has a public,
 security-conscious pre-release maintenance workflow and is seeking its first
@@ -80,35 +83,13 @@ release and pilots.
 4. Use security-focused review only with public, non-sensitive artifacts and
    coordinated disclosure practices.
 
-## Application draft fields
+## Application form pack
 
-These fields are a draft only. They are not ready for submission until the
-public repository, maintainer role and usage evidence are independently
-verifiable.
-
-```text
-Applicant name: [Your Name]
-ChatGPT account email: [Your ChatGPT Account Email]
-Public GitHub username: daichunghy
-Public repository URL: https://github.com/daichunghy/patchgate
-Role: primary maintainer / core maintainer
-Interest: both (Codex Security & API credits)
-OpenAI Organization ID: [Your Org ID]
-
-Why the repository qualifies (<=500 characters, draft only):
-PatchGate is an Apache-2.0 open-source developer-infrastructure project for a concrete maintainer problem: verifying policy, commit-bound evidence, ownership and human review boundaries before a pull request consumes review time. It has a public repository, deterministic evaluator, security model, CLI/Action candidate and contribution/pilot workflow. It is pre-release, so we make no adoption claim; the ecosystem need is trustworthy review readiness for agent-assisted contributions.
-
-How credits will be used (<=500 characters, draft only):
-API credits would support bounded issue triage, deterministic regression-fixture drafting, pull-request review preparation, security finding triage on authorized repositories, and release/rollback checklists. PatchGate would keep its evaluator deterministic, require maintainer approval for code and releases, exclude secrets and private repository data, and link each useful output to a public issue, test, PR or release artifact.
-
-Additional context (<=500 characters, draft only):
-Maintainers need to know whether a pull request is ready before spending time on
-a full review. PatchGate moves policy discovery, evidence binding, and human
-approval boundaries before that review. It does so without executing untrusted
-pull-request code in a privileged workflow. The repository is still seeking its
-first consenting external pilots, so this application describes a concrete
-maintenance problem and pre-release evidence rather than claiming adoption.
-```
+The copy-ready fields, character counts, live metrics and five-day submission
+checklist now live in [the form draft](codex-for-open-source-form-draft.md).
+Run `npm run check:application-dossier` before copying the answers into the
+official form. Applicant identity, maintainer role, ChatGPT email and OpenAI
+Organization ID remain intentionally blank until the applicant supplies them.
 
 ## Submission checklist
 
@@ -119,6 +100,8 @@ maintenance problem and pre-release evidence rather than claiming adoption.
 - [x] Authorized G3 live read-only smoke; complete snapshot/receipt built, with non-ready requirements retained as evidence.
 - [ ] Three G2 usability sessions with consenting participants.
 - [ ] Two G4 shadow installations.
-- [x] Push default branch to a maintainer-confirmed public GitHub remote.
+- [x] Confirm the repository is public and the maintainer-controlled remote is reachable.
+- [ ] Merge the public hardening PR and verify the resulting default-branch workflows.
+- [ ] Fill and validate the [copy-ready form draft](codex-for-open-source-form-draft.md).
 - [ ] Confirm public support/security routes and maintainer role for the application.
 - [ ] Submit application form at `https://openai.com/form/codex-for-oss/`.
