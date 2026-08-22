@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an explicit `actions: read` permission to the shadow workflow and a
   regression check so workflow-run provenance cannot silently become unknown.
 - Corrected the README links for the consumer fixture and beta rollback issues.
+- Added an internal Markdown-link verifier to the authoritative verification
+  chain and fixed broken relative links in the public support guide.
 
 ### Status checkpoint — 2026-08-20
 - Public foundation is now observable: `origin` points to
