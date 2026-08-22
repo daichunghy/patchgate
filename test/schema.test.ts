@@ -87,6 +87,14 @@ describe("runtime contract schemas", () => {
     rejectsContract(() => assertContributionReceipt(forged), "RECEIPT_REFERENCE_MISSING");
   });
 
+  it("rejects failed+evidence requirement combinations that would compute ready_for_review", async () => {
+    const receipt = evaluate(await fixture());
+    const forged = structuredClone(receipt);
+    forged.requirements[0] = { ...forged.requirements[0]!, result: "failed", severity: "evidence" };
+    forged.receiptDigest = receiptDigest(forged);
+    rejectsContract(() => assertContributionReceipt(forged), "SCHEMA_INVALID");
+  });
+
   it("keeps the three version namespaces independent", async () => {
     const input = await fixture();
     const receipt = evaluate(input);

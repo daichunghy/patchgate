@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Init draft comments, contributor health, receipt schema — 2026-08-22
+- `init` writes a commented map of the six supported rule classes from
+  `docs/patchgate.example.yml`. Only `version: 1` is live YAML; comments are
+  not parsed as rules. Overwrite refusal, `enforcement: not_enabled`, and
+  `--github-dir` are unchanged.
+- CONTRIBUTING now states the fork/PR model, `npm run verify` as the merge
+  gate, the Node 20 / CI 20.x–22.x / Action `node24` scatter, base-SHA
+  policy, good-first work outside the trust boundary, one-maintainer review,
+  and Apache-2.0 with no extra CLA/DCO. SUPPORT labels pre-release support
+  as best effort and documents `GITHUB_PROVENANCE_AMBIGUOUS`. Dependabot
+  now watches `github-actions` weekly in addition to npm.
+- Receipt schema rejects `result: failed` + `severity: evidence`, which the
+  evaluator never emits and which would otherwise compute `ready_for_review`.
+  Observation digest helpers now share `normalizedObservationDigest` /
+  `compareTextUnit` so validation and evidence hashing stay byte-identical.
+  CODEOWNERS still rejects `?` as unsupported subset syntax.
+
 ### init --github-dir and local-file doctor without Git — 2026-08-22
 - `init --github-dir` writes `.github/patchgate.yml` and still refuses overwrite.
 - Missing Git is informational for local-file `doctor`, so a draft directory
