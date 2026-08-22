@@ -39,27 +39,25 @@ API credits would support bounded issue triage, deterministic regression-fixture
 ### Anything else we should know? (maximum 500 characters)
 
 ```text
-PatchGate is designed for the review burden created when contributions and coding agents move faster than maintainer attention. It does not detect AI authorship or replace human approval. Current evidence is honest: public pre-release repository, PR #9 with passing required checks, five self-authored Discussions and a scheduled community workflow; there are no stars, releases, downstream users or pilots yet.
+PatchGate is designed for the review burden created when contributions and coding agents move faster than maintainer attention. It does not detect AI authorship or replace human approval. Current evidence is honest: public repository, merged hardening history, a tagged v0.1.0-beta.1 pre-release with reproducible verification, five self-authored Discussions and a scheduled community workflow; there are no external pilots or adoption yet.
 ```
 
 ## Evidence snapshot for the application
 
 | Signal | Verified state on 2026-08-22 | Evidence boundary |
 | --- | --- | --- |
-| Repository visibility | `daichunghy/patchgate` is public, Apache-2.0, default branch `main` | Public foundation, not release or adoption |
-| Default branch | `main@a3745f6` | The hardening PR is not yet part of default-branch code |
-| Maintainer hardening | PR [#9](https://github.com/daichunghy/patchgate/pull/9) is open and mergeable; the latest required CI and CodeQL checks pass | Public reviewable work, not a merged workflow |
-| Community activity | Discussions #1, #2, #3, #8 and [#10](https://github.com/daichunghy/patchgate/discussions/10) | Self-authored maintenance activity; no external replies yet |
-| Usage signals | 0 stars, 0 forks, 0 tags/releases, no verified downloads or downstream users | Do not claim broad adoption |
-| Pilot/release | No completed external pilot and no public release | Required evidence remains open |
+| Repository visibility | `daichunghy/patchgate` is public, Apache-2.0, default branch `main` | Public foundation, not adoption |
+| Default branch | `main@301c700`; hardening PR #9 and follow-up PRs #15–#18 merged by the maintainer (administrator decision, recorded as such) | Merged workflow; the PR #9 merge lacked an independent approving review |
+| Release | [`v0.1.0-beta.1`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.1) pre-release at `301c700` with fresh-checkout verification record | Beta for shadow evaluation; not production-declared, not externally piloted |
+| Dependency hygiene | Dependabot PRs #11/#13/#14 merged after local re-verification; #12 (TypeScript 7) deferred with documented `@vercel/ncc` blocker | Active maintenance, not a quality guarantee |
+| Community activity | Discussions #1, #2, #3, #8 and [#10](https://github.com/daichunghy/patchgate/discussions/10); community scheduler active on `main` | Self-authored maintenance activity; no external replies yet |
+| Usage signals | No verified downloads, downstream users or pilots; check live star/fork counts at submission time | Do not claim broad adoption |
+| Pilot/release | Shadow-installation no-go decision recorded in the release record; no completed external pilot | Required evidence for any `v0.1` claim remains open |
 
 ## Five-day completion checklist
 
 - [ ] Fill applicant name, ChatGPT email and OpenAI Organization ID.
 - [ ] Confirm primary/core maintainer role and public GitHub profile visibility.
-- [ ] Ask an independent maintainer to review PR #9; do not self-approve.
-- [ ] Merge PR #9 if the required review is granted and checks remain green.
-- [ ] Verify the first post-run of the community scheduler on `main`.
 - [ ] Record any real external reply, pilot consent or contribution; do not
       substitute self-authored activity.
 - [ ] Re-run the live metrics check immediately before submitting.
