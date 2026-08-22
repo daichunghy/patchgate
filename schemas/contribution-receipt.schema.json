@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schemaVersion", "evaluatorVersion", "repository", "revisions", "policyDigest", "decisionInputDigest", "receiptDigest", "changedPaths", "policySources", "observations", "evidence", "requirements", "humanGates", "final", "evaluatedAt"],
   "properties": {
-    "schemaVersion": { "const": "0.1" }, "evaluatorVersion": { "const": "0.1.0-dev" },
+    "schemaVersion": { "const": "0.1" }, "evaluatorVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$" },
     "repository": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/repository" }, "revisions": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/revisions" },
     "policyDigest": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/digest" }, "decisionInputDigest": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/digest" }, "receiptDigest": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/digest" },
     "changedPaths": { "type": "array", "maxItems": 3000, "items": { "$ref": "https://patchgate.dev/schemas/evaluation-input/0.1#/$defs/nonBlank" }, "uniqueItems": true },

@@ -93,6 +93,12 @@ describe("runtime contract schemas", () => {
     expect(input.schemaVersion).toBe("0.1");
     expect(receipt.schemaVersion).toBe("0.1");
     expect(receipt.evaluatorVersion).toBe("0.1.0-dev");
-    rejectsContract(() => assertContributionReceipt({ ...receipt, evaluatorVersion: "0.1.0" }), "SCHEMA_INVALID");
+    // A future evaluator bump stays valid against this schema; only the
+    // receipt digest defends integrity.
+    const bumped: typeof receipt = { ...receipt, evaluatorVersion: "0.1.0" };
+    bumped.receiptDigest = receiptDigest(bumped);
+    assertContributionReceipt(bumped);
+    rejectsContract(() => assertContributionReceipt({ ...receipt, evaluatorVersion: "not-a-version" }), "SCHEMA_INVALID");
+    rejectsContract(() => assertContributionReceipt({ ...receipt, schemaVersion: "0.2" }), "SCHEMA_INVALID");
   });
 });

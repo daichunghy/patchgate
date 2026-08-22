@@ -248,6 +248,26 @@ export async function loadPatchgatePolicy(
   throw new Error(`ENOENT: no supported patchgate.yml found in ${basePath} (tried patchgate.yml and .github/patchgate.yml)`);
 }
 
+export async function isGitWorkTree(repositoryPath: string): Promise<boolean> {
+  try {
+    const result = await execFileAsync("git", ["-C", repositoryPath, "rev-parse", "--is-inside-work-tree"], { encoding: "utf8", maxBuffer: 64 * 1024 });
+    return result.stdout.trim() === "true";
+  } catch {
+    return false;
+  }
+}
+
+function isMissingGitBlob(error: unknown): boolean {
+  const err = error as { stderr?: string; message?: string };
+  const text = `${err.stderr ?? ""} ${err.message ?? ""}`.toLowerCase();
+  return (
+    text.includes("not a valid object name") ||
+    text.includes("does not exist") ||
+    text.includes("exists on disk, but not in") ||
+    text.includes("bad file")
+  );
+}
+
 export async function loadPatchgatePolicyFromGitRefWithFallback(
   repositoryPath: string,
   ref: string,
@@ -255,11 +275,8 @@ export async function loadPatchgatePolicyFromGitRefWithFallback(
   try {
     return await loadPatchgatePolicyFromGitRef(repositoryPath, ref, "patchgate.yml");
   } catch (rootError) {
-    try {
-      return await loadPatchgatePolicyFromGitRef(repositoryPath, ref, join(".github", "patchgate.yml"));
-    } catch {
-      throw rootError;
-    }
+    if (!isMissingGitBlob(rootError)) throw rootError;
+    return await loadPatchgatePolicyFromGitRef(repositoryPath, ref, join(".github", "patchgate.yml"));
   }
 }
 

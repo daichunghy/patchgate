@@ -24,6 +24,7 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 │   └── workflows/           # CI/CD and verification GitHub Actions
 ├── docs/                    # Architecture, specifications, research, roadmap & ADRs
 │   ├── PROJECT_CONSTITUTION.md # Authoritative charter & constitution
+│   ├── getting-started.md   # Clone, build, init, validate, preflight, doctor, evaluate
 │   ├── CHANGELOG.md         # Release history
 │   ├── NOTICE               # Open source attribution notices
 │   ├── patchgate.example.yml # Example PatchGate policy
@@ -68,7 +69,7 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 ├── fixtures/                # Deterministic test fixtures and API exchange recordings
 ├── test/                    # Comprehensive unit, integration, security, and determinism tests
 ├── scripts/                 # Linters, budget checkers, and verification harnesses
-├── action.yml               # GitHub Marketplace Action metadata and entrypoint
+├── action.yml               # GitHub Action metadata (not Marketplace-listed) and entrypoint
 ├── AGENTS.md                # AI agent operating rules and context (this file)
 ├── LICENSE                  # Apache-2.0 License
 ├── README.md                # Project overview and quickstart
@@ -97,24 +98,25 @@ readiness.
 
 | Area | Current evidence | Status and limit |
 | --- | --- | --- |
-| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI runs including the latest `32563526945` on `main@e4052f2` | Foundation is present; `main` requires six CI contexts and one approving review, `0.1.0-dev` remains an unpublished package, beta tags through `v0.1.0-beta.2` exist, and there is no downstream usage; the hardening PR #9 was merged by the repository administrator on 2026-08-22 without an independent approving review, which is recorded here as a maintainer decision rather than independent-review evidence |
+| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI runs including the recorded `32563526945` on `main@e4052f2` | Foundation is present; public default branch is `main@6db56a4` after PR #26; `main` requires six CI contexts and one approving review, `0.1.0-dev` remains an unpublished package, beta tags through `v0.1.0-beta.2` exist, and there is no downstream usage; the hardening PR #9 was merged by the repository administrator on 2026-08-22 without an independent approving review, which is recorded here as a maintainer decision rather than independent-review evidence |
 | G1 deterministic contract | TypeScript evaluator, schemas, receipt digests, recorded fixtures, security coverage, and deterministic tests | Locally verified; this does not prove a live GitHub integration |
 | G2 local preflight | `preflight`, `validate`, `init`, `doctor`, Git-ref loading, discovery classification, text/JSON parity, and five CLI process tests | Local user flow is verified; three consented usability sessions and UR acceptance evidence are still open |
 | G3 GitHub adapter | Recorded/mock authenticated snapshot flow, bounded requests, source and SHA binding, TOCTOU re-read, redaction, branch-protection and Rulesets subset contract, 25 integration tests and the latest recorded GET-only smoke for PR #9 head `5f9ccb5` | The tested head built a schema-valid live snapshot and receipt with final status `human_review_required`; missing approval/ownership/linkage evidence remains explicit; unsupported Ruleset semantics and merge-group membership remain fail-closed |
-| G4 Action | Root `action.yml`, `src/action/index.ts`, committed ncc bundle, pinned workflows, required CI/CodeQL merge-group triggers, clean-room bundle verification, idempotent check delivery, consumer fixture smoke and explicit non-ready merge-group handling are merged into `main` | Local consumer boundary is verified; no live external consumer E2E, production release or two consenting non-blocking shadow installations |
-| User value and release | Protocols, roadmap, five public Discussions including [#10](https://github.com/daichunghy/patchgate/discussions/10), a [pilot request](https://github.com/daichunghy/patchgate/issues/4), three contribution issues, public Project #1, merged PR #9 and the `v0.1.0-beta.1` pre-release with a recorded shadow-installation no-go decision exist; four context-specific questions were posted to related OSS repositories | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, production release, or `v0.1` claim |
+| G4 Action | Root `action.yml`, `src/action/index.ts`, committed ncc bundle, pinned workflows, required CI/CodeQL merge-group triggers, clean-room bundle verification, idempotent check delivery including a neutral check run when the snapshot is rejected (PR #26), consumer fixture smoke and explicit non-ready merge-group handling are merged into `main` | Local consumer boundary is verified; no live external consumer E2E, production release or two consenting non-blocking shadow installations |
+| User value and release | Protocols, roadmap, five public Discussions including [#10](https://github.com/daichunghy/patchgate/discussions/10), a [pilot request](https://github.com/daichunghy/patchgate/issues/4), three contribution issues, public Project #1, merged PR #9 and the `v0.1.0-beta.2` pre-release (`v0.1.0-beta.1` superseded) with a recorded shadow-installation no-go decision exist; four context-specific questions were posted to related OSS repositories | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, production release, or `v0.1` claim |
 
-The public default branch is currently `main@e4052f2`. [PR #9](https://github.com/daichunghy/patchgate/pull/9)
-and follow-ups #15–#21, #23 and #25 were merged on 2026-08-22 by the repository
+The public default branch is currently `main@6db56a4`. [PR #9](https://github.com/daichunghy/patchgate/pull/9)
+and follow-ups #15–#21, #23, #25 and #26 were merged on 2026-08-22 by the repository
 administrator after temporarily lifting `enforce_admins`; the setting was
 restored immediately after each merge, and every such merge is recorded as a
 maintainer decision rather than independent-review evidence. Completed
-default-branch workflow runs include the latest
+default-branch workflow runs include the recorded
 [CI 32563526945](https://github.com/daichunghy/patchgate/actions/runs/32563526945)
 and CodeQL `32563526929` on `main@e4052f2`, earlier runs through
 [32559824706](https://github.com/daichunghy/patchgate/actions/runs/32559824706)
 on `main@c9f643e`, and the first public run
 [CI 32333914059](https://github.com/daichunghy/patchgate/actions/runs/32333914059).
+This snapshot does not claim a new CI run id for `6db56a4`.
 Live branch
 protection also requires one approving pull-request review, dismisses stale
 reviews, requires six CI contexts including `CI / Full Verify`, enforces
@@ -187,25 +189,27 @@ The policy source is always the base commit. A change proposed in a PR does not 
 The first complete release provides a CLI and GitHub Action built on the same deterministic evaluator.
 
 ```bash
-patchgate preflight --base origin/main
-patchgate evaluate --event snapshot.json --report receipt.json
+node dist/src/cli.js preflight --base origin/main
+node dist/src/cli.js evaluate --event snapshot.json --report receipt.json
 ```
 
 `evaluate` consumes a normalized evaluation-input snapshot
 ([`schemas/evaluation-input.schema.json`](schemas/evaluation-input.schema.json))
 produced by the adapter — not a raw GitHub event payload.
 
+Current allowed Action form (shadow only):
+
 ```yaml
 - uses: daichunghy/patchgate@v0.1.0-beta.2
   with:
-    fail-on: blocked
+    fail-on: never
+    create-check-run: true
 ```
 
-The tagged beta reference is approved for shadow evaluation only
-(`fail-on: never` in the [shadow runbook](docs/pilots/g4-shadow-installation-runbook.md));
-`fail-on: blocked` above is the enforcement form intended for the first
-stable release. Pin `v0.1.0-beta.2` or later: `v0.1.0-beta.1` Action inputs
-were unreadable on real runners and the tag is superseded.
+`fail-on: blocked` is the enforcement form intended for the first stable
+release, not for this pre-release. Pin `v0.1.0-beta.2` or later:
+`v0.1.0-beta.1` Action inputs were unreadable on real runners and the tag
+is superseded.
 
 The first supported rule classes are:
 

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fixture, review, withInput, withPolicy } from "./helpers.js";
@@ -19,8 +19,8 @@ function runCli(inputPath: string): { exit: number | null; status?: string; stde
   return { exit: result.status, ...(status === undefined ? {} : { status }), stderr: result.stderr.trim() };
 }
 
-function runCommand(args: string[]): { exit: number | null; stdout: string; stderr: string } {
-  const result = spawnSync(process.execPath, [resolve("dist/src/cli.js"), ...args], { encoding: "utf8" });
+function runCommand(args: string[], cwd?: string): { exit: number | null; stdout: string; stderr: string } {
+  const result = spawnSync(process.execPath, [resolve("dist/src/cli.js"), ...args], { encoding: "utf8", ...(cwd === undefined ? {} : { cwd }) });
   return { exit: result.status, stdout: result.stdout.trim(), stderr: result.stderr.trim() };
 }
 
@@ -54,6 +54,10 @@ describe("CLI process smoke contract", () => {
     expect(rootHelp.stdout).toContain("PatchGate CLI");
     expect(rootHelp.stdout).toContain("preflight");
     expect(rootHelp.stdout).toContain("doctor");
+    expect(rootHelp.stdout).toContain("--json");
+    expect(rootHelp.stdout).toContain("--fail-on");
+    expect(rootHelp.stdout).toContain("--report");
+    expect(rootHelp.stdout).toContain("--output");
 
     const rootVersion = runCommand(["--version"]);
     expect(rootVersion.exit).toBe(0);
@@ -63,12 +67,27 @@ describe("CLI process smoke contract", () => {
     expect(preflightHelp.exit).toBe(0);
     expect(preflightHelp.stdout).toContain("Usage: patchgate preflight");
 
+    const nestedInitDir = join(directory, "nested", "try");
+    const nestedInit = runCommand(["init", "--path", nestedInitDir, "--json"]);
+    expect(nestedInit.exit).toBe(0);
+    expect(JSON.parse(nestedInit.stdout)).toMatchObject({ status: "created", enforcement: "not_enabled" });
+    const githubInitDir = join(directory, "github-init");
+    const githubInit = runCommand(["init", "--path", githubInitDir, "--github-dir", "--json"]);
+    expect(githubInit.exit).toBe(0);
+    expect(JSON.parse(githubInit.stdout).path).toContain(`${join(".github", "patchgate.yml")}`);
+    const noGitDoctor = runCommand(["doctor", "--base", nestedInitDir, "--json"]);
+    expect(noGitDoctor.exit).toBe(0);
+    expect(JSON.parse(noGitDoctor.stdout)).toMatchObject({ status: "ready_for_local_preflight" });
     const initialized = runCommand(["init", "--path", directory, "--json"]);
     expect(initialized.exit).toBe(0);
     expect(JSON.parse(initialized.stdout)).toMatchObject({ status: "created", enforcement: "not_enabled" });
+    expect(readFileSync(join(directory, "patchgate.yml"), "utf8")).toContain("docs/patchgate.example.yml");
     const validated = runCommand(["validate", "--policy", join(directory, "patchgate.yml"), "--json"]);
     expect(validated.exit).toBe(0);
     expect(JSON.parse(validated.stdout)).toMatchObject({ policy: { version: 1 } });
+    const validatedViaBase = runCommand(["validate", "--base", join(directory, "patchgate.yml"), "--json"]);
+    expect(validatedViaBase.exit).toBe(0);
+    expect(JSON.parse(validatedViaBase.stdout)).toMatchObject({ policy: { version: 1 } });
     const overwrite = runCommand(["init", "--path", directory]);
     expect(overwrite.exit).toBe(2);
     expect(overwrite.stderr).toContain("INIT_TARGET_EXISTS");
@@ -128,6 +147,22 @@ describe("CLI process smoke contract", () => {
     expect(JSON.parse(gitPreflight.stdout)).toMatchObject({ mode: "git_ref", policySource: { revision: expect.stringMatching(/^[0-9a-f]{40}$/) } });
     expect(JSON.parse(gitPreflight.stdout).guidance).toEqual(expect.arrayContaining([expect.objectContaining({ path: "README.md", classification: "needs_confirmation", diagnosticId: "DISCOVERY_POLICY_CONFLICT" })]));
     writeFileSync(join(gitDirectory, "patchgate.yml"), "version: 1\nissueLinkage:\n  required: true\n", "utf8");
+    const cwdGitDirectory = mkdtempSync("/tmp/patchgate-cli-git-ref-cwd-");
+    tempDirectories.push(cwdGitDirectory);
+    mkdirSync(join(cwdGitDirectory, ".github"));
+    writeFileSync(join(cwdGitDirectory, ".github", "patchgate.yml"), "version: 1\n", "utf8");
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "init", "-q", "-b", "main"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "config", "user.email", "test@example.invalid"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "config", "user.name", "PatchGate Test"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "add", ".github/patchgate.yml"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", cwdGitDirectory, "commit", "-q", "-m", "baseline"], { encoding: "utf8" }).status).toBe(0);
+    const cwdGitPreflight = runCommand(["preflight", "--base", "main", "--json"], cwdGitDirectory);
+    expect(cwdGitPreflight.exit).toBe(0);
+    expect(JSON.parse(cwdGitPreflight.stdout)).toMatchObject({ mode: "git_ref", policySource: { identity: ".github/patchgate.yml", revision: expect.stringMatching(/^[0-9a-f]{40}$/) } });
+    const nonJsDoctor = runCommand(["doctor", "--base", cwdGitDirectory, "--json"]);
+    expect(nonJsDoctor.exit).toBe(0);
+    expect(JSON.parse(nonJsDoctor.stdout)).toMatchObject({ status: "ready_for_local_preflight", mode: "local" });
+    expect(JSON.parse(nonJsDoctor.stdout).checks).toEqual(expect.arrayContaining([expect.objectContaining({ id: "package", status: "passed" })]));
     const headChangeIgnored = runCommand(["preflight", "--base", "HEAD", "--repo", gitDirectory, "--json"]);
     expect(JSON.parse(headChangeIgnored.stdout).policy).toEqual({ version: 1 });
   }, CLI_PROCESS_TEST_TIMEOUT);
@@ -136,8 +171,26 @@ describe("CLI process smoke contract", () => {
     const base = await fixture();
     expect(runCli(writeInput(base))).toMatchObject({ exit: 0, status: "ready_for_review" });
     expect(runCli(writeInput(withInput(base, { linkedIssues: [] })))).toMatchObject({ exit: 1, status: "blocked" });
+    // Default --fail-on is "blocked" with Action precedence semantics:
+    // blocked, evidence_missing and policy_ambiguous exit 1, while
+    // human_review_required stays non-failing until the threshold is raised.
     expect(runCli(writeInput(withInput(base, { policy: { version: 1 } })))).toMatchObject({ exit: 1, status: "policy_ambiguous" });
     expect(runCli(writeInput(withInput(base, { observations: { ...base.observations, linkedIssues: { ...base.observations.linkedIssues, complete: false, permissionState: "unknown", normalizedDigest: undefined } } })))).toMatchObject({ exit: 1, status: "evidence_missing" });
+    const failOnNever = runCommand(["evaluate", "--event", writeInput(withInput(base, { linkedIssues: [] })), "--fail-on", "never"]);
+    expect(failOnNever.exit).toBe(0);
+    expect(JSON.parse(failOnNever.stdout).final.status).toBe("blocked");
+    const failOnEvidenceOnly = runCommand(["evaluate", "--event", writeInput(withInput(base, { linkedIssues: [] })), "--fail-on", "evidence_missing"]);
+    expect(failOnEvidenceOnly.exit).toBe(0);
+    expect(JSON.parse(failOnEvidenceOnly.stdout).final.status).toBe("blocked");
+    const missingFailOnValue = runCommand(["evaluate", "--event", writeInput(base), "--fail-on"]);
+    expect(missingFailOnValue.exit).toBe(2);
+    expect(missingFailOnValue.stderr).toContain("FAIL_ON_INVALID");
+    const bogusFailOn = runCommand(["evaluate", "--event", writeInput(base), "--fail-on", "bogus"]);
+    expect(bogusFailOn.exit).toBe(2);
+    expect(bogusFailOn.stderr).toContain("FAIL_ON_INVALID");
+    const rejectedNever = runCommand(["github", "snapshot", "--mock-fixture", resolve("fixtures/api/merge-group-unsupported.json"), "--fail-on", "never"]);
+    expect(rejectedNever.exit).toBe(0);
+    expect(runCli(writeInput(withInput(withPolicy(base, sensitivePolicy()), { changedPaths: ["src/auth/token.ts"], reviews: [] })))).toMatchObject({ exit: 0, status: "human_review_required" });
     expect(runCli(writeInput(withInput(base, { revisions: { ...base.revisions, testedSha: "foreign-sha" } })))).toMatchObject({ exit: 2 });
   }, CLI_PROCESS_TEST_TIMEOUT);
 
@@ -159,7 +212,7 @@ describe("CLI process smoke contract", () => {
     expect(supportBundle).not.toHaveProperty("snapshot");
 
     const unsupported = runCommand(["github", "snapshot", "--mock-fixture", resolve("fixtures/api/merge-group-unsupported.json")]);
-    expect(unsupported.exit).toBe(2);
+    expect(unsupported.exit).toBe(1);
     expect(JSON.parse(unsupported.stdout)).toMatchObject({ kind: "rejected", diagnostic: { id: "GITHUB_API_UNSUPPORTED" } });
 
     const malformedFixture = join(outputDirectory, "malformed-api-fixture.json");

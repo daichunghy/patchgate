@@ -1,19 +1,19 @@
-export const id = 995;
-export const ids = [995];
+export const id = 815;
+export const ids = [815];
 export const modules = {
 
-/***/ 9425:
+/***/ 7349:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var Scalar = __webpack_require__(8041);
-var YAMLMap = __webpack_require__(8178);
-var YAMLSeq = __webpack_require__(1803);
-var resolveBlockMap = __webpack_require__(2067);
-var resolveBlockSeq = __webpack_require__(8418);
-var resolveFlowCollection = __webpack_require__(3610);
+var identity = __webpack_require__(1127);
+var Scalar = __webpack_require__(3301);
+var YAMLMap = __webpack_require__(4454);
+var YAMLSeq = __webpack_require__(2223);
+var resolveBlockMap = __webpack_require__(7103);
+var resolveBlockSeq = __webpack_require__(334);
+var resolveFlowCollection = __webpack_require__(3142);
 
 function resolveCollection(CN, ctx, token, onError, tagName, tag) {
     const coll = token.type === 'block-map'
@@ -99,15 +99,15 @@ exports.composeCollection = composeCollection;
 
 /***/ }),
 
-/***/ 2527:
+/***/ 3683:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Document = __webpack_require__(8769);
-var composeNode = __webpack_require__(3477);
-var resolveEnd = __webpack_require__(3064);
-var resolveProps = __webpack_require__(371);
+var Document = __webpack_require__(5402);
+var composeNode = __webpack_require__(5937);
+var resolveEnd = __webpack_require__(5407);
+var resolveProps = __webpack_require__(4631);
 
 function composeDoc(options, directives, { offset, start, value, end }, onError) {
     const opts = Object.assign({ _directives: directives }, options);
@@ -151,17 +151,17 @@ exports.composeDoc = composeDoc;
 
 /***/ }),
 
-/***/ 3477:
+/***/ 5937:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Alias = __webpack_require__(5341);
-var identity = __webpack_require__(1835);
-var composeCollection = __webpack_require__(9425);
-var composeScalar = __webpack_require__(593);
-var resolveEnd = __webpack_require__(3064);
-var utilEmptyScalarPosition = __webpack_require__(1731);
+var Alias = __webpack_require__(4065);
+var identity = __webpack_require__(1127);
+var composeCollection = __webpack_require__(7349);
+var composeScalar = __webpack_require__(5413);
+var resolveEnd = __webpack_require__(5407);
+var utilEmptyScalarPosition = __webpack_require__(2599);
 
 const CN = { composeNode, composeEmptyNode };
 function composeNode(ctx, token, props, onError) {
@@ -270,15 +270,15 @@ exports.composeNode = composeNode;
 
 /***/ }),
 
-/***/ 593:
+/***/ 5413:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var Scalar = __webpack_require__(8041);
-var resolveBlockScalar = __webpack_require__(1453);
-var resolveFlowScalar = __webpack_require__(7182);
+var identity = __webpack_require__(1127);
+var Scalar = __webpack_require__(3301);
+var resolveBlockScalar = __webpack_require__(8913);
+var resolveFlowScalar = __webpack_require__(6842);
 
 function composeScalar(ctx, token, tagToken, onError) {
     const { value, type, comment, range } = token.type === 'block-scalar'
@@ -365,18 +365,18 @@ exports.composeScalar = composeScalar;
 
 /***/ }),
 
-/***/ 2284:
+/***/ 9984:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
 var node_process = __webpack_require__(932);
-var directives = __webpack_require__(6466);
-var Document = __webpack_require__(8769);
-var errors = __webpack_require__(9804);
-var identity = __webpack_require__(1835);
-var composeDoc = __webpack_require__(2527);
-var resolveEnd = __webpack_require__(3064);
+var directives = __webpack_require__(1342);
+var Document = __webpack_require__(5402);
+var errors = __webpack_require__(1464);
+var identity = __webpack_require__(1127);
+var composeDoc = __webpack_require__(3683);
+var resolveEnd = __webpack_require__(5407);
 
 function getErrorPos(src) {
     if (typeof src === 'number')
@@ -596,17 +596,17 @@ exports.Composer = Composer;
 
 /***/ }),
 
-/***/ 2067:
+/***/ 7103:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Pair = __webpack_require__(9337);
-var YAMLMap = __webpack_require__(8178);
-var resolveProps = __webpack_require__(371);
-var utilContainsNewline = __webpack_require__(4023);
-var utilFlowIndentCheck = __webpack_require__(8175);
-var utilMapIncludes = __webpack_require__(1727);
+var Pair = __webpack_require__(7165);
+var YAMLMap = __webpack_require__(4454);
+var resolveProps = __webpack_require__(4631);
+var utilContainsNewline = __webpack_require__(9499);
+var utilFlowIndentCheck = __webpack_require__(4051);
+var utilMapIncludes = __webpack_require__(1187);
 
 const startColMsg = 'All mapping items must start at the same column';
 function resolveBlockMap({ composeNode, composeEmptyNode }, ctx, bm, onError, tag) {
@@ -720,12 +720,12 @@ exports.resolveBlockMap = resolveBlockMap;
 
 /***/ }),
 
-/***/ 1453:
+/***/ 8913:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Scalar = __webpack_require__(8041);
+var Scalar = __webpack_require__(3301);
 
 function resolveBlockScalar(ctx, scalar, onError) {
     const start = scalar.offset;
@@ -927,14 +927,14 @@ exports.resolveBlockScalar = resolveBlockScalar;
 
 /***/ }),
 
-/***/ 8418:
+/***/ 334:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var YAMLSeq = __webpack_require__(1803);
-var resolveProps = __webpack_require__(371);
-var utilFlowIndentCheck = __webpack_require__(8175);
+var YAMLSeq = __webpack_require__(2223);
+var resolveProps = __webpack_require__(4631);
+var utilFlowIndentCheck = __webpack_require__(4051);
 
 function resolveBlockSeq({ composeNode, composeEmptyNode }, ctx, bs, onError, tag) {
     const NodeClass = tag?.nodeClass ?? YAMLSeq.YAMLSeq;
@@ -985,7 +985,7 @@ exports.resolveBlockSeq = resolveBlockSeq;
 
 /***/ }),
 
-/***/ 3064:
+/***/ 5407:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1031,19 +1031,19 @@ exports.resolveEnd = resolveEnd;
 
 /***/ }),
 
-/***/ 3610:
+/***/ 3142:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var Pair = __webpack_require__(9337);
-var YAMLMap = __webpack_require__(8178);
-var YAMLSeq = __webpack_require__(1803);
-var resolveEnd = __webpack_require__(3064);
-var resolveProps = __webpack_require__(371);
-var utilContainsNewline = __webpack_require__(4023);
-var utilMapIncludes = __webpack_require__(1727);
+var identity = __webpack_require__(1127);
+var Pair = __webpack_require__(7165);
+var YAMLMap = __webpack_require__(4454);
+var YAMLSeq = __webpack_require__(2223);
+var resolveEnd = __webpack_require__(5407);
+var resolveProps = __webpack_require__(4631);
+var utilContainsNewline = __webpack_require__(9499);
+var utilMapIncludes = __webpack_require__(1187);
 
 const blockMsg = 'Block collections are not allowed within flow collections';
 const isBlock = (token) => token && (token.type === 'block-map' || token.type === 'block-seq');
@@ -1247,13 +1247,13 @@ exports.resolveFlowCollection = resolveFlowCollection;
 
 /***/ }),
 
-/***/ 7182:
+/***/ 6842:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Scalar = __webpack_require__(8041);
-var resolveEnd = __webpack_require__(3064);
+var Scalar = __webpack_require__(3301);
+var resolveEnd = __webpack_require__(5407);
 
 function resolveFlowScalar(scalar, strict, onError) {
     const { offset, type, source, end } = scalar;
@@ -1481,7 +1481,7 @@ exports.resolveFlowScalar = resolveFlowScalar;
 
 /***/ }),
 
-/***/ 371:
+/***/ 4631:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1636,7 +1636,7 @@ exports.resolveProps = resolveProps;
 
 /***/ }),
 
-/***/ 4023:
+/***/ 9499:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1679,7 +1679,7 @@ exports.containsNewline = containsNewline;
 
 /***/ }),
 
-/***/ 1731:
+/***/ 2599:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1714,12 +1714,12 @@ exports.emptyScalarPosition = emptyScalarPosition;
 
 /***/ }),
 
-/***/ 8175:
+/***/ 4051:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var utilContainsNewline = __webpack_require__(4023);
+var utilContainsNewline = __webpack_require__(9499);
 
 function flowIndentCheck(indent, fc, onError) {
     if (fc?.type === 'flow-collection') {
@@ -1738,12 +1738,12 @@ exports.flowIndentCheck = flowIndentCheck;
 
 /***/ }),
 
-/***/ 1727:
+/***/ 1187:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
+var identity = __webpack_require__(1127);
 
 function mapIncludes(ctx, items, search) {
     const { uniqueKeys } = ctx.options;
@@ -1760,22 +1760,22 @@ exports.mapIncludes = mapIncludes;
 
 /***/ }),
 
-/***/ 8769:
+/***/ 5402:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Alias = __webpack_require__(5341);
-var Collection = __webpack_require__(2777);
-var identity = __webpack_require__(1835);
-var Pair = __webpack_require__(9337);
-var toJS = __webpack_require__(1319);
-var Schema = __webpack_require__(6244);
-var stringifyDocument = __webpack_require__(1209);
-var anchors = __webpack_require__(9248);
-var applyReviver = __webpack_require__(1697);
-var createNode = __webpack_require__(3272);
-var directives = __webpack_require__(6466);
+var Alias = __webpack_require__(4065);
+var Collection = __webpack_require__(101);
+var identity = __webpack_require__(1127);
+var Pair = __webpack_require__(7165);
+var toJS = __webpack_require__(4043);
+var Schema = __webpack_require__(5840);
+var stringifyDocument = __webpack_require__(9210);
+var anchors = __webpack_require__(1596);
+var applyReviver = __webpack_require__(3661);
+var createNode = __webpack_require__(2404);
+var directives = __webpack_require__(1342);
 
 class Document {
     constructor(value, replacer, options) {
@@ -2104,13 +2104,13 @@ exports.Document = Document;
 
 /***/ }),
 
-/***/ 9248:
+/***/ 1596:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var visit = __webpack_require__(7608);
+var identity = __webpack_require__(1127);
+var visit = __webpack_require__(204);
 
 /**
  * Verify that the input string is a valid anchor.
@@ -2187,7 +2187,7 @@ exports.findNewAnchor = findNewAnchor;
 
 /***/ }),
 
-/***/ 1697:
+/***/ 3661:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2251,14 +2251,14 @@ exports.applyReviver = applyReviver;
 
 /***/ }),
 
-/***/ 3272:
+/***/ 2404:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Alias = __webpack_require__(5341);
-var identity = __webpack_require__(1835);
-var Scalar = __webpack_require__(8041);
+var Alias = __webpack_require__(4065);
+var identity = __webpack_require__(1127);
+var Scalar = __webpack_require__(3301);
 
 const defaultTagPrefix = 'tag:yaml.org,2002:';
 function findTagObject(value, tagName, tags) {
@@ -2348,13 +2348,13 @@ exports.createNode = createNode;
 
 /***/ }),
 
-/***/ 6466:
+/***/ 1342:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var visit = __webpack_require__(7608);
+var identity = __webpack_require__(1127);
+var visit = __webpack_require__(204);
 
 const escapeChars = {
     '!': '%21',
@@ -2533,7 +2533,7 @@ exports.Directives = Directives;
 
 /***/ }),
 
-/***/ 9804:
+/***/ 1464:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2602,27 +2602,27 @@ exports.prettifyError = prettifyError;
 
 /***/ }),
 
-/***/ 6995:
+/***/ 8815:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var composer = __webpack_require__(2284);
-var Document = __webpack_require__(8769);
-var Schema = __webpack_require__(6244);
-var errors = __webpack_require__(9804);
-var Alias = __webpack_require__(5341);
-var identity = __webpack_require__(1835);
-var Pair = __webpack_require__(9337);
-var Scalar = __webpack_require__(8041);
-var YAMLMap = __webpack_require__(8178);
-var YAMLSeq = __webpack_require__(1803);
-var cst = __webpack_require__(8313);
-var lexer = __webpack_require__(7805);
-var lineCounter = __webpack_require__(8560);
-var parser = __webpack_require__(5724);
-var publicApi = __webpack_require__(9627);
-var visit = __webpack_require__(7608);
+var composer = __webpack_require__(9984);
+var Document = __webpack_require__(5402);
+var Schema = __webpack_require__(5840);
+var errors = __webpack_require__(1464);
+var Alias = __webpack_require__(4065);
+var identity = __webpack_require__(1127);
+var Pair = __webpack_require__(7165);
+var Scalar = __webpack_require__(3301);
+var YAMLMap = __webpack_require__(4454);
+var YAMLSeq = __webpack_require__(2223);
+var cst = __webpack_require__(3461);
+var lexer = __webpack_require__(361);
+var lineCounter = __webpack_require__(6628);
+var parser = __webpack_require__(3456);
+var publicApi = __webpack_require__(4047);
+var visit = __webpack_require__(204);
 
 
 
@@ -2659,7 +2659,7 @@ exports.visitAsync = visit.visitAsync;
 
 /***/ }),
 
-/***/ 6981:
+/***/ 7249:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -2685,16 +2685,16 @@ exports.warn = warn;
 
 /***/ }),
 
-/***/ 5341:
+/***/ 4065:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var anchors = __webpack_require__(9248);
-var visit = __webpack_require__(7608);
-var identity = __webpack_require__(1835);
-var Node = __webpack_require__(1357);
-var toJS = __webpack_require__(1319);
+var anchors = __webpack_require__(1596);
+var visit = __webpack_require__(204);
+var identity = __webpack_require__(1127);
+var Node = __webpack_require__(6673);
+var toJS = __webpack_require__(4043);
 
 class Alias extends Node.NodeBase {
     constructor(source) {
@@ -2810,14 +2810,14 @@ exports.Alias = Alias;
 
 /***/ }),
 
-/***/ 2777:
+/***/ 101:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var createNode = __webpack_require__(3272);
-var identity = __webpack_require__(1835);
-var Node = __webpack_require__(1357);
+var createNode = __webpack_require__(2404);
+var identity = __webpack_require__(1127);
+var Node = __webpack_require__(6673);
 
 function collectionFromPath(schema, path, value) {
     let v = value;
@@ -2968,14 +2968,14 @@ exports.isEmptyPath = isEmptyPath;
 
 /***/ }),
 
-/***/ 1357:
+/***/ 6673:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var applyReviver = __webpack_require__(1697);
-var identity = __webpack_require__(1835);
-var toJS = __webpack_require__(1319);
+var applyReviver = __webpack_require__(3661);
+var identity = __webpack_require__(1127);
+var toJS = __webpack_require__(4043);
 
 class NodeBase {
     constructor(type) {
@@ -3015,15 +3015,15 @@ exports.NodeBase = NodeBase;
 
 /***/ }),
 
-/***/ 9337:
+/***/ 7165:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var createNode = __webpack_require__(3272);
-var stringifyPair = __webpack_require__(7032);
-var addPairToJSMap = __webpack_require__(2932);
-var identity = __webpack_require__(1835);
+var createNode = __webpack_require__(2404);
+var stringifyPair = __webpack_require__(9748);
+var addPairToJSMap = __webpack_require__(7104);
+var identity = __webpack_require__(1127);
 
 function createPair(key, value, ctx) {
     const k = createNode.createNode(key, undefined, ctx);
@@ -3061,14 +3061,14 @@ exports.createPair = createPair;
 
 /***/ }),
 
-/***/ 8041:
+/***/ 3301:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var Node = __webpack_require__(1357);
-var toJS = __webpack_require__(1319);
+var identity = __webpack_require__(1127);
+var Node = __webpack_require__(6673);
+var toJS = __webpack_require__(4043);
 
 const isScalarValue = (value) => !value || (typeof value !== 'function' && typeof value !== 'object');
 class Scalar extends Node.NodeBase {
@@ -3095,17 +3095,17 @@ exports.isScalarValue = isScalarValue;
 
 /***/ }),
 
-/***/ 8178:
+/***/ 4454:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var stringifyCollection = __webpack_require__(4808);
-var addPairToJSMap = __webpack_require__(2932);
-var Collection = __webpack_require__(2777);
-var identity = __webpack_require__(1835);
-var Pair = __webpack_require__(9337);
-var Scalar = __webpack_require__(8041);
+var stringifyCollection = __webpack_require__(1212);
+var addPairToJSMap = __webpack_require__(7104);
+var Collection = __webpack_require__(101);
+var identity = __webpack_require__(1127);
+var Pair = __webpack_require__(7165);
+var Scalar = __webpack_require__(3301);
 
 function findPair(items, key) {
     const k = identity.isScalar(key) ? key.value : key;
@@ -3249,17 +3249,17 @@ exports.findPair = findPair;
 
 /***/ }),
 
-/***/ 1803:
+/***/ 2223:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var createNode = __webpack_require__(3272);
-var stringifyCollection = __webpack_require__(4808);
-var Collection = __webpack_require__(2777);
-var identity = __webpack_require__(1835);
-var Scalar = __webpack_require__(8041);
-var toJS = __webpack_require__(1319);
+var createNode = __webpack_require__(2404);
+var stringifyCollection = __webpack_require__(1212);
+var Collection = __webpack_require__(101);
+var identity = __webpack_require__(1127);
+var Scalar = __webpack_require__(3301);
+var toJS = __webpack_require__(4043);
 
 class YAMLSeq extends Collection.Collection {
     static get tagName() {
@@ -3371,16 +3371,16 @@ exports.YAMLSeq = YAMLSeq;
 
 /***/ }),
 
-/***/ 2932:
+/***/ 7104:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var log = __webpack_require__(6981);
-var merge = __webpack_require__(560);
-var stringify = __webpack_require__(9128);
-var identity = __webpack_require__(1835);
-var toJS = __webpack_require__(1319);
+var log = __webpack_require__(7249);
+var merge = __webpack_require__(452);
+var stringify = __webpack_require__(2148);
+var identity = __webpack_require__(1127);
+var toJS = __webpack_require__(4043);
 
 function addPairToJSMap(ctx, map, { key, value }) {
     if (identity.isNode(key) && key.addToJSMap)
@@ -3443,7 +3443,7 @@ exports.addPairToJSMap = addPairToJSMap;
 
 /***/ }),
 
-/***/ 1835:
+/***/ 1127:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3503,12 +3503,12 @@ exports.isSeq = isSeq;
 
 /***/ }),
 
-/***/ 1319:
+/***/ 4043:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
+var identity = __webpack_require__(1127);
 
 /**
  * Recursively convert any node or its contents to native JavaScript
@@ -3549,15 +3549,15 @@ exports.toJS = toJS;
 
 /***/ }),
 
-/***/ 7338:
+/***/ 110:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var resolveBlockScalar = __webpack_require__(1453);
-var resolveFlowScalar = __webpack_require__(7182);
-var errors = __webpack_require__(9804);
-var stringifyString = __webpack_require__(6377);
+var resolveBlockScalar = __webpack_require__(8913);
+var resolveFlowScalar = __webpack_require__(6842);
+var errors = __webpack_require__(1464);
+var stringifyString = __webpack_require__(3069);
 
 function resolveAsScalar(token, strict = true, onError) {
     if (token) {
@@ -3774,7 +3774,7 @@ exports.setScalarValue = setScalarValue;
 
 /***/ }),
 
-/***/ 1793:
+/***/ 1733:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3844,7 +3844,7 @@ exports.stringify = stringify;
 
 /***/ }),
 
-/***/ 1391:
+/***/ 7715:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -3950,14 +3950,14 @@ exports.visit = visit;
 
 /***/ }),
 
-/***/ 8313:
+/***/ 3461:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var cstScalar = __webpack_require__(7338);
-var cstStringify = __webpack_require__(1793);
-var cstVisit = __webpack_require__(1391);
+var cstScalar = __webpack_require__(110);
+var cstStringify = __webpack_require__(1733);
+var cstVisit = __webpack_require__(7715);
 
 /** The byte order mark */
 const BOM = '\u{FEFF}';
@@ -4069,12 +4069,12 @@ exports.tokenType = tokenType;
 
 /***/ }),
 
-/***/ 7805:
+/***/ 361:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var cst = __webpack_require__(8313);
+var cst = __webpack_require__(3461);
 
 /*
 START -> stream
@@ -4799,7 +4799,7 @@ exports.Lexer = Lexer;
 
 /***/ }),
 
-/***/ 8560:
+/***/ 6628:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -4847,14 +4847,14 @@ exports.LineCounter = LineCounter;
 
 /***/ }),
 
-/***/ 5724:
+/***/ 3456:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
 var node_process = __webpack_require__(932);
-var cst = __webpack_require__(8313);
-var lexer = __webpack_require__(7805);
+var cst = __webpack_require__(3461);
+var lexer = __webpack_require__(361);
 
 function includesToken(list, type) {
     for (let i = 0; i < list.length; ++i)
@@ -5834,18 +5834,18 @@ exports.Parser = Parser;
 
 /***/ }),
 
-/***/ 9627:
+/***/ 4047:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var composer = __webpack_require__(2284);
-var Document = __webpack_require__(8769);
-var errors = __webpack_require__(9804);
-var log = __webpack_require__(6981);
-var identity = __webpack_require__(1835);
-var lineCounter = __webpack_require__(8560);
-var parser = __webpack_require__(5724);
+var composer = __webpack_require__(9984);
+var Document = __webpack_require__(5402);
+var errors = __webpack_require__(1464);
+var log = __webpack_require__(7249);
+var identity = __webpack_require__(1127);
+var lineCounter = __webpack_require__(6628);
+var parser = __webpack_require__(3456);
 
 function parseOptions(options) {
     const prettyErrors = options.prettyErrors !== false;
@@ -5948,16 +5948,16 @@ exports.stringify = stringify;
 
 /***/ }),
 
-/***/ 6244:
+/***/ 5840:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var map = __webpack_require__(7271);
-var seq = __webpack_require__(3414);
-var string = __webpack_require__(6100);
-var tags = __webpack_require__(3814);
+var identity = __webpack_require__(1127);
+var map = __webpack_require__(7451);
+var seq = __webpack_require__(1706);
+var string = __webpack_require__(6464);
+var tags = __webpack_require__(18);
 
 const sortMapEntriesByKey = (a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0;
 class Schema {
@@ -5994,13 +5994,13 @@ exports.Schema = Schema;
 
 /***/ }),
 
-/***/ 7271:
+/***/ 7451:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var YAMLMap = __webpack_require__(8178);
+var identity = __webpack_require__(1127);
+var YAMLMap = __webpack_require__(4454);
 
 const map = {
     collection: 'map',
@@ -6020,12 +6020,12 @@ exports.map = map;
 
 /***/ }),
 
-/***/ 1052:
+/***/ 3632:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Scalar = __webpack_require__(8041);
+var Scalar = __webpack_require__(3301);
 
 const nullTag = {
     identify: value => value == null,
@@ -6044,13 +6044,13 @@ exports.nullTag = nullTag;
 
 /***/ }),
 
-/***/ 3414:
+/***/ 1706:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var YAMLSeq = __webpack_require__(1803);
+var identity = __webpack_require__(1127);
+var YAMLSeq = __webpack_require__(2223);
 
 const seq = {
     collection: 'seq',
@@ -6070,12 +6070,12 @@ exports.seq = seq;
 
 /***/ }),
 
-/***/ 6100:
+/***/ 6464:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var stringifyString = __webpack_require__(6377);
+var stringifyString = __webpack_require__(3069);
 
 const string = {
     identify: value => typeof value === 'string',
@@ -6093,12 +6093,12 @@ exports.string = string;
 
 /***/ }),
 
-/***/ 1139:
+/***/ 3959:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Scalar = __webpack_require__(8041);
+var Scalar = __webpack_require__(3301);
 
 const boolTag = {
     identify: value => typeof value === 'boolean',
@@ -6121,13 +6121,13 @@ exports.boolTag = boolTag;
 
 /***/ }),
 
-/***/ 5105:
+/***/ 8405:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Scalar = __webpack_require__(8041);
-var stringifyNumber = __webpack_require__(3461);
+var Scalar = __webpack_require__(3301);
+var stringifyNumber = __webpack_require__(8689);
 
 const floatNaN = {
     identify: value => typeof value === 'number',
@@ -6175,12 +6175,12 @@ exports.floatNaN = floatNaN;
 
 /***/ }),
 
-/***/ 8958:
+/***/ 9874:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var stringifyNumber = __webpack_require__(3461);
+var stringifyNumber = __webpack_require__(8689);
 
 const intIdentify = (value) => typeof value === 'bigint' || Number.isInteger(value);
 const intResolve = (str, offset, radix, { intAsBigInt }) => (intAsBigInt ? BigInt(str) : parseInt(str.substring(offset), radix));
@@ -6224,18 +6224,18 @@ exports.intOct = intOct;
 
 /***/ }),
 
-/***/ 8836:
+/***/ 896:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var map = __webpack_require__(7271);
-var _null = __webpack_require__(1052);
-var seq = __webpack_require__(3414);
-var string = __webpack_require__(6100);
-var bool = __webpack_require__(1139);
-var float = __webpack_require__(5105);
-var int = __webpack_require__(8958);
+var map = __webpack_require__(7451);
+var _null = __webpack_require__(3632);
+var seq = __webpack_require__(1706);
+var string = __webpack_require__(6464);
+var bool = __webpack_require__(3959);
+var float = __webpack_require__(8405);
+var int = __webpack_require__(9874);
 
 const schema = [
     map.map,
@@ -6256,14 +6256,14 @@ exports.schema = schema;
 
 /***/ }),
 
-/***/ 6347:
+/***/ 3559:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Scalar = __webpack_require__(8041);
-var map = __webpack_require__(7271);
-var seq = __webpack_require__(3414);
+var Scalar = __webpack_require__(3301);
+var map = __webpack_require__(7451);
+var seq = __webpack_require__(1706);
 
 function intIdentify(value) {
     return typeof value === 'bigint' || Number.isInteger(value);
@@ -6327,27 +6327,27 @@ exports.schema = schema;
 
 /***/ }),
 
-/***/ 3814:
+/***/ 18:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var map = __webpack_require__(7271);
-var _null = __webpack_require__(1052);
-var seq = __webpack_require__(3414);
-var string = __webpack_require__(6100);
-var bool = __webpack_require__(1139);
-var float = __webpack_require__(5105);
-var int = __webpack_require__(8958);
-var schema = __webpack_require__(8836);
-var schema$1 = __webpack_require__(6347);
-var binary = __webpack_require__(5007);
-var merge = __webpack_require__(560);
-var omap = __webpack_require__(6243);
-var pairs = __webpack_require__(3053);
-var schema$2 = __webpack_require__(1581);
-var set = __webpack_require__(580);
-var timestamp = __webpack_require__(4196);
+var map = __webpack_require__(7451);
+var _null = __webpack_require__(3632);
+var seq = __webpack_require__(1706);
+var string = __webpack_require__(6464);
+var bool = __webpack_require__(3959);
+var float = __webpack_require__(8405);
+var int = __webpack_require__(9874);
+var schema = __webpack_require__(896);
+var schema$1 = __webpack_require__(3559);
+var binary = __webpack_require__(6083);
+var merge = __webpack_require__(452);
+var omap = __webpack_require__(303);
+var pairs = __webpack_require__(8385);
+var schema$2 = __webpack_require__(5913);
+var set = __webpack_require__(1528);
+var timestamp = __webpack_require__(6752);
 
 const schemas = new Map([
     ['core', schema.schema],
@@ -6433,14 +6433,14 @@ exports.getTags = getTags;
 
 /***/ }),
 
-/***/ 5007:
+/***/ 6083:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
 var node_buffer = __webpack_require__(181);
-var Scalar = __webpack_require__(8041);
-var stringifyString = __webpack_require__(6377);
+var Scalar = __webpack_require__(3301);
+var stringifyString = __webpack_require__(3069);
 
 const binary = {
     identify: value => value instanceof Uint8Array, // Buffer inherits from Uint8Array
@@ -6510,12 +6510,12 @@ exports.binary = binary;
 
 /***/ }),
 
-/***/ 9770:
+/***/ 8398:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Scalar = __webpack_require__(8041);
+var Scalar = __webpack_require__(3301);
 
 function boolStringify({ value, source }, ctx) {
     const boolObj = value ? trueTag : falseTag;
@@ -6546,13 +6546,13 @@ exports.trueTag = trueTag;
 
 /***/ }),
 
-/***/ 9346:
+/***/ 5782:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Scalar = __webpack_require__(8041);
-var stringifyNumber = __webpack_require__(3461);
+var Scalar = __webpack_require__(3301);
+var stringifyNumber = __webpack_require__(8689);
 
 const floatNaN = {
     identify: value => typeof value === 'number',
@@ -6603,12 +6603,12 @@ exports.floatNaN = floatNaN;
 
 /***/ }),
 
-/***/ 9317:
+/***/ 873:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var stringifyNumber = __webpack_require__(3461);
+var stringifyNumber = __webpack_require__(8689);
 
 const intIdentify = (value) => typeof value === 'bigint' || Number.isInteger(value);
 function intResolve(str, offset, radix, { intAsBigInt }) {
@@ -6686,13 +6686,13 @@ exports.intOct = intOct;
 
 /***/ }),
 
-/***/ 560:
+/***/ 452:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var Scalar = __webpack_require__(8041);
+var identity = __webpack_require__(1127);
+var Scalar = __webpack_require__(3301);
 
 // If the value associated with a merge key is a single mapping node, each of
 // its key/value pairs is inserted into the current mapping, unless the key
@@ -6764,16 +6764,16 @@ exports.merge = merge;
 
 /***/ }),
 
-/***/ 6243:
+/***/ 303:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var toJS = __webpack_require__(1319);
-var YAMLMap = __webpack_require__(8178);
-var YAMLSeq = __webpack_require__(1803);
-var pairs = __webpack_require__(3053);
+var identity = __webpack_require__(1127);
+var toJS = __webpack_require__(4043);
+var YAMLMap = __webpack_require__(4454);
+var YAMLSeq = __webpack_require__(2223);
+var pairs = __webpack_require__(8385);
 
 class YAMLOMap extends YAMLSeq.YAMLSeq {
     constructor() {
@@ -6848,15 +6848,15 @@ exports.omap = omap;
 
 /***/ }),
 
-/***/ 3053:
+/***/ 8385:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var Pair = __webpack_require__(9337);
-var Scalar = __webpack_require__(8041);
-var YAMLSeq = __webpack_require__(1803);
+var identity = __webpack_require__(1127);
+var Pair = __webpack_require__(7165);
+var Scalar = __webpack_require__(3301);
+var YAMLSeq = __webpack_require__(2223);
 
 function resolvePairs(seq, onError) {
     if (identity.isSeq(seq)) {
@@ -6937,24 +6937,24 @@ exports.resolvePairs = resolvePairs;
 
 /***/ }),
 
-/***/ 1581:
+/***/ 5913:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var map = __webpack_require__(7271);
-var _null = __webpack_require__(1052);
-var seq = __webpack_require__(3414);
-var string = __webpack_require__(6100);
-var binary = __webpack_require__(5007);
-var bool = __webpack_require__(9770);
-var float = __webpack_require__(9346);
-var int = __webpack_require__(9317);
-var merge = __webpack_require__(560);
-var omap = __webpack_require__(6243);
-var pairs = __webpack_require__(3053);
-var set = __webpack_require__(580);
-var timestamp = __webpack_require__(4196);
+var map = __webpack_require__(7451);
+var _null = __webpack_require__(3632);
+var seq = __webpack_require__(1706);
+var string = __webpack_require__(6464);
+var binary = __webpack_require__(6083);
+var bool = __webpack_require__(8398);
+var float = __webpack_require__(5782);
+var int = __webpack_require__(873);
+var merge = __webpack_require__(452);
+var omap = __webpack_require__(303);
+var pairs = __webpack_require__(8385);
+var set = __webpack_require__(1528);
+var timestamp = __webpack_require__(6752);
 
 const schema = [
     map.map,
@@ -6985,14 +6985,14 @@ exports.schema = schema;
 
 /***/ }),
 
-/***/ 580:
+/***/ 1528:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var Pair = __webpack_require__(9337);
-var YAMLMap = __webpack_require__(8178);
+var identity = __webpack_require__(1127);
+var Pair = __webpack_require__(7165);
+var YAMLMap = __webpack_require__(4454);
 
 class YAMLSet extends YAMLMap.YAMLMap {
     constructor(schema) {
@@ -7088,12 +7088,12 @@ exports.set = set;
 
 /***/ }),
 
-/***/ 4196:
+/***/ 6752:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var stringifyNumber = __webpack_require__(3461);
+var stringifyNumber = __webpack_require__(8689);
 
 /** Internal types handle bigint as number, because TS can't figure it out. */
 function parseSexagesimal(str, asBigInt) {
@@ -7200,7 +7200,7 @@ exports.timestamp = timestamp;
 
 /***/ }),
 
-/***/ 1015:
+/***/ 4475:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -7358,15 +7358,15 @@ exports.foldFlowLines = foldFlowLines;
 
 /***/ }),
 
-/***/ 9128:
+/***/ 2148:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var anchors = __webpack_require__(9248);
-var identity = __webpack_require__(1835);
-var stringifyComment = __webpack_require__(4880);
-var stringifyString = __webpack_require__(6377);
+var anchors = __webpack_require__(1596);
+var identity = __webpack_require__(1127);
+var stringifyComment = __webpack_require__(9799);
+var stringifyString = __webpack_require__(3069);
 
 function createStringifyContext(doc, options) {
     const opt = Object.assign({
@@ -7497,14 +7497,14 @@ exports.stringify = stringify;
 
 /***/ }),
 
-/***/ 4808:
+/***/ 1212:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var stringify = __webpack_require__(9128);
-var stringifyComment = __webpack_require__(4880);
+var identity = __webpack_require__(1127);
+var stringify = __webpack_require__(2148);
+var stringifyComment = __webpack_require__(9799);
 
 function stringifyCollection(collection, ctx, options) {
     const flow = ctx.inFlow ?? collection.flow;
@@ -7659,7 +7659,7 @@ exports.stringifyCollection = stringifyCollection;
 
 /***/ }),
 
-/***/ 4880:
+/***/ 9799:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -7690,14 +7690,14 @@ exports.stringifyComment = stringifyComment;
 
 /***/ }),
 
-/***/ 1209:
+/***/ 9210:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var stringify = __webpack_require__(9128);
-var stringifyComment = __webpack_require__(4880);
+var identity = __webpack_require__(1127);
+var stringify = __webpack_require__(2148);
+var stringifyComment = __webpack_require__(9799);
 
 function stringifyDocument(doc, options) {
     const lines = [];
@@ -7784,7 +7784,7 @@ exports.stringifyDocument = stringifyDocument;
 
 /***/ }),
 
-/***/ 3461:
+/***/ 8689:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -7818,15 +7818,15 @@ exports.stringifyNumber = stringifyNumber;
 
 /***/ }),
 
-/***/ 7032:
+/***/ 9748:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
-var Scalar = __webpack_require__(8041);
-var stringify = __webpack_require__(9128);
-var stringifyComment = __webpack_require__(4880);
+var identity = __webpack_require__(1127);
+var Scalar = __webpack_require__(3301);
+var stringify = __webpack_require__(2148);
+var stringifyComment = __webpack_require__(9799);
 
 function stringifyPair({ key, value }, ctx, onComment, onChompKeep) {
     const { allNullValues, doc, indent, indentStep, options: { commentString, indentSeq, simpleKeys } } = ctx;
@@ -7977,13 +7977,13 @@ exports.stringifyPair = stringifyPair;
 
 /***/ }),
 
-/***/ 6377:
+/***/ 3069:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var Scalar = __webpack_require__(8041);
-var foldFlowLines = __webpack_require__(1015);
+var Scalar = __webpack_require__(3301);
+var foldFlowLines = __webpack_require__(4475);
 
 const getFoldOptions = (ctx, isBlock) => ({
     indentAtStart: isBlock ? ctx.indent.length : ctx.indentAtStart,
@@ -8322,12 +8322,12 @@ exports.stringifyString = stringifyString;
 
 /***/ }),
 
-/***/ 7608:
+/***/ 204:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 
-var identity = __webpack_require__(1835);
+var identity = __webpack_require__(1127);
 
 const BREAK = Symbol('break visit');
 const SKIP = Symbol('skip children');

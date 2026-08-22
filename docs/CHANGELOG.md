@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### init --github-dir and local-file doctor without Git — 2026-08-22
+- `init --github-dir` writes `.github/patchgate.yml` and still refuses overwrite.
+- Missing Git is informational for local-file `doctor`, so a draft directory
+  without `.git` can be `ready_for_local_preflight`.
+
+### Independent review follow-up — 2026-08-22
+- `init` creates a missing parent directory so `init --path /tmp/patchgate-try` works.
+- Git-ref policy fallback to `.github/patchgate.yml` only when the root blob is absent, not when root YAML is invalid.
+- `github snapshot --fail-on` applies to rejected snapshots (Action `snapshotRejectionExitCode` parity) and is validated before I/O.
+- Constitution / README / getting-started no longer advertise `npx patchgate` (that npm name is a different project).
+- Consumer Action YAML includes `actions: read` and labels enforcement as “do not copy yet.”
+
+### Local preflight Git-ref default, non-JS doctor, Action usage — 2026-08-22
+- `preflight --base <ref>` uses Git-object loading when `--base` is not an
+  existing file or directory and the current work tree (or `--repo`) is a Git
+  repository, so `patchgate preflight --base origin/main` works without a
+  dummy `--repo`. Existing filesystem paths stay local-file mode. Policy is
+  still read with `git cat-file`; untrusted PR code is not checked out.
+- `doctor` treats missing `package.json` as informational, so a Git repository
+  with a valid policy and no Node package can be `ready_for_local_preflight`.
+- `init` draft comments point at `docs/patchgate.example.yml`.
+- Consumer Action quick start now pins `daichunghy/patchgate@v0.1.0-beta.2`
+  with `fail-on: never` and `create-check-run: true`; `npm ci` + `uses: ./`
+  is labeled as developing PatchGate itself. Native-control snapshots still
+  need a PAT or App token because `GITHUB_TOKEN` cannot have Administration.
+- Application dossier, evidence index and constitution matrix no longer
+  describe open PR #9 or zero tags; they record the merged hardening history
+  and `v0.1.0-beta.2` without claiming adoption or program selection.
+
+### First-run path, CLI `--fail-on`, and receipt version decoupling — 2026-08-22
+- Documented the working stranger first-run as clone + `npm ci` +
+  `npm run build` + `doctor`/`preflight`/`evaluate` fixture, with a short
+  [getting-started](getting-started.md) walkthrough. `npx patchgate` remains
+  unavailable (`private: true`). `npx github:daichunghy/patchgate` was tried
+  against current `main` and failed because committed `dist/` has the Action
+  bundle, not the CLI.
+- Added a `files` allowlist (`dist`, `schemas`, `action.yml`, `README.md`,
+  `LICENSE`, `docs/patchgate.example.yml`) so a future maintainer publish is
+  packable; the package stays unpublished.
+- CLI `evaluate` and `github snapshot` honor `--fail-on` with the same
+  `shouldFailAction` threshold as the Action. Default is `blocked`:
+  `blocked` / `evidence_missing` / `policy_ambiguous` exit 1;
+  `human_review_required` does not until the threshold is raised. Invalid
+  values exit 2 as `FAIL_ON_INVALID`.
+- Receipt schema `evaluatorVersion` is a semver-shaped pattern instead of
+  `const: "0.1.0-dev"`, so a version bump no longer invalidates the schema.
+- `validate --base` is documented as an alias of `--policy`. Root help lists
+  `--json`, `--fail-on`, `--report` (evaluate), and `--output`
+  (snapshot / support-bundle).
+
 ### Rejected-snapshot check runs — 2026-08-22
 - When `create-check-run: true` and the GitHub snapshot is rejected, the
   Action now posts an idempotent check run with conclusion `neutral` titled
