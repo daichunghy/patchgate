@@ -141,6 +141,7 @@ The repository maintains a clean root directory structure (9 files max) with mod
 - [Support guide](.github/SUPPORT.md)
 - [Community discussions](https://github.com/daichunghy/patchgate/discussions)
 - [Non-blocking pilot request](https://github.com/daichunghy/patchgate/issues/4)
+- [Independent review and pilot outreach drafts](docs/community/independent-review-and-pilot-outreach.md)
 
 ### Contribution opportunities
 

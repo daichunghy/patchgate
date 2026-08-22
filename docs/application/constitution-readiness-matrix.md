@@ -21,6 +21,9 @@ PR does not become a release, pilot or adoption claim.
 | G7 diverse pilots | Open | Pilot brief, consent-safe feedback template and installation runbook | Two different public repositories with consented shadow/enforcement evidence and feedback-driven fixes |
 | G8 `v0.1` and application | Open | Evidence dossier, form draft, maintainer workflow and this matrix | All constitutional gates, `v0.1.0`, pilot links, applicant fields and manual submission |
 
+The consent-safe outreach drafts are in
+[`docs/community/independent-review-and-pilot-outreach.md`](../community/independent-review-and-pilot-outreach.md).
+
 ## First public-release Definition of Done
 
 | Constitutional requirement | Current result |
