@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Beta release — 2026-08-22
+- Tagged [`v0.1.0-beta.1`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.1)
+  at `main@301c700` with maintainer approval, fresh-checkout verification
+  (138 tests, clean-room bundle, consumer fixture) and a recorded
+  shadow-installation no-go decision; the release is beta shadow-evidence
+  scope, not a production or adoption claim.
+- Merged PR #9 (hardening) and follow-up PRs #15–#18 via administrator
+  decision after temporarily lifting `enforce_admins`; branch protection was
+  restored after every merge and each merge is recorded as a maintainer
+  decision rather than independent-review evidence.
+- Merged Dependabot PRs #11 (`@types/node` 26), #13 (`vitest` 4.1.11) and #14
+  (`@vitest/coverage-v8` 4.1.11) after local re-verification; deferred #12
+  (TypeScript 7) because `@vercel/ncc` cannot bundle under TS 7.
+- Fixed vitest CLI substring filters executing compiled `dist/test` copies
+  after a build (PR #16).
+- Hardened the GitHub adapter boundary after static-advisory adjudication:
+  strict GitHub-compatible charset for repository identity segments and a
+  simpler timestamp regex; two scanner advisories were fixed at root and two
+  were confirmed false positives with a documented record (PR #18).
+- The Codex for Open Source form draft and evidence snapshot now reflect the
+  merged history and the beta tag.
+
 ### Live continuation — 2026-08-22
 - PR #9 remains open and unmerged, but its required CI matrix, CodeQL and the
   dedicated `CI / Full Verify` job pass on the current public head.
