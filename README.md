@@ -16,6 +16,40 @@ The evaluator is deterministic and explainable. It does not determine who or
 what produced the code, whether the code is correct, safe, or merge-worthy, and
 it cannot force external automation to stop working.
 
+**Status:** public pre-release. The package is unpublished (`private: true`,
+`0.1.0-dev`). The Action tag
+[`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
+is the recommended immutable reference for **shadow** evaluation only.
+`v0.1.0-beta.1` is superseded. This is not production, not a `v0.1` claim,
+and not evidence of external pilots or adoption.
+
+## Try it locally
+
+The working first-run path is a clone and a local build. `npx patchgate` is
+not available (unpublished package). `npx --yes github:daichunghy/patchgate -- --help`
+was run against current `main` and failed: committed `dist/` contains the
+Action bundle only; the CLI at `dist/src/cli.js` is produced by `npm run build`.
+
+```bash
+git clone https://github.com/daichunghy/patchgate.git
+cd patchgate
+npm ci
+npm run build
+node dist/src/cli.js --help
+node dist/src/cli.js init --path /tmp/patchgate-try
+node dist/src/cli.js validate --policy /tmp/patchgate-try
+node dist/src/cli.js validate --base /tmp/patchgate-try
+node dist/src/cli.js preflight --base docs/patchgate.example.yml
+node dist/src/cli.js doctor --base docs/patchgate.example.yml
+node dist/src/cli.js evaluate --event fixtures/pr-ready.json --report /tmp/patchgate-receipt.json
+```
+
+`validate` accepts `--base` as an alias of `--policy`. `evaluate` writes
+receipts with `--report`; `github snapshot` and `support-bundle` write files
+with `--output`. `--fail-on` defaults to `blocked`, matching the Action.
+
+Longer walkthrough: [Getting started](docs/getting-started.md).
+
 ## GitHub Action candidate
 
 The Action is bundled for the repository's local shadow workflow. The tagged
@@ -106,6 +140,7 @@ The repository maintains a clean root directory structure (9 files max) with mod
 │   └── workflows/           # CI/CD and verification GitHub Actions
 ├── docs/                    # Architecture, design decisions, research, and specifications
 │   ├── PROJECT_CONSTITUTION.md # Authoritative charter and product constitution
+│   ├── getting-started.md   # Clone, build, init, validate, preflight, doctor, evaluate
 │   ├── CHANGELOG.md         # Release and development history
 │   ├── NOTICE               # Attribution and open source notices
 │   ├── patchgate.example.yml # Example PatchGate policy specification
@@ -159,6 +194,7 @@ The repository maintains a clean root directory structure (9 files max) with mod
 
 ## Documentation
 
+- [Getting started](docs/getting-started.md)
 - [Project constitution](docs/PROJECT_CONSTITUTION.md)
 - [Example policy](docs/patchgate.example.yml)
 - [Action usage guide](docs/github-action-usage.md)

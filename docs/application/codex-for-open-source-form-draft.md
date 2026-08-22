@@ -39,7 +39,7 @@ API credits would support bounded issue triage, deterministic regression-fixture
 ### Anything else we should know? (maximum 500 characters)
 
 ```text
-PatchGate is designed for the review burden created when contributions and coding agents move faster than maintainer attention. It does not detect AI authorship or replace human approval. Current evidence is honest: public repository, merged hardening history, a tagged v0.1.0-beta.1 pre-release with reproducible verification, five self-authored Discussions and a scheduled community workflow; there are no external pilots or adoption yet.
+PatchGate is designed for the review burden created when contributions and coding agents move faster than maintainer attention. It does not detect AI authorship or replace human approval. Current evidence is honest: public repository, merged hardening history, a tagged v0.1.0-beta.2 pre-release with reproducible verification, five self-authored Discussions and a scheduled community workflow; there are no external pilots or adoption yet.
 ```
 
 ## Evidence snapshot for the application
@@ -47,8 +47,8 @@ PatchGate is designed for the review burden created when contributions and codin
 | Signal | Verified state on 2026-08-22 | Evidence boundary |
 | --- | --- | --- |
 | Repository visibility | `daichunghy/patchgate` is public, Apache-2.0, default branch `main` | Public foundation, not adoption |
-| Default branch | `main@301c700`; hardening PR #9 and follow-up PRs #15–#18 merged by the maintainer (administrator decision, recorded as such) | Merged workflow; the PR #9 merge lacked an independent approving review |
-| Release | [`v0.1.0-beta.1`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.1) pre-release at `301c700` with fresh-checkout verification record | Beta for shadow evaluation; not production-declared, not externally piloted |
+| Default branch | `main@6db56a4`; hardening PR #9, follow-ups #15–#18, and #26 merged by the maintainer (administrator decisions, recorded as such) | Merged workflow; those merges lacked an independent approving review |
+| Release | Recommended tag [`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2) at `edab0ec`; `v0.1.0-beta.1` is superseded because Action inputs were unreadable on real runners | Beta for shadow evaluation; not production-declared, not externally piloted |
 | Dependency hygiene | Dependabot PRs #11/#13/#14 merged after local re-verification; #12 (TypeScript 7) deferred with documented `@vercel/ncc` blocker | Active maintenance, not a quality guarantee |
 | Community activity | Discussions #1, #2, #3, #8 and [#10](https://github.com/daichunghy/patchgate/discussions/10); community scheduler active on `main` | Self-authored maintenance activity; no external replies yet |
 | Usage signals | No verified downloads, downstream users or pilots; check live star/fork counts at submission time | Do not claim broad adoption |

@@ -27,6 +27,14 @@
   "bin": {
     "patchgate": "dist/src/cli.js"
   },
+  "files": [
+    "dist",
+    "schemas",
+    "action.yml",
+    "README.md",
+    "LICENSE",
+    "docs/patchgate.example.yml"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "bundle:action": "ncc build src/action/index.ts -o dist/action --minify --transpile-only",

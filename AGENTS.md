@@ -24,6 +24,7 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 │   └── workflows/           # CI/CD and verification GitHub Actions
 ├── docs/                    # Architecture, specifications, research, roadmap & ADRs
 │   ├── PROJECT_CONSTITUTION.md # Authoritative charter & constitution
+│   ├── getting-started.md   # Clone, build, init, validate, preflight, doctor, evaluate
 │   ├── CHANGELOG.md         # Release history
 │   ├── NOTICE               # Open source attribution notices
 │   ├── patchgate.example.yml # Example PatchGate policy
