@@ -19,7 +19,8 @@ function fieldBody(heading) {
   return dossier.slice(bodyStart, end);
 }
 
-if (!dossier.includes("https://openai.com/form/codex-for-oss/")) fail("official form URL is missing");
+const officialFormLine = "**Official form:** https://openai.com/form/codex-for-oss/";
+if (!dossier.split(/\r?\n/).some((line) => line === officialFormLine)) fail("official form URL is missing");
 if (!dossier.includes("[FILL BEFORE SUBMISSION]")) fail("manual applicant placeholders are missing");
 if (!dossier.includes("[CONFIRM PRIMARY OR CORE MAINTAINER]")) fail("maintainer-role confirmation is missing");
 
