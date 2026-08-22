@@ -97,6 +97,9 @@ Run `npm run check:application-dossier` before copying the answers into the
 official form. Applicant identity, maintainer role, ChatGPT email and OpenAI
 Organization ID remain intentionally blank until the applicant supplies them.
 
+Use the [constitution readiness matrix](constitution-readiness-matrix.md) for
+the gate-by-gate status and the exact external evidence that is still missing.
+
 ## Submission checklist
 
 - [x] Local foundation: Git history, `LICENSE` (Apache-2.0), community files and CI definitions.

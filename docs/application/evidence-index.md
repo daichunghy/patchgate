@@ -37,3 +37,5 @@ same as independent community use.
 
 The application should remain preparation-only until these gaps are either
 closed or explained honestly in the application.
+
+The full gate-by-gate view is in the [constitution readiness matrix](constitution-readiness-matrix.md).
