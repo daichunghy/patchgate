@@ -245,5 +245,51 @@ describe("GitHub Action runner unit tests", () => {
       expect(calls.map((call) => call.method)).toEqual(["GET", "PATCH"]);
       expect(calls[1]?.url).toContain("/check-runs/42");
     });
+
+    it("posts a neutral rejection check run with the diagnostic and remediation", async () => {
+      const { upsertRejectionCheckRun } = await import("../src/action/index.js");
+      const calls: Array<{ url: string; method: string; body?: string | undefined }> = [];
+      const fetchMock: typeof fetch = async (input, init) => {
+        calls.push({ url: String(input), method: init?.method ?? "GET", body: typeof init?.body === "string" ? init.body : undefined });
+        if (init?.method === "GET") return new Response(JSON.stringify({ check_runs: [] }), { status: 200 });
+        return new Response("{}", { status: 200 });
+      };
+      await upsertRejectionCheckRun({
+        owner: "example",
+        name: "service",
+        headSha: "head-sha",
+        checkName: "PatchGate Review Gate",
+        diagnostic: { id: "GITHUB_IDENTITY_INVALID", message: "Repository identity failed validation.", remediation: "Check owner/name and rerun." },
+        summaryMarkdown: "### ❌ PatchGate Snapshot Rejected",
+        token: "test-token",
+      }, fetchMock);
+      expect(calls.map((call) => call.method)).toEqual(["GET", "POST"]);
+      const body = JSON.parse(calls[1]?.body ?? "{}") as { conclusion?: string; output?: { title?: string; text?: string } };
+      expect(body.conclusion).toBe("neutral");
+      expect(body.output?.title).toBe("PatchGate: SNAPSHOT REJECTED");
+      expect(body.output?.text).toContain("GITHUB_IDENTITY_INVALID");
+      expect(body.output?.text).toContain("Check owner/name and rerun.");
+    });
+
+    it("updates an existing rejection check run instead of creating a duplicate", async () => {
+      const { upsertRejectionCheckRun } = await import("../src/action/index.js");
+      const calls: Array<{ url: string; method: string }> = [];
+      const fetchMock: typeof fetch = async (input, init) => {
+        calls.push({ url: String(input), method: init?.method ?? "GET" });
+        if (init?.method === "GET") return new Response(JSON.stringify({ check_runs: [{ id: 7, name: "PatchGate Review Gate", head_sha: "head-sha" }] }), { status: 200 });
+        return new Response("{}", { status: 200 });
+      };
+      await upsertRejectionCheckRun({
+        owner: "example",
+        name: "service",
+        headSha: "head-sha",
+        checkName: "PatchGate Review Gate",
+        diagnostic: { id: "GITHUB_POLICY_INVALID", message: "Trusted base policy failed validation." },
+        summaryMarkdown: "rejected",
+        token: "test-token",
+      }, fetchMock);
+      expect(calls.map((call) => call.method)).toEqual(["GET", "PATCH"]);
+      expect(calls[1]?.url).toContain("/check-runs/7");
+    });
   });
 });

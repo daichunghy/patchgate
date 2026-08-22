@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Rejected-snapshot check runs — 2026-08-22
+- When `create-check-run: true` and the GitHub snapshot is rejected, the
+  Action now posts an idempotent check run with conclusion `neutral` titled
+  `PatchGate: SNAPSHOT REJECTED`, carrying the adapter diagnostic id and
+  remediation, instead of leaving only the workflow status. This closes the
+  improvement candidate from the live-smoke findings record. If the event
+  payload has no pull-request head SHA, the check run is skipped with a
+  warning. Evaluation check runs and rejection check runs share one
+  lookup/update delivery helper to preserve deduplication.
+
 ### Multi-persona review round — 2026-08-22
 - Fixed the local/live policy-discovery divergence found by the new-user
   persona: `doctor`, local `preflight` and git-ref loading now accept
