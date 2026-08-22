@@ -25,10 +25,19 @@ and not evidence of external pilots or adoption.
 
 ## Try it locally
 
-The working first-run path is a clone and a local build. Do not run
-`npx patchgate`: that npm name belongs to a different project. This package
-is unpublished. `npx github:daichunghy/patchgate` also fails today because
-committed `dist/` is the Action bundle only.
+The fastest first-run path is a direct GitHub install on Node 20+ — `npx`
+clones the repository, builds it via the `prepare` script and runs the
+`patchgate` binary. Do not run `npx patchgate`: that npm name belongs to a
+different project and this package is unpublished.
+
+```bash
+npx github:daichunghy/patchgate --version
+npx github:daichunghy/patchgate doctor --base /path/to/your/repo
+npx github:daichunghy/patchgate preflight --base main --repo /path/to/your/repo
+```
+
+A walkthrough with real captured output is in [docs/demo.md](docs/demo.md). To
+work from a clone instead:
 
 ```bash
 git clone https://github.com/daichunghy/patchgate.git

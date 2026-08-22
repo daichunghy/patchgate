@@ -101,6 +101,16 @@ describe("evaluateContribution", () => {
     expect(configured.final.status).toBe("human_review_required");
   });
 
+  it("treats '?' in path patterns as a literal character, not a wildcard", async () => {
+    const input = await fixture();
+    const policy = policyWith({ policyChanges: { mode: "human_review", paths: ["docs/policy?.md"] } });
+    const changed = withPolicy(input, policy);
+    const wildcard = evaluate(withInput(changed, { changedPaths: ["docs/policyX.md"] }));
+    expect(wildcard.final.reasonIds).not.toContain("policy.change");
+    const literal = evaluate(withInput(changed, { changedPaths: ["docs/policy?.md"] }));
+    expect(literal.final.reasonIds).toContain("policy.change");
+  });
+
   it("derives policy change from the loaded policy source identity, not only the root path", async () => {
     const input = await fixture();
     const policy = policyWith({ policyChanges: { mode: "human_review", paths: ["docs/policy/*.md"] } });

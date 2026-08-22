@@ -53,7 +53,7 @@ function hasBasePolicySource(input: EvaluationInput, kind: "codeowners" | "rules
 
 function matchedPath(paths: string[], patterns: string[]): boolean {
   return patterns.some((pattern) => {
-    const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*\*/g, "\u0000").replace(/\*/g, "[^/]*").replace(/\u0000/g, ".*");
+    const escaped = pattern.replace(/[.+^${}()|[\]\\?]/g, "\\$&").replace(/\*\*/g, "\u0000").replace(/\*/g, "[^/]*").replace(/\u0000/g, ".*");
     const matcher = new RegExp(`^${escaped}$`);
     return paths.some((path) => matcher.test(path));
   });
