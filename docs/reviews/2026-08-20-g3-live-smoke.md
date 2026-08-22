@@ -74,3 +74,25 @@ The current G3 boundary is therefore narrower and verified: branch-protection
 checks, approval gates and the supported Rulesets required-check/review subset
 are represented; unsupported Ruleset semantics, merge-group membership and
 immutable last-pusher/review-thread evidence remain fail-closed.
+
+## Follow-up run — current PR head `961c009` (2026-08-22)
+
+The same authorized GET-only harness was rerun against the current public PR
+head after the Full Verify, Action-entrypoint, release-ordering and dossier
+validator fixes:
+
+```text
+API Metrics: 24 attempted requests (750580 bytes transferred)
+Identity bound: Base=a3745f6, Tested=961c009
+EvaluationInput conforms to schema v0.1
+ContributionReceipt conforms to schema v0.1
+Evaluator final status: human_review_required
+Receipt Digest: sha256:40b80c24e7eac5fe926b3ecf3da02c11b66ef6ea18875228c002b94984ba4ef8
+Smoke Test Summary: 1 Built/Passed, 0 Rejected, 0 Failed
+```
+
+The result is current PR evidence, not a default-branch release or external
+consumer pilot. It confirms that the current head remains evaluable through the
+authenticated read-only adapter and retains the real missing human approval,
+linkage and ownership evidence. No GitHub write was performed. A post-merge
+smoke is still required before claiming default-branch integration.

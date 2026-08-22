@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   imported tests and release validation before the CLI build. A CodeQL URL
   substring alert in the dossier validator was also corrected by exact-line
   matching.
+- Reran the authorized GET-only GitHub smoke against current PR head `961c009`:
+  24 bounded requests produced schema-valid input and receipt with the real
+  non-ready result `human_review_required`; no GitHub write was performed.
 
 ### Status checkpoint — 2026-08-20
 - Public foundation is now observable: `origin` points to
@@ -42,8 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   branch protection with five required CI checks, one approving review, stale
   review dismissal, linear history and conversation resolution. Force-pushes
   and branch deletion are disabled.
-- Current public history contains draft PR #9 but no merged pull request or
-  release. Four Discussions, one pilot request and three contribution issues
+- At this checkpoint, public history contained draft PR #9 but no merged pull
+  request or release. Four Discussions, one pilot request and three contribution issues
   are open outreach surfaces; they do not establish external adoption or pilot
   evidence. The scheduled/manual Security Audit and Pull Request-only PatchGate
   Shadow workflows still need a successful public main-branch run.

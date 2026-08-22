@@ -22,7 +22,7 @@ and the program terms linked from that application.
 | Meaningful usage or ecosystem importance | Product rationale, threat model, five self-authored Discussions including [#10](https://github.com/daichunghy/patchgate/discussions/10), a requirements question and context-specific questions on four related OSS repositories; live metrics are 0 stars, 0 forks, 0 tags/releases and no verified downstream users | ecosystem relevance hypothesis, not usage evidence | public release, real users/pilots, independent maintainer responses and concrete ecosystem references |
 | Active maintenance | Public Git history, current implementation, security review, deterministic verification, protected `main`, four scoped contribution issues with start paths, public Project #1, open PR #9 and passing required PR checks are recorded | public pre-release maintainer activity | merged external contributions, release history, live maintainer workflow and external pilots |
 | Maintainer role | Repository is public under `daichunghy/patchgate`; the application still requires the maintainer to state the role explicitly | partially verified | final applicant identity/role confirmation |
-| Security and quality | Local verification passes; no high-severity npm audit findings; security boundary and fail-closed tests exist; protected `main` and public CI run `32333914059` are observable | local/fixture plus public CI | publish pending hardening, then obtain public Security Audit/CodeQL runs, authorized live integration and external review |
+| Security and quality | Local verification passes; no high-severity npm audit findings; security boundary and fail-closed tests exist; protected `main`, public PR checks, CodeQL, Security Audit and Full Verify runs are observable; current PR head passed an authorized GET-only live smoke | local/fixture plus public PR and live snapshot evidence | independent review/merge, post-merge default-branch verification and external review |
 | Codex use case | Clear fit for PR review-readiness, triage, security review and release maintenance | documented | explain concrete day-to-day workflow after publication |
 
 ## Effect of the 2026-08-20–2026-08-22 community update
@@ -58,6 +58,12 @@ consented external pilots.” It is not: “PatchGate is already widely used” 
   full-SHA consumer reference, bundle startup without source schemas or
   `node_modules`, and explicit non-blocking `merge_group` handling. It is not a
   live external consumer or pilot.
+- Current G3 live smoke: PR #9 head `961c009` produced a schema-valid
+  `EvaluationInput` and `ContributionReceipt` from 24 bounded GET requests,
+  with final status `human_review_required` and receipt digest
+  `sha256:40b80c24e7eac5fe926b3ecf3da02c11b66ef6ea18875228c002b94984ba4ef8`.
+  This is read-only live integration evidence, not a release, adoption or
+  external pilot.
 - Supportability: `support-bundle` command and privacy exclusions in
   `docs/support-bundle.md`.
 - Latest local/public verification is recorded in
