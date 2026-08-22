@@ -246,6 +246,22 @@ export async function runAction(env: NodeJS.ProcessEnv = process.env): Promise<n
     setActionOutput("status", "evidence_missing", env);
     setActionOutput("summary-markdown", errorMarkdown, env);
     appendStepSummary(errorMarkdown, env);
+    if (inputs.createCheckRun && inputs.githubToken) {
+      const headSha = eventPayload.pull_request?.head?.sha;
+      if (headSha === undefined) {
+        console.warn("PatchGate Action: Event payload has no pull-request head SHA; rejection check-run was not posted.");
+      } else {
+        await upsertRejectionCheckRun({
+          owner,
+          name,
+          headSha,
+          checkName: inputs.checkName,
+          diagnostic: { id: diagnostic.id, message: diagnostic.message, remediation: diagnostic.remediation },
+          summaryMarkdown: errorMarkdown,
+          token: inputs.githubToken,
+        });
+      }
+    }
     return snapshotRejectionExitCode(inputs.failOn);
   }
 
@@ -316,31 +332,19 @@ export interface CheckRunParams {
 
 interface CheckRunRecord { id?: number; name?: string; head_sha?: string; }
 
-export async function upsertCheckRun(params: CheckRunParams, fetchImpl: typeof fetch = fetch): Promise<void> {
-  const conclusionMap: Record<FinalStatus, "success" | "failure" | "action_required" | "neutral"> = {
-    ready_for_review: "success",
-    blocked: "failure",
-    human_review_required: "action_required",
-    evidence_missing: "neutral",
-    policy_ambiguous: "neutral",
-  };
+interface CheckRunPayload {
+  name: string;
+  head_sha: string;
+  status: "completed";
+  conclusion: "success" | "failure" | "action_required" | "neutral";
+  completed_at: string;
+  output: { title: string; summary: string; text: string };
+}
 
-  const payload = {
-    name: params.checkName,
-    head_sha: params.headSha,
-    status: "completed",
-    conclusion: conclusionMap[params.status],
-    completed_at: new Date().toISOString(),
-    output: {
-      title: `PatchGate: ${params.status.toUpperCase().replace(/_/g, " ")}`,
-      summary: params.summaryMarkdown,
-      text: `Receipt Digest: \`${params.receipt.receiptDigest}\`\nDecision Input Digest: \`${params.receipt.decisionInputDigest}\`\nEvaluated At: ${params.receipt.evaluatedAt}`,
-    },
-  };
-
+async function deliverCheckRun(params: { owner: string; name: string; headSha: string; token: string }, payload: CheckRunPayload, fetchImpl: typeof fetch = fetch): Promise<void> {
   try {
     const apiUrl = `https://api.github.com/repos/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}`;
-    const lookupUrl = `${apiUrl}/commits/${encodeURIComponent(params.headSha)}/check-runs?check_name=${encodeURIComponent(params.checkName)}&filter=latest&per_page=100`;
+    const lookupUrl = `${apiUrl}/commits/${encodeURIComponent(params.headSha)}/check-runs?check_name=${encodeURIComponent(payload.name)}&filter=latest&per_page=100`;
     const lookup = await fetchImpl(lookupUrl, {
       method: "GET",
       redirect: "error",
@@ -357,7 +361,7 @@ export async function upsertCheckRun(params: CheckRunParams, fetchImpl: typeof f
     }
     const lookupBody = await lookup.json() as { check_runs?: CheckRunRecord[] };
     const existing = Array.isArray(lookupBody.check_runs)
-      ? lookupBody.check_runs.filter((item) => item.id !== undefined && item.name === params.checkName && item.head_sha === params.headSha).sort((left, right) => (right.id ?? 0) - (left.id ?? 0))[0]
+      ? lookupBody.check_runs.filter((item) => item.id !== undefined && item.name === payload.name && item.head_sha === params.headSha).sort((left, right) => (right.id ?? 0) - (left.id ?? 0))[0]
       : undefined;
     const url = existing?.id === undefined ? `${apiUrl}/check-runs` : `${apiUrl}/check-runs/${existing.id}`;
     const res = await fetchImpl(url, {
@@ -375,11 +379,61 @@ export async function upsertCheckRun(params: CheckRunParams, fetchImpl: typeof f
     if (!res.ok) {
       console.warn(`PatchGate Action: Notice — Could not post check-run (HTTP ${res.status}). Verify that 'checks: write' permission is granted.`);
     } else {
-      console.log(`PatchGate Action: Check run '${params.checkName}' successfully ${existing?.id === undefined ? "created" : "updated"} with conclusion '${payload.conclusion}'.`);
+      console.log(`PatchGate Action: Check run '${payload.name}' successfully ${existing?.id === undefined ? "created" : "updated"} with conclusion '${payload.conclusion}'.`);
     }
   } catch (err) {
     console.warn(`PatchGate Action: Check run posting skipped (${err instanceof Error ? err.message : String(err)}).`);
   }
+}
+
+export async function upsertCheckRun(params: CheckRunParams, fetchImpl: typeof fetch = fetch): Promise<void> {
+  const conclusionMap: Record<FinalStatus, "success" | "failure" | "action_required" | "neutral"> = {
+    ready_for_review: "success",
+    blocked: "failure",
+    human_review_required: "action_required",
+    evidence_missing: "neutral",
+    policy_ambiguous: "neutral",
+  };
+
+  const payload: CheckRunPayload = {
+    name: params.checkName,
+    head_sha: params.headSha,
+    status: "completed",
+    conclusion: conclusionMap[params.status],
+    completed_at: new Date().toISOString(),
+    output: {
+      title: `PatchGate: ${params.status.toUpperCase().replace(/_/g, " ")}`,
+      summary: params.summaryMarkdown,
+      text: `Receipt Digest: \`${params.receipt.receiptDigest}\`\nDecision Input Digest: \`${params.receipt.decisionInputDigest}\`\nEvaluated At: ${params.receipt.evaluatedAt}`,
+    },
+  };
+  await deliverCheckRun(params, payload, fetchImpl);
+}
+
+export interface RejectionCheckRunParams {
+  owner: string;
+  name: string;
+  headSha: string;
+  checkName: string;
+  diagnostic: { id: string; message: string; remediation?: string | undefined };
+  summaryMarkdown: string;
+  token: string;
+}
+
+export async function upsertRejectionCheckRun(params: RejectionCheckRunParams, fetchImpl: typeof fetch = fetch): Promise<void> {
+  const payload: CheckRunPayload = {
+    name: params.checkName,
+    head_sha: params.headSha,
+    status: "completed",
+    conclusion: "neutral",
+    completed_at: new Date().toISOString(),
+    output: {
+      title: "PatchGate: SNAPSHOT REJECTED",
+      summary: params.summaryMarkdown,
+      text: `Diagnostic: ${params.diagnostic.id}\nRemediation: ${params.diagnostic.remediation ?? "None"}`,
+    },
+  };
+  await deliverCheckRun(params, payload, fetchImpl);
 }
 
 const postCheckRun = upsertCheckRun;
