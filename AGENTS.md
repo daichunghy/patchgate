@@ -16,6 +16,8 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 │   ├── CONTRIBUTING.md      # Contribution guidelines & architecture invariants
 │   ├── SECURITY.md          # Vulnerability reporting & security boundaries
 │   ├── SUPPORT.md           # Support channels & maintainer contact
+│   ├── dependabot.yml       # Dependency update configuration
+│   ├── community-posts.json # Scheduled community discussion content
 │   ├── patchgate.yml        # Repository review-readiness policy
 │   ├── ISSUE_TEMPLATE/      # GitHub issue forms
 │   ├── PULL_REQUEST_TEMPLATE.md # PR template
@@ -33,12 +35,21 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 │   ├── github-api-support-matrix.md # API endpoints & versioning
 │   ├── github-permissions.md # Permission model & least privilege
 │   ├── support-bundle.md    # Redacted diagnostic bundle spec
+│   ├── github-action-usage.md # Consumer Action usage & shadow-mode guide
+│   ├── github-live-smoke-protocol.md # Authorized live GET-only smoke procedure
+│   ├── release-candidate-checklist.md # Pre-tag verification checklist
+│   ├── agent-execution-plan.md # Agent task planning baseline
+│   ├── agent-work-packages.yml # Agent work-package definitions
 │   ├── research/            # Landscape & deep-dive research reports
 │   ├── decisions/           # Architecture Decision Records (ADRs)
 │   ├── product/             # User requirements & UX specifications
 │   ├── pilots/              # Usability session protocols & pilot results
 │   ├── prompts/             # Task prompts and launcher specifications
-│   └── reviews/             # Milestone review checkpoints
+│   ├── reviews/             # Milestone review checkpoints
+│   ├── releases/            # Release records and the beta rollback runbook
+│   ├── application/         # Codex for Open Source application evidence
+│   ├── community/           # Community interaction & outreach records
+│   └── security/            # GitHub adapter security boundary notes
 ├── src/                     # Pure TypeScript implementation (Strict mode, zero `any`)
 │   ├── types.ts             # Canonical types and data models
 │   ├── evaluator-core.ts    # Deterministic requirement evaluation engine
@@ -70,10 +81,10 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 
 ## How Agents Should Explore & Execute
 
-1. **Understand Authority**: Always read [docs/PROJECT_CONSTITUTION.md](file:///Users/macos/Desktop/Github/docs/PROJECT_CONSTITUTION.md) first. Policy is always read from the base commit (`baseSha`), never from the PR branch.
-2. **Review Types & Contracts**: Read [src/types.ts](file:///Users/macos/Desktop/Github/src/types.ts), [src/contract/status-precedence.ts](file:///Users/macos/Desktop/Github/src/contract/status-precedence.ts), and [schemas/](file:///Users/macos/Desktop/Github/schemas).
-3. **Core Engine**: Pure deterministic logic lives in [src/evaluator-core.ts](file:///Users/macos/Desktop/Github/src/evaluator-core.ts) and [src/evidence/](file:///Users/macos/Desktop/Github/src/evidence).
-4. **Adapter & Security**: GitHub integration logic lives in [src/github/](file:///Users/macos/Desktop/Github/src/github) and follows [docs/threat-model.md](file:///Users/macos/Desktop/Github/docs/threat-model.md).
+1. **Understand Authority**: Always read [docs/PROJECT_CONSTITUTION.md](docs/PROJECT_CONSTITUTION.md) first. Policy is always read from the base commit (`baseSha`), never from the PR branch.
+2. **Review Types & Contracts**: Read [src/types.ts](src/types.ts), [src/contract/status-precedence.ts](src/contract/status-precedence.ts), and [schemas/](schemas).
+3. **Core Engine**: Pure deterministic logic lives in [src/evaluator-core.ts](src/evaluator-core.ts) and [src/evidence/](src/evidence).
+4. **Adapter & Security**: GitHub integration logic lives in [src/github/](src/github) and follows [docs/threat-model.md](docs/threat-model.md).
 5. **Validation**: Run `npm run verify` before completing any change.
 
 ## Current project status
@@ -86,27 +97,32 @@ readiness.
 
 | Area | Current evidence | Status and limit |
 | --- | --- | --- |
-| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI runs `32333914059` and `32552222398` | Foundation is present; `main` requires six CI contexts and one approving review, `0.1.0-dev` remains an unpublished package, the beta tag `v0.1.0-beta.1` exists, and there is no downstream usage; the hardening PR #9 was merged by the repository administrator on 2026-08-22 without an independent approving review, which is recorded here as a maintainer decision rather than independent-review evidence |
+| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI runs including the latest `32559824706` on `main@c9f643e` | Foundation is present; `main` requires six CI contexts and one approving review, `0.1.0-dev` remains an unpublished package, the beta tag `v0.1.0-beta.1` exists, and there is no downstream usage; the hardening PR #9 was merged by the repository administrator on 2026-08-22 without an independent approving review, which is recorded here as a maintainer decision rather than independent-review evidence |
 | G1 deterministic contract | TypeScript evaluator, schemas, receipt digests, recorded fixtures, security coverage, and deterministic tests | Locally verified; this does not prove a live GitHub integration |
 | G2 local preflight | `preflight`, `validate`, `init`, `doctor`, Git-ref loading, discovery classification, text/JSON parity, and five CLI process tests | Local user flow is verified; three consented usability sessions and UR acceptance evidence are still open |
 | G3 GitHub adapter | Recorded/mock authenticated snapshot flow, bounded requests, source and SHA binding, TOCTOU re-read, redaction, branch-protection and Rulesets subset contract, 25 integration tests and the latest recorded GET-only smoke for PR #9 head `5f9ccb5` | The tested head built a schema-valid live snapshot and receipt with final status `human_review_required`; missing approval/ownership/linkage evidence remains explicit; unsupported Ruleset semantics and merge-group membership remain fail-closed |
-| G4 Action | Root `action.yml`, `src/action/index.ts`, committed ncc bundle, pinned workflows, required CI/CodeQL merge-group triggers, clean-room bundle verification, idempotent check delivery, consumer fixture smoke and explicit non-ready merge-group handling are merged into `main` | Local consumer boundary is verified; no live external consumer E2E, public release or two consenting non-blocking shadow installations |
+| G4 Action | Root `action.yml`, `src/action/index.ts`, committed ncc bundle, pinned workflows, required CI/CodeQL merge-group triggers, clean-room bundle verification, idempotent check delivery, consumer fixture smoke and explicit non-ready merge-group handling are merged into `main` | Local consumer boundary is verified; no live external consumer E2E, production release or two consenting non-blocking shadow installations |
 | User value and release | Protocols, roadmap, five public Discussions including [#10](https://github.com/daichunghy/patchgate/discussions/10), a [pilot request](https://github.com/daichunghy/patchgate/issues/4), three contribution issues, public Project #1, merged PR #9 and the `v0.1.0-beta.1` pre-release with a recorded shadow-installation no-go decision exist; four context-specific questions were posted to related OSS repositories | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, production release, or `v0.1` claim |
 
-The public default branch is currently `main@301c700`. [PR #9](https://github.com/daichunghy/patchgate/pull/9)
-and follow-ups #15–#18 were merged on 2026-08-22 by the repository
+The public default branch is currently `main@c9f643e`. [PR #9](https://github.com/daichunghy/patchgate/pull/9)
+and follow-ups #15–#19 were merged on 2026-08-22 by the repository
 administrator after temporarily lifting `enforce_admins`; the setting was
-restored immediately after each merge. Completed default-branch
-workflow runs include [CI #1](https://github.com/daichunghy/patchgate/actions/runs/32333914059)
-and [CI #32552222398](https://github.com/daichunghy/patchgate/actions/runs/32552222398)
-plus passing CodeQL and Dependabot runs on the merge commit. Live branch
+restored immediately after each merge. Completed default-branch workflow runs
+include the latest [CI 32559824706](https://github.com/daichunghy/patchgate/actions/runs/32559824706)
+and CodeQL `32559824693` on `main@c9f643e`, earlier runs through
+[32559540757](https://github.com/daichunghy/patchgate/actions/runs/32559540757)
+on the tagged `301c700`, and the first public run
+[CI 32333914059](https://github.com/daichunghy/patchgate/actions/runs/32333914059).
+Live branch
 protection also requires one approving pull-request review, dismisses stale
 reviews, requires six CI contexts including `CI / Full Verify`, enforces
 linear history and conversation resolution, and disables force-pushes and
-branch deletion. The merged `codex/community-interaction` and
-`docs/clean-ai-isms` branches were deleted after their content reached
-`main`; the stale pre-publication `test/patchgate-shadow-smoke` draft branch
-remains. Dependabot PRs #11 (`@types/node` 26), #13 (`vitest` 4) and #14
+branch deletion. The merged `codex/community-interaction`,
+`docs/clean-ai-isms` and `docs/beta-release-record` branches were deleted
+after their content reached `main`; the merged `fix/mimosa-boundary-hardening`
+branch, the stale pre-publication `test/patchgate-shadow-smoke` draft branch
+and the open `dependabot/npm_and_yarn/typescript-7.0.2` branch (PR #12)
+remain. Dependabot PRs #11 (`@types/node` 26), #13 (`vitest` 4) and #14
 (`@vitest/coverage-v8` 4) were merged on 2026-08-22 after local
 re-verification; PR #12 (`typescript` 7) stays open because `@vercel/ncc`
 cannot bundle under TS 7. The pre-release
@@ -116,7 +132,7 @@ recorded shadow-installation no-go decision
 ([release record](docs/releases/2026-08-22-beta-candidate.md)); it is beta
 shadow-evidence scope only — not production, adoption or a `v0.1` claim.
 
-The current audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The latest verification command to rerun after a change is:
+The current milestone audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The newest records are the [2026-08-22 Mimosa static-advisory adjudication](docs/reviews/2026-08-22-mimosa-static-advisory-adjudication.md) — re-run the sealed scan after any change to `src/github/client.ts` transport handling — and the [v0.1.0-beta.1 release record](docs/releases/2026-08-22-beta-candidate.md). The latest verification command to rerun after a change is:
 
 ```bash
 npm run verify
@@ -168,14 +184,23 @@ The first complete release provides a CLI and GitHub Action built on the same de
 
 ```bash
 patchgate preflight --base origin/main
-patchgate evaluate --event pull_request.json --report receipt.json
+patchgate evaluate --event snapshot.json --report receipt.json
 ```
 
+`evaluate` consumes a normalized evaluation-input snapshot
+([`schemas/evaluation-input.schema.json`](schemas/evaluation-input.schema.json))
+produced by the adapter — not a raw GitHub event payload.
+
 ```yaml
-- uses: patchgate/action@v1
+- uses: daichunghy/patchgate@v0.1.0-beta.1
   with:
     fail-on: blocked
 ```
+
+The tagged beta reference is approved for shadow evaluation only
+(`fail-on: never` in the [shadow runbook](docs/pilots/g4-shadow-installation-runbook.md));
+`fail-on: blocked` above is the enforcement form intended for the first
+stable release.
 
 The first supported rule classes are:
 
@@ -254,6 +279,8 @@ docs/
 ```
 
 Do not build a dashboard, database, hosted service, LLM rule engine, policy catalogue, cryptographic ledger, or multi-platform integration before the GitHub CLI/Action proves useful on real repositories.
+
+The tree above is the constitutional target shape. The current implementation keeps discovery, policy parsing, deterministic evaluation, and reviewability signals in flat modules (`src/discovery.ts`, `src/policy.ts`, `src/evaluator-core.ts`, `src/evaluator.ts`); `contract/`, `evidence/`, `github/`, `cli/`, and `action/` are directories today. See the Repository Layout above for the actual file map.
 
 ## Implementation rules
 

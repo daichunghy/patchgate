@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run PatchGate in shadow mode
-        uses: daichunghy/patchgate/action@<PATCHGATE_ACTION_SHA>
+        uses: daichunghy/patchgate@<PATCHGATE_ACTION_SHA>
         with:
           fail-on: never
           create-check-run: true

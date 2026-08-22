@@ -16,9 +16,12 @@ it cannot force external automation to stop working.
 
 ## GitHub Action candidate
 
-The Action is bundled for the repository's local shadow workflow, but no public
-Action release or immutable version tag exists yet. Do not use the placeholder
-`patchgate/patchgate@v0.1.0-dev` as an installable public reference.
+The Action is bundled for the repository's local shadow workflow. The tagged
+pre-release [`v0.1.0-beta.1`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.1)
+is the first immutable reference and is approved for shadow evaluation only;
+production consumers must still wait for a stable public release. Do not use
+the placeholder `patchgate/patchgate@v0.1.0-dev` as an installable public
+reference.
 
 For this checkout, the source-of-truth workflow is
 [`.github/workflows/patchgate-shadow.yml`](.github/workflows/patchgate-shadow.yml).

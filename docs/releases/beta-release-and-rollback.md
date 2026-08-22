@@ -47,7 +47,7 @@ publish command is run.
 
 ```yaml
 - name: PatchGate beta shadow gate
-  uses: daichunghy/patchgate/action@<RELEASE_COMMIT_SHA>
+  uses: daichunghy/patchgate@<RELEASE_COMMIT_SHA>
   with:
     fail-on: never
     create-check-run: true

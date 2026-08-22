@@ -18,20 +18,29 @@ export interface ActionInputs {
 
 const MAX_ACTION_SUMMARY_LENGTH = 64_000;
 
+// The GitHub Actions runner exports inputs as INPUT_<NAME> with dashes
+// preserved (e.g. `github-token` -> `INPUT_GITHUB-TOKEN`). Accept that form
+// first and keep the underscore form as a fallback for non-runner callers.
+function actionInput(env: NodeJS.ProcessEnv, dashedName: string, underscoreName: string): string | undefined {
+  const dashed = env[`INPUT_${dashedName}`];
+  if (dashed !== undefined && dashed.trim().length > 0) return dashed;
+  return env[`INPUT_${underscoreName}`];
+}
+
 export function parseActionInputs(env: NodeJS.ProcessEnv = process.env): ActionInputs {
-  const failOnRaw = env.INPUT_FAIL_ON?.trim() || "blocked";
+  const failOnRaw = actionInput(env, "FAIL-ON", "FAIL_ON")?.trim() || "blocked";
   const validFailOns = ["never", "blocked", "human_review_required", "evidence_missing", "policy_ambiguous"] as const;
   const failOn = validFailOns.includes(failOnRaw as ActionInputs["failOn"]) ? (failOnRaw as ActionInputs["failOn"]) : "blocked";
 
-  const reportPath = env.INPUT_REPORT_PATH?.trim() || "patchgate-receipt.json";
-  const checkName = env.INPUT_CHECK_NAME?.trim() || "PatchGate Review Gate";
+  const reportPath = actionInput(env, "REPORT-PATH", "REPORT_PATH")?.trim() || "patchgate-receipt.json";
+  const checkName = actionInput(env, "CHECK-NAME", "CHECK_NAME")?.trim() || "PatchGate Review Gate";
   assertActionText(reportPath, "report-path", 500);
   assertActionText(checkName, "check-name", 200);
   return {
     failOn,
-    githubToken: env.INPUT_GITHUB_TOKEN?.trim() || env.GITHUB_TOKEN?.trim() || "",
+    githubToken: actionInput(env, "GITHUB-TOKEN", "GITHUB_TOKEN")?.trim() || env.GITHUB_TOKEN?.trim() || "",
     reportPath,
-    createCheckRun: env.INPUT_CREATE_CHECK_RUN?.trim().toLowerCase() === "true",
+    createCheckRun: (actionInput(env, "CREATE-CHECK-RUN", "CREATE_CHECK_RUN") ?? "").trim().toLowerCase() === "true",
     checkName,
   };
 }
