@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   imported tests and release validation before the CLI build. A CodeQL URL
   substring alert in the dossier validator was also corrected by exact-line
   matching.
-- Reran the authorized GET-only GitHub smoke against current PR head `e6af172`:
+- Reran the authorized GET-only GitHub smoke against PR head `5f9ccb5`:
   24 bounded requests produced schema-valid input and receipt with the real
   non-ready result `human_review_required`; no GitHub write was performed.
 

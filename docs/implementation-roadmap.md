@@ -119,8 +119,8 @@ active decision-bearing rulesets that the current scalar evaluator cannot
 represent. Branch-protection and the supported Rulesets required-check/review
 subset are now represented in the versioned native-control contract;
 unsupported last-pusher, review-thread and other rule semantics remain
-evidence-missing. The authorized GET-only smoke was rerun on current public PR
-head `e6af172` and built a complete schema-valid snapshot and receipt; the
+evidence-missing. The authorized GET-only smoke was rerun at implementation
+head `5f9ccb5` and built a complete schema-valid snapshot and receipt; the
 result remained non-ready because the real PR lacks its required
 approval/ownership/linkage evidence. See the [live smoke record](reviews/2026-08-20-g3-live-smoke.md).
 
@@ -159,7 +159,7 @@ The current gate position is:
 
 - G1: locally verified.
 - G2: local onboarding slice verified; three consented task sessions remain.
-- G3: branch-protection subset and authorized live snapshot verified on current PR head `e6af172`; post-merge default-branch and external consumer proof remain open.
+- G3: branch-protection subset and latest recorded authorized live snapshot verified on implementation head `5f9ccb5`; post-merge default-branch and external consumer proof remain open.
 - G4: public PR Action candidate verified; consumer and shadow evidence remain.
 - G5 through G8: not started as release gates because their upstream evidence is incomplete.
 

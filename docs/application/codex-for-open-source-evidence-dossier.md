@@ -58,10 +58,10 @@ consented external pilots.” It is not: “PatchGate is already widely used” 
   full-SHA consumer reference, bundle startup without source schemas or
   `node_modules`, and explicit non-blocking `merge_group` handling. It is not a
   live external consumer or pilot.
-- Current G3 live smoke: PR #9 head `e6af172` produced a schema-valid
+- Latest recorded G3 live smoke: PR #9 head `5f9ccb5` produced a schema-valid
   `EvaluationInput` and `ContributionReceipt` from 24 bounded GET requests,
   with final status `human_review_required` and receipt digest
-  `sha256:5351949e542c511b3ea2a0967a157d301cd837211ab1b940e1dd013fb6a4f8b6`.
+  `sha256:c9467c84b0fea7b844c7d285e71c6c22dd97d5d3ceae4d02db441906050ce68e`.
   This is read-only live integration evidence, not a release, adoption or
   external pilot.
 - Supportability: `support-bundle` command and privacy exclusions in

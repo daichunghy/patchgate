@@ -75,19 +75,19 @@ checks, approval gates and the supported Rulesets required-check/review subset
 are represented; unsupported Ruleset semantics, merge-group membership and
 immutable last-pusher/review-thread evidence remain fail-closed.
 
-## Follow-up run — current PR head `e6af172` (2026-08-22)
+## Follow-up run — PR head `5f9ccb5` (2026-08-22)
 
 The same authorized GET-only harness was rerun against the current public PR
 head after the Full Verify, Action-entrypoint, release-ordering and dossier
 validator fixes:
 
 ```text
-API Metrics: 24 attempted requests (755762 bytes transferred)
-Identity bound: Base=a3745f6, Tested=e6af172
+API Metrics: 24 attempted requests (777446 bytes transferred)
+Identity bound: Base=a3745f6, Tested=5f9ccb5
 EvaluationInput conforms to schema v0.1
 ContributionReceipt conforms to schema v0.1
 Evaluator final status: human_review_required
-Receipt Digest: sha256:5351949e542c511b3ea2a0967a157d301cd837211ab1b940e1dd013fb6a4f8b6
+Receipt Digest: sha256:c9467c84b0fea7b844c7d285e71c6c22dd97d5d3ceae4d02db441906050ce68e
 Smoke Test Summary: 1 Built/Passed, 0 Rejected, 0 Failed
 ```
 
