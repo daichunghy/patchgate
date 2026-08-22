@@ -1,4 +1,4 @@
-import { sha256Digest } from "../canonical-json.js";
+import { compareTextUnit, sha256Digest } from "../canonical-json.js";
 import type { LinkedIssue, ObservationMeta } from "../types.js";
 import { isRecord, readString, readPositiveInt } from "./api-types.js";
 import type { RawGraphQlIssue } from "./api-types.js";
@@ -72,5 +72,5 @@ export async function collectLinkedIssues(client: GitHubClient, owner: string, n
       complete = false; diagnostics.push(diagnostic); break;
     }
   }
-  return { issues: issues.sort((a, b) => a.repository.localeCompare(b.repository) || a.number - b.number), meta: { source: { kind: "github", identity: "graphql:closingIssuesReferences" }, revision: headSha, retrievedAt, complete, permissionState: complete ? "sufficient" : diagnostics.some((item) => item.permissionState === "insufficient") ? "insufficient" : "unknown", responseDigest: sha256Digest(responseDigests) }, diagnostics };
+  return { issues: issues.sort((a, b) => compareTextUnit(a.repository, b.repository) || a.number - b.number), meta: { source: { kind: "github", identity: "graphql:closingIssuesReferences" }, revision: headSha, retrievedAt, complete, permissionState: complete ? "sufficient" : diagnostics.some((item) => item.permissionState === "insufficient") ? "insufficient" : "unknown", responseDigest: sha256Digest(responseDigests) }, diagnostics };
 }

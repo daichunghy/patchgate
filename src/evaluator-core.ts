@@ -507,6 +507,9 @@ export function evaluateValidated(input: EvaluationInput): ContributionReceiptCo
     changedPaths: input.changedPaths,
     policySources: input.policySources,
     observations: input.observations,
+    // Included so a receipt consumer can recompute decisionInputDigest, which
+    // hashes the full input including native controls.
+    ...(input.nativeControls === undefined ? {} : { nativeControls: input.nativeControls }),
     evidence: { checks: input.checks, linkedIssues: input.linkedIssues, reviews: input.reviews, ownershipRequirements: input.ownershipRequirements },
     requirements: orderedRequirements,
     ...(input.reviewability === undefined ? {} : { reviewability: input.reviewability }),

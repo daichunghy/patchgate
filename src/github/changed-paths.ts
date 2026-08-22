@@ -1,4 +1,4 @@
-import { sha256Digest } from "../canonical-json.js";
+import { compareTextUnit, sha256Digest } from "../canonical-json.js";
 import type { ObservationMeta } from "../types.js";
 import { isRecord, readString } from "./api-types.js";
 import { collectPaginated, type PageCollection } from "./pagination.js";
@@ -43,7 +43,7 @@ function pageCollectionToResult(collection: PageCollection<ChangedFile>, client:
   let complete = collection.complete;
   const diagnostics = [...collection.diagnostics];
   if (collection.items.length >= 3000) { complete = false; client.budget.recordCap("github_file_ceiling_3000"); diagnostics.push(makeDiagnostic("GITHUB_PAGINATION_LIMIT", "GitHub file retrieval reached the documented 3,000-file ceiling; completeness cannot be proven.", { observation: "changedPaths", remediation: "Split the pull request or use a deliberately supported larger-file retrieval strategy." })); }
-  const files = [...collection.items].sort((a, b) => a.path.localeCompare(b.path) || a.status.localeCompare(b.status));
+  const files = [...collection.items].sort((a, b) => compareTextUnit(a.path, b.path) || compareTextUnit(a.status, b.status));
   return {
     files,
     paths: [...paths].sort(),

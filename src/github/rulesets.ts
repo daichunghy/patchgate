@@ -1,4 +1,4 @@
-import { sha256Digest } from "../canonical-json.js";
+import { compareTextUnit, sha256Digest } from "../canonical-json.js";
 import type { NativeRuleset, ObservationMeta, PolicySource } from "../types.js";
 import { isRecord, readPositiveInt, readString } from "./api-types.js";
 import { GitHubClient } from "./client.js";
@@ -97,7 +97,7 @@ function parseRuleControls(rulesValue: unknown): { ruleTypes: string[]; controls
     }
     controls.unsupported = true;
   }
-  controls.requiredChecks.sort((left, right) => left.context.localeCompare(right.context) || (left.appId ?? 0) - (right.appId ?? 0));
+  controls.requiredChecks.sort((left, right) => compareTextUnit(left.context, right.context) || (left.appId ?? 0) - (right.appId ?? 0));
   return { ruleTypes: [...new Set(ruleTypes)].sort(), controls };
 }
 

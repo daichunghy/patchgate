@@ -48,10 +48,42 @@ wins were fixed in the same change where noted.
 
 ## Persona 3 — Contract/determinism reviewer
 
-- Status precedence, schema-version fields and digest ordering were
-  previously audited (2026-08-20 G4/G0 audit) and re-spot-checked here
-  without new findings; the receipt records evaluator and schema versions
-  and rejected snapshots never produce partial receipts.
+- **[High — fixed in this change] Locale-dependent sorting in the adapter.**
+  Five collection sorts used `localeCompare` without a locale argument
+  (`codeowners.ts`, `branch-protection.ts`, `rulesets.ts`, `changed-paths.ts`,
+  `linked-issues.ts`). Because `codeowners.N` requirement IDs and
+  `native.*.check.N` reason IDs are derived from sort position, replaying the
+  same recorded fixture on a runtime with different ICU collation could swap
+  IDs and change native-control digests — breaking cross-environment receipt
+  reproducibility while every single-machine test stays green. Fixed by
+  replacing all five with the exported code-unit comparator
+  `compareTextUnit` in `src/canonical-json.ts`.
+- **[Medium — fixed in this change] Receipts dropped `nativeControls`.** The
+  evaluator built the receipt core without `nativeControls` even though the
+  type, schema and `decisionInputDigest` (which hashes the full input) all
+  include it, so third-party consumers could not recompute
+  `decisionInputDigest` from the receipt and the native-controls receipt
+  validation branch was unreachable for real receipts. Fixed by conditionally
+  including `input.nativeControls` in the core.
+- **[Medium — open] `evaluatorVersion` pinned as a schema `const`.** The
+  first version bump will make receipts that the bundled schema rejects with
+  a generic Ajv const error rather than a dedicated diagnostic. Defer to the
+  release-engineering pass.
+- **[Low — open] CLI exit-code contract**: every non-ready status collapses
+  to exit 1 and there is no CLI `--fail-on` mirroring the Action; `--json` is
+  undocumented in root help; `--report` vs `--output` naming is
+  inconsistent; `validate --policy` silently accepts `--base`. Recorded for
+  the CLI ergonomics pass.
+- **[Low — open] Third-party receipt validators**: the receipt schema permits
+  schema-valid `result`/`severity` combinations the evaluator never emits
+  (`failed` + `evidence`) that would self-consistently compute
+  `ready_for_review`; the digest helper is duplicated between
+  `contract/validation.ts` and `evidence/digests.ts`; glob translation does
+  not escape `?`. All recorded as hardening candidates.
+- **Verified clean**: no wall-clock or randomness in the evaluator core;
+  timestamps are injected and excluded from semantic digests; status
+  precedence matches the documented table; input forward-compat rejects
+  unknown schema versions explicitly (`INPUT_VERSION_UNSUPPORTED`).
 
 ## Persona 4 — Open-source program evaluator
 
