@@ -11,6 +11,8 @@ import { buildGitHubSnapshot } from "../../src/github/snapshot-builder.js";
 import type { GitHubSnapshotRequest } from "../../src/github/identity.js";
 
 interface Fixture {
+  caseId: string;
+  description: string;
   request: GitHubSnapshotRequest & { allowConfirmedAbsence?: boolean };
   exchanges: RecordedExchange[];
 }
@@ -281,6 +283,19 @@ describe("authenticated GitHub adapter fixtures", () => {
       { id: "codeowners.1", owners: ["@org/reviewers", "@org/security"], requiredCount: 1 },
       { id: "codeowners.2", owners: ["@org/reviewers"], requiredCount: 1 },
     ]);
+    expect(firstResult.input.reviews).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        login: "alice",
+        qualified: true,
+        teams: ["@org/reviewers"],
+        teamIds: [700],
+        qualification: expect.objectContaining({
+          complete: true,
+          permissionState: "sufficient",
+          principalBindings: [expect.objectContaining({ configuredPrincipal: "@org/reviewers", membershipState: "active" })],
+        }),
+      }),
+    ]));
     expect(canonicalJson(firstResult.input)).toBe(canonicalJson(secondResult.input));
     const receipt = evaluateContribution(firstResult.input, "2026-08-13T00:00:00.000Z");
     expect(receipt.final.status).toBe("ready_for_review");
@@ -356,9 +371,16 @@ describe("authenticated GitHub adapter fixtures", () => {
     const references = [...new Set(manifest.cases.map((item) => item.path))].sort();
     expect(references).toEqual(files);
     expect(new Set(manifest.cases.map((item) => item.id)).size).toBe(manifest.cases.length);
+    const codeownersDescriptions = new Set<string>();
     for (const item of manifest.cases) {
       expect(files).toContain(item.path);
       const recorded = await fixture(item.path.slice("fixtures/api/".length));
+      if (item.path.includes("/codeowners-")) {
+        expect(recorded.caseId).toBe(item.id);
+        expect(recorded.description).toMatch(/^CODEOWNERS: /);
+        expect(recorded.request).toMatchObject({ eventKind: "pull_request", targetKind: "head", allowConfirmedAbsence: true });
+        codeownersDescriptions.add(recorded.description);
+      }
       let exchanges = structuredClone(recorded.exchanges);
       const request = item.variant === "merge-target" ? { ...recorded.request, targetKind: "merge" as const } : recorded.request;
       if (item.variant === "merge-target") {
@@ -420,6 +442,7 @@ describe("authenticated GitHub adapter fixtures", () => {
       expect(transport.requested().map((request) => `${request.method} ${request.path}`)).toEqual(item.expected.requestSequence);
       expect(transport.requested()).toHaveLength(Number(item.expected.requestCount));
     }
+    expect(codeownersDescriptions).toHaveLength(7);
     expect(manifest.cases.map((item) => item.id)).toEqual(expect.arrayContaining(["github-pr-happy-path", "github-pr-merge-target-derived", "github-merge-group-unsupported", "github-repository-permission-denied"]));
   });
 });

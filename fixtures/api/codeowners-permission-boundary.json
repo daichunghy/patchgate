@@ -1,6 +1,6 @@
 {
-  "caseId": "github-pr-happy-path",
-  "description": "Authenticated pull_request head snapshot with exact-base policy, native linked issue, and workflow-bound check.",
+  "caseId": "github-codeowners-permission-boundary",
+  "description": "CODEOWNERS: keeps a permission denial as incomplete ownership evidence rather than treating it as no matching owners.",
   "request": {
     "owner": "example",
     "name": "service",

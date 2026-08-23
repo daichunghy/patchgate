@@ -1,6 +1,6 @@
 {
-  "caseId": "github-pr-happy-path",
-  "description": "Authenticated pull_request head snapshot with exact-base policy, native linked issue, and workflow-bound check.",
+  "caseId": "github-codeowners-incomplete-changed-paths",
+  "description": "CODEOWNERS: keeps incomplete changed-path retrieval from becoming a proven non-match.",
   "request": {
     "owner": "example",
     "name": "service",

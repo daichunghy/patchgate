@@ -1,6 +1,6 @@
 {
-  "caseId": "github-pr-happy-path",
-  "description": "Authenticated pull_request head snapshot with exact-base policy, native linked issue, and workflow-bound check.",
+  "caseId": "github-codeowners-unsupported",
+  "description": "CODEOWNERS: keeps unsupported syntax bounded and returns policy_ambiguous instead of guessing ownership.",
   "request": {
     "owner": "example",
     "name": "service",

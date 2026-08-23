@@ -1,6 +1,6 @@
 {
-  "caseId": "github-pr-happy-path",
-  "description": "Authenticated pull_request head snapshot with exact-base policy, native linked issue, and workflow-bound check.",
+  "caseId": "github-codeowners-escaped-multiple",
+  "description": "CODEOWNERS: parses escaped paths and accepts one qualified owner-team reviewer for a multiple-owner rule.",
   "request": {
     "owner": "example",
     "name": "service",
@@ -607,13 +607,12 @@
         "path": "/orgs/org/teams/security/memberships/alice"
       },
       "response": {
-        "status": 200,
+        "status": 404,
         "body": {
-          "state": "active",
-          "role": "member"
+          "message": "Not Found"
         },
         "headers": {},
-        "bytes": 34
+        "bytes": 24
       }
     },
     {
@@ -691,13 +690,12 @@
         "path": "/orgs/org/teams/security/memberships/alice"
       },
       "response": {
-        "status": 200,
+        "status": 404,
         "body": {
-          "state": "active",
-          "role": "member"
+          "message": "Not Found"
         },
         "headers": {},
-        "bytes": 34
+        "bytes": 24
       }
     },
     {

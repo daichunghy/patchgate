@@ -1,6 +1,6 @@
 {
-  "caseId": "github-pr-happy-path",
-  "description": "Authenticated pull_request head snapshot with exact-base policy, native linked issue, and workflow-bound check.",
+  "caseId": "github-codeowners-precedence-github",
+  "description": "CODEOWNERS: selects .github/CODEOWNERS before repository-root and docs candidates at the trusted base revision.",
   "request": {
     "owner": "example",
     "name": "service",
