@@ -1,7 +1,7 @@
 # Constitution and release-readiness matrix
 
 **Status:** current operational snapshot; preparation evidence only  
-**Reviewed:** 2026-08-22
+**Reviewed:** 2026-08-23
 
 This matrix maps the constitution and roadmap gates to the strongest evidence
 currently available. It is intentionally conservative: a local test or public
@@ -17,7 +17,7 @@ PR does not become a release, pilot or adoption claim.
 | G3 authenticated snapshot | Partial | Bounded GET-only live smoke on PR #9, schema-valid input/receipt, base/head binding, branch-protection and supported Rulesets subset | Post-merge default-branch smoke, complete merge-group contract and external consumer evidence |
 | G4 shadow Action | Partial | Root `action.yml`, committed bundle, pinned workflows, explicit permissions, clean-room consumer fixture, shadow and rollback runbooks | Two consenting external shadow installations, fork E2E and live merge-group E2E |
 | G5 enforcement | Open | Adversarial tests and fail-closed native-control behavior exist | Shadow evidence review, explicit maintainer consent, performance/abuse evidence and enforcement decision |
-| G6 public beta | Open | Release-candidate checker, rollback runbook, and tagged `v0.1.0-beta.2` (shadow-evidence only; `v0.1.0-beta.1` superseded) | Clean external consumer install, upgrade/downgrade/rollback proof, production-ready release |
+| G6 public beta | Partial | Release-candidate checker, rollback runbook, and tagged `v0.1.0-beta.5` (shadow-evidence only) | Clean external consumer install, upgrade/downgrade/rollback proof, production-ready release |
 | G7 diverse pilots | Open | Pilot brief, consent-safe feedback template and installation runbook | Two different public repositories with consented shadow/enforcement evidence and feedback-driven fixes |
 | G8 `v0.1` and application | Open | Evidence dossier, form draft, maintainer workflow and this matrix | All constitutional gates, `v0.1.0`, pilot links, applicant fields and manual submission |
 
@@ -48,8 +48,8 @@ The consent-safe outreach drafts are in
    scheduler state.
 3. Run only consented G2/shadow sessions and record raw evidence; do not count
    self-authored Discussions as adoption.
-4. Decide whether beta publication is authorized and execute the rollback test
-   before creating a release.
+4. Treat beta5 as shadow-only, execute the rollback test, and record the result
+   before any stable release decision.
 5. Fill the applicant identity fields, refresh live links, and submit the
    official form manually. Selection is not guaranteed by this preparation.
 
