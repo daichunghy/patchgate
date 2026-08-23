@@ -2,6 +2,11 @@
 
 All notable changes to PatchGate will be documented in this file.
 
+### Beta release — 2026-08-23 (`v0.1.0-beta.4`)
+- Released [`v0.1.0-beta.4`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.4), pinned to `d8c67a848a95d456707e6c580a43e4e56e6071a0`.
+- Updated the consumer Action reference, default Check Run behavior, CLI `--output` alias, and full-SHA workflow pins.
+- This remains shadow-evidence only: no production, adoption, external pilot, or stable `v0.1` claim.
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 

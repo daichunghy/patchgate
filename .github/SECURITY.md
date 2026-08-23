@@ -4,7 +4,7 @@
 
 | Version | Supported |
 |---|---|
-| `v0.1.0-beta.2` / `0.1.0-dev` | Best effort during pre-release (beta.1 superseded) |
+| `v0.1.0-beta.4` / `0.1.0-dev` | Best effort during pre-release |
 | Stable versions | None released yet |
 
 ## 2. Reporting a Vulnerability

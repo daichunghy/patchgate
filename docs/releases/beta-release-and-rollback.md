@@ -1,7 +1,7 @@
 # Beta release and rollback runbook
 
-**Status:** release preparation only; no beta or `v0.1` release is authorized
-by this document.
+**Status:** runbook for the current public beta; it does not authorize a stable
+`v0.1` release or production enforcement.
 
 This runbook closes the documentation path requested in [issue #5](https://github.com/daichunghy/patchgate/issues/5).
 It does not override the constitution, branch protection, pilot consent or the
@@ -20,8 +20,9 @@ Before publishing a beta, the maintainer must have independently recorded:
   no-go decision;
 - support, security-reporting, compatibility and unsupported-behavior wording.
 
-The current repository has a public pre-release PR and a private development
-package, so these prerequisites are not yet all satisfied.
+The current repository has public pre-release `v0.1.0-beta.4` and a private
+development package. The two external shadow installations and production
+gates remain open.
 
 ## Release procedure
 

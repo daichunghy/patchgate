@@ -2,7 +2,8 @@
 
 Thank you for using PatchGate.
 
-PatchGate is a public pre-release (`0.1.0-dev`, Action tag `v0.1.0-beta.2`).
+PatchGate is a public pre-release (`0.1.0-dev`, Action tag `v0.1.0-beta.4`, commit
+`d8c67a848a95d456707e6c580a43e4e56e6071a0`).
 Support is **best effort**. There is no SLA for consumer questions, no
 on-call, and no promise that a maintainer will debug a specific repository's
 GitHub Ruleset, branch protection, or workflow graph. PatchGate reports

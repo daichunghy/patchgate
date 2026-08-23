@@ -16,12 +16,12 @@ The evaluator is deterministic and explainable. It does not determine who or
 what produced the code, whether the code is correct, safe, or merge-worthy, and
 it cannot force external automation to stop working.
 
-**Status:** public pre-release. The package is unpublished (`private: true`,
-`0.1.0-dev`). The Action tag
-[`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
-is the recommended immutable reference for **shadow** evaluation only.
-`v0.1.0-beta.1` is superseded. This is not production, not a `v0.1` claim,
-and not evidence of external pilots or adoption.
+**Status:** public pre-release. The npm package remains unpublished (`private: true`,
+`0.1.0-dev`). The current Action release is
+[`v0.1.0-beta.4`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.4),
+and consumers should pin commit `d8c67a848a95d456707e6c580a43e4e56e6071a0` for
+**shadow** evaluation only. This is not production, not a `v0.1` claim, and
+not evidence of external pilots or adoption.
 
 ## Try it locally
 
@@ -64,9 +64,9 @@ Longer walkthrough: [Getting started](docs/getting-started.md).
 ## GitHub Action candidate
 
 The Action is bundled for the repository's local shadow workflow. The tagged
-pre-release [`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
-is the recommended immutable reference for shadow evaluation; `v0.1.0-beta.1`
-is superseded because its Action inputs were unreadable on real runners.
+pre-release [`v0.1.0-beta.4`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.4)
+is the current release; pin commit `d8c67a848a95d456707e6c580a43e4e56e6071a0`
+for shadow evaluation.
 Production consumers must still wait for a stable public release. Do not use
 the placeholder `patchgate/patchgate@v0.1.0-dev` as an installable public
 reference. Consumer setup, permissions and the shadow workflow are documented
@@ -209,7 +209,7 @@ The repository maintains a clean root directory structure (9 files max) with mod
 - [Project constitution](docs/PROJECT_CONSTITUTION.md)
 - [Example policy](docs/patchgate.example.yml)
 - [Action usage guide](docs/github-action-usage.md)
-- [v0.1.0-beta.2 release record](docs/releases/2026-08-22-beta-candidate.md)
+- [v0.1.0-beta.4 release record](docs/releases/2026-08-23-beta.4.md)
 - [Contributing](.github/CONTRIBUTING.md)
 - [Security policy](.github/SECURITY.md)
 - [Code of conduct](.github/CODE_OF_CONDUCT.md)
