@@ -18,8 +18,8 @@ it cannot force external automation to stop working.
 
 **Status:** public pre-release. The npm package remains unpublished (`private: true`,
 `0.1.0-dev`). The current Action release is
-[`v0.1.0-beta.4`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.4),
-and consumers should pin commit `d8c67a848a95d456707e6c580a43e4e56e6071a0` for
+[`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5),
+and consumers should pin the immutable commit shown on that release page for
 **shadow** evaluation only. This is not production, not a `v0.1` claim, and
 not evidence of external pilots or adoption.
 
@@ -64,8 +64,8 @@ Longer walkthrough: [Getting started](docs/getting-started.md).
 ## GitHub Action candidate
 
 The Action is bundled for the repository's local shadow workflow. The tagged
-pre-release [`v0.1.0-beta.4`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.4)
-is the current release; pin commit `d8c67a848a95d456707e6c580a43e4e56e6071a0`
+pre-release [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5)
+is the current release; pin its immutable commit SHA
 for shadow evaluation.
 Production consumers must still wait for a stable public release. Do not use
 the placeholder `patchgate/patchgate@v0.1.0-dev` as an installable public
@@ -209,7 +209,7 @@ The repository maintains a clean root directory structure (9 files max) with mod
 - [Project constitution](docs/PROJECT_CONSTITUTION.md)
 - [Example policy](docs/patchgate.example.yml)
 - [Action usage guide](docs/github-action-usage.md)
-- [v0.1.0-beta.4 release record](docs/releases/2026-08-23-beta.4.md)
+- [v0.1.0-beta.5 release record](docs/releases/2026-08-23-beta.5.md)
 - [Contributing](.github/CONTRIBUTING.md)
 - [Security policy](.github/SECURITY.md)
 - [Code of conduct](.github/CODE_OF_CONDUCT.md)

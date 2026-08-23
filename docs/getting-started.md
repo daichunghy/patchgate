@@ -1,10 +1,10 @@
 # Getting started
 
 PatchGate is a public pre-release. The npm package is unpublished
-(`private: true`, `0.1.0-dev`). The current Action release is `v0.1.0-beta.4`,
+(`private: true`, `0.1.0-dev`). The current Action release is `v0.1.0-beta.5`,
 which is for shadow evaluation only — not production, not a `v0.1` claim, and
 not evidence of external pilots. Pin commit
-`d8c67a848a95d456707e6c580a43e4e56e6071a0`.
+the immutable commit SHA shown on its release page.
 
 This walkthrough uses a clone and a local build. Do not run `npx patchgate`:
 that npm name is a different project. The direct GitHub install is available

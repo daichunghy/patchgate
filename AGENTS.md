@@ -98,14 +98,14 @@ readiness.
 
 | Area | Current evidence | Status and limit |
 | --- | --- | --- |
-| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI runs | Foundation is present at public `main@d8c67a8`; `main` requires six CI contexts and one approving review, `0.1.0-dev` remains an unpublished package, and beta.4 is the current public Action pre-release. There is no downstream usage; maintainer-bypass merges remain recorded as maintainer decisions rather than independent-review evidence |
+| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI runs | Foundation is present on public `main`; `main` requires six CI contexts and one approving review, `0.1.0-dev` remains an unpublished package, and beta.5 is the current public Action pre-release. There is no downstream usage; maintainer-bypass merges remain recorded as maintainer decisions rather than independent-review evidence |
 | G1 deterministic contract | TypeScript evaluator, schemas, receipt digests, recorded fixtures, security coverage, and deterministic tests | Locally verified; this does not prove a live GitHub integration |
 | G2 local preflight | `preflight`, `validate`, `init`, `doctor`, Git-ref loading, discovery classification, text/JSON parity, and six CLI process tests (the sixth covers the `evaluate --output` alias and its fail-closed conflict, PR #40) | Local user flow is verified; three consented usability sessions and UR acceptance evidence are still open |
 | G3 GitHub adapter | Recorded/mock authenticated snapshot flow, bounded requests, source and SHA binding, TOCTOU re-read, redaction, branch-protection and Rulesets subset contract, 25 integration tests and the latest recorded GET-only smoke for PR #9 head `5f9ccb5` | The tested head built a schema-valid live snapshot and receipt with final status `human_review_required`; missing approval/ownership/linkage evidence remains explicit; unsupported Ruleset semantics and merge-group membership remain fail-closed |
 | G4 Action | Root `action.yml`, `src/action/index.ts`, committed ncc bundle, pinned workflows, required CI/CodeQL merge-group triggers, clean-room bundle verification, idempotent check delivery including a neutral check run when the snapshot is rejected (PR #26), consumer fixture smoke and explicit non-ready merge-group handling are merged into `main` | Local consumer boundary is verified; no live external consumer E2E, production release or two consenting non-blocking shadow installations |
-| User value and release | Protocols, roadmap, public Discussions, pilot request, contribution issues, public Project #1, merged hardening work and the `v0.1.0-beta.4` pre-release with a recorded shadow-installation no-go decision exist | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, production release, or `v0.1` claim |
+| User value and release | Protocols, roadmap, public Discussions, pilot request, contribution issues, public Project #1, merged hardening work and the `v0.1.0-beta.5` pre-release with a recorded shadow-installation no-go decision exist | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, production release, or `v0.1` claim |
 
-The public default branch is currently `main@d8c67a8`. [PR #9](https://github.com/daichunghy/patchgate/pull/9)
+The public default branch is currently `main`; the current immutable Action commit is recorded on the beta.5 release page. [PR #9](https://github.com/daichunghy/patchgate/pull/9)
 and follow-ups #15–#21, #23, #25 and #26 were merged on 2026-08-22, and #28,
 #36 and #40 were merged on 2026-08-23, each by the repository
 administrator after temporarily lifting `enforce_admins`; the setting was
@@ -121,7 +121,7 @@ and CodeQL `32563526929` on `main@e4052f2`, earlier runs through
 [32559824706](https://github.com/daichunghy/patchgate/actions/runs/32559824706)
 on `main@c9f643e`, and the first public run
 [CI 32333914059](https://github.com/daichunghy/patchgate/actions/runs/32333914059).
-For `main@d8c67a8`, default-branch CI run
+For the current public `main`, default-branch CI run
 [32616034636](https://github.com/daichunghy/patchgate/actions/runs/32616034636)
 completed successfully while CodeQL `32616034425` was still in progress when
 this snapshot was written.
@@ -141,13 +141,13 @@ and #39 (`actions/checkout` 7) were merged on 2026-08-23 after green CI, and
 the split CodeQL 4.37.7 PRs #35/#37 were superseded by a combined init+analyze
 bump; the `create-check-run` default flip also shipped in that PR. Every merge
 used the recorded admin-bypass pattern and is a maintainer decision. The pre-release
-[`v0.1.0-beta.4`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.4)
-is pinned to `main@d8c67a8` after a live maintainer smoke
+[`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5)
+is the current public beta after a live maintainer smoke
 ([daichunghy/patchgate-beta-smoke](https://github.com/daichunghy/patchgate-beta-smoke))
 found and fixed a critical Action input-parsing bug that made `v0.1.0-beta.1`
 unusable on real runners
 ([findings](docs/reviews/2026-08-22-live-smoke-findings.md),
-[release record](docs/releases/2026-08-23-beta.4.md)); it is beta
+[release record](docs/releases/2026-08-23-beta.5.md)); it is beta
 shadow-evidence scope only — not production, adoption or a `v0.1` claim.
 
 The current milestone audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The newest records are the [2026-08-22 multi-persona review round](docs/reviews/2026-08-22-multi-persona-review.md), the [2026-08-22 live consumer smoke findings](docs/reviews/2026-08-22-live-smoke-findings.md) and the [2026-08-22 Mimosa static-advisory adjudication](docs/reviews/2026-08-22-mimosa-static-advisory-adjudication.md) — re-run the sealed scan after any change to `src/github/client.ts` transport handling. The latest verification command to rerun after a change is:
@@ -212,14 +212,14 @@ produced by the adapter — not a raw GitHub event payload.
 Current allowed Action form (shadow only):
 
 ```yaml
-- uses: daichunghy/patchgate@d8c67a848a95d456707e6c580a43e4e56e6071a0
+- uses: daichunghy/patchgate@v0.1.0-beta.5
   with:
     fail-on: never
     create-check-run: true
 ```
 
 `fail-on: blocked` is the enforcement form intended for the first stable
-release, not for this pre-release. Pin the beta.4 full SHA above; older beta
+release, not for this pre-release. Pin the beta.5 immutable release commit; older beta
 tags are superseded.
 
 The first supported rule classes are:
