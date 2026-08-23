@@ -9,7 +9,7 @@ describe("GitHub Action runner unit tests", () => {
       expect(inputs.failOn).toBe("blocked");
       expect(inputs.githubToken).toBe("");
       expect(inputs.reportPath).toBe("patchgate-receipt.json");
-      expect(inputs.createCheckRun).toBe(false);
+      expect(inputs.createCheckRun).toBe(true);
       expect(inputs.checkName).toBe("PatchGate Review Gate");
     });
 
