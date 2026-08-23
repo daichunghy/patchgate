@@ -64,8 +64,16 @@ try {
         GITHUB_OUTPUT: outputPath,
         GITHUB_STEP_SUMMARY: summaryPath,
         GITHUB_WORKSPACE: consumerRoot,
-        INPUT_FAIL_ON: "never",
-        INPUT_CREATE_CHECK_RUN: "false",
+        // GitHub Actions preserves dashes in INPUT_<NAME>; keep opposite
+        // underscore values here so the fixture also guards precedence.
+        "INPUT_FAIL-ON": "never",
+        INPUT_FAIL_ON: "blocked",
+        "INPUT_CREATE-CHECK-RUN": "false",
+        INPUT_CREATE_CHECK_RUN: "true",
+        "INPUT_REPORT-PATH": "runner/receipt.json",
+        INPUT_REPORT_PATH: "underscore/receipt.json",
+        "INPUT_CHECK-NAME": "Runner Gate",
+        INPUT_CHECK_NAME: "Underscore Gate",
         GITHUB_TOKEN: "",
       },
     });
