@@ -2,6 +2,10 @@
 
 All notable changes to PatchGate will be documented in this file.
 
+### Beta release — 2026-08-23 (`v0.1.0-beta.5`)
+- Published the current documentation-synchronized beta from the public default branch.
+- The Action behavior is unchanged from beta.4; consumers should pin the immutable release commit and keep shadow mode enabled.
+
 ### Beta release — 2026-08-23 (`v0.1.0-beta.4`)
 - Released [`v0.1.0-beta.4`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.4), pinned to `d8c67a848a95d456707e6c580a43e4e56e6071a0`.
 - Updated the consumer Action reference, default Check Run behavior, CLI `--output` alias, and full-SHA workflow pins.
