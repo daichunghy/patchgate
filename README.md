@@ -300,3 +300,5 @@ mechanism and verification path exist and are tested.
 
 If PatchGate saved you review time on one pull request, star the repository. It
 helps other maintainers find the gate.
+
+Release history: [CHANGELOG.md](CHANGELOG.md).
