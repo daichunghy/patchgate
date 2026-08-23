@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### evaluate --output alias with fail-closed conflicts — 2026-08-23
+- `evaluate` accepts `--output` as an alias of `--report`, so the
+  file-writing flag is uniform across commands. Passing both with different
+  receipt paths exits 2 with `REPORT_OUTPUT_CONFLICT` instead of picking a
+  winner. `--report` remains the documented flag. (Audit item P1-8; the
+  `validate --base` alias was already documented.)
+
 ### Working git install and glob hardening — 2026-08-22
 - `npx github:daichunghy/patchgate` now actually works: a `prepare` script
   builds `dist/` when the package is installed from GitHub, closing the gap

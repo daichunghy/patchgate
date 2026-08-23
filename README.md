@@ -54,8 +54,10 @@ node dist/src/cli.js evaluate --event fixtures/pr-ready.json --report /tmp/patch
 ```
 
 `validate` accepts `--base` as an alias of `--policy`. `evaluate` writes
-receipts with `--report`; `github snapshot` and `support-bundle` write files
-with `--output`. `--fail-on` defaults to `blocked`, matching the Action.
+receipts with `--report` (or `--output`, the shared write-path alias); `github
+snapshot` and `support-bundle` write files with `--output` only. Giving
+`evaluate` both flags with different paths exits 2 (`REPORT_OUTPUT_CONFLICT`).
+`--fail-on` defaults to `blocked`, matching the Action.
 
 Longer walkthrough: [Getting started](docs/getting-started.md).
 

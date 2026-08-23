@@ -27,8 +27,10 @@ node dist/src/cli.js --help
 `evidence_missing`, and `policy_ambiguous` exit 1. `human_review_required`
 does not fail until the threshold is raised.
 
-`evaluate` writes a receipt with `--report`. `github snapshot` and
-`support-bundle` write files with `--output`.
+`evaluate` writes a receipt with `--report` (or `--output`, the shared
+write-path alias). `github snapshot` and `support-bundle` write files with
+`--output` only. Giving `evaluate` both flags with different paths exits 2
+(`REPORT_OUTPUT_CONFLICT`).
 
 ## 2. Init a draft policy
 
@@ -97,8 +99,8 @@ node dist/src/cli.js evaluate --event fixtures/pr-ready.json
 
 This consumes a normalized evaluation-input snapshot, not a raw GitHub
 event. Stdout is a receipt with `final.status: ready_for_review` (exit 0).
-Add `--report /tmp/patchgate-receipt.json` only if you want the same JSON
-written to a file (stdout is then empty).
+Add `--report /tmp/patchgate-receipt.json` (or `--output`, the alias) only if
+you want the same JSON written to a file (stdout is then empty).
 
 To inspect a blocked case without failing the process:
 
