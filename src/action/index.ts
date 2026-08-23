@@ -40,7 +40,7 @@ export function parseActionInputs(env: NodeJS.ProcessEnv = process.env): ActionI
     failOn,
     githubToken: actionInput(env, "GITHUB-TOKEN", "GITHUB_TOKEN")?.trim() || env.GITHUB_TOKEN?.trim() || "",
     reportPath,
-    createCheckRun: (actionInput(env, "CREATE-CHECK-RUN", "CREATE_CHECK_RUN") ?? "").trim().toLowerCase() === "true",
+    createCheckRun: (actionInput(env, "CREATE-CHECK-RUN", "CREATE_CHECK_RUN") ?? "true").trim().toLowerCase() === "true",
     checkName,
   };
 }
