@@ -19,9 +19,10 @@ it cannot force external automation to stop working.
 **Status:** public pre-release. The npm package remains unpublished (`private: true`,
 `0.1.0-dev`). The current Action release is
 [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5),
-and consumers should pin the immutable commit shown on that release page for
-**shadow** evaluation only. This is not production, not a `v0.1` claim, and
-not evidence of external pilots or adoption.
+and consumers should pin
+`34d998bbd59fa09dd9081e24f22abe812f97fbab` for **shadow** evaluation only.
+This is not production, not a `v0.1` claim, and not evidence of external
+pilots or adoption.
 
 > If PatchGate saved you one wasted review,
 > [star it](https://github.com/daichunghy/patchgate/stargazers). That is the
@@ -69,8 +70,8 @@ Longer walkthrough: [Getting started](docs/getting-started.md).
 
 The Action is bundled for the repository's local shadow workflow. The tagged
 pre-release [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5)
-is the current release; pin its immutable commit SHA
-for shadow evaluation.
+is the current release; pin
+`34d998bbd59fa09dd9081e24f22abe812f97fbab` for shadow evaluation.
 Production consumers must still wait for a stable public release. Do not use
 the placeholder `patchgate/patchgate@v0.1.0-dev` as an installable public
 reference. Consumer setup, permissions and the shadow workflow are documented
