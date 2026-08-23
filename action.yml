@@ -21,7 +21,7 @@ inputs:
   create-check-run:
     description: 'Whether to post an idempotent GitHub Check Run with the receipt summary.'
     required: false
-    default: 'false'
+    default: 'true'
   check-name:
     description: 'Title of the GitHub Check Run.'
     required: false
