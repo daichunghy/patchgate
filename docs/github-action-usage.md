@@ -125,7 +125,7 @@ consumers should use the tagged Action above, not `uses: ./` after `npm ci`.
 |---|---|---|---|
 | `fail-on` | Status level causing step failure | `blocked` | `never`, `blocked`, `human_review_required`, `evidence_missing`, `policy_ambiguous` |
 | `github-token` | GitHub token for reading metadata; `checks: write` is also required when `create-check-run: true` | `${{ github.token }}` | String |
-| `create-check-run` | Post idempotent GitHub Check Run | `false` | `true`, `false` |
+| `create-check-run` | Post idempotent GitHub Check Run | `true` | `true`, `false` |
 | `check-name` | Title of the GitHub Check Run | `PatchGate Review Gate` | String |
 | `report-path` | Output path for `ContributionReceipt` | `patchgate-receipt.json` | Path string |
 
