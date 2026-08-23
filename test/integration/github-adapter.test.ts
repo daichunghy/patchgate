@@ -25,7 +25,12 @@ async function fixture(name: string): Promise<Fixture> {
 
 function client(exchanges: readonly RecordedExchange[]): { client: GitHubClient; transport: RecordedGitHubTransport } {
   const transport = new RecordedGitHubTransport(exchanges);
-  return { transport, client: new GitHubClient(transport) };
+  return {
+    transport,
+    client: new GitHubClient(transport, undefined, {
+      clock: { now: () => Date.parse("2026-08-24T00:00:00.000Z"), sleep: async () => {} },
+    }),
+  };
 }
 
 function branchProtectionBody(requiredApprovingReviewCount: number): Record<string, unknown> {
@@ -238,6 +243,113 @@ describe("authenticated GitHub adapter fixtures", () => {
     expect(evaluateContribution(result.input, "2026-08-13T00:00:00.000Z").final.status).toBe("ready_for_review");
   });
 
+  for (const scenario of [
+    { file: "codeowners-precedence-github.json", selectedPath: ".github/CODEOWNERS", skippedPaths: ["CODEOWNERS", "docs/CODEOWNERS"] },
+    { file: "codeowners-precedence-root.json", selectedPath: "CODEOWNERS", skippedPaths: ["docs/CODEOWNERS"] },
+    { file: "codeowners-precedence-docs.json", selectedPath: "docs/CODEOWNERS", skippedPaths: [] },
+  ]) {
+    it(`resolves CODEOWNERS precedence to ${scenario.selectedPath}`, async () => {
+      const recorded = await fixture(scenario.file);
+      const { client: github, transport } = client(recorded.exchanges);
+      const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
+
+      expect(result.kind).toBe("built");
+      if (result.kind !== "built") return;
+      expect(result.input.policySources.find((source) => source.kind === "codeowners")?.identity).toBe(scenario.selectedPath);
+      expect(result.input.ownershipRequirements).toEqual([{ id: "codeowners.1", owners: ["@org/reviewers"], requiredCount: 1 }]);
+      if (scenario.skippedPaths.length > 0) {
+        expect(transport.requested().map((request) => request.path)).not.toEqual(expect.arrayContaining(scenario.skippedPaths.map((path) => `/repos/example/service/contents/${path}`)));
+      }
+      expect(evaluateContribution(result.input, "2026-08-13T00:00:00.000Z").final.status).toBe("human_review_required");
+      expect(transport.remainingResponses()).toBe(0);
+    });
+  }
+
+  it("replays escaped patterns and treats multiple owners as one required approval", async () => {
+    const first = await fixture("codeowners-escaped-multiple.json");
+    const second = await fixture("codeowners-escaped-multiple.json");
+    const firstClient = client(first.exchanges);
+    const secondClient = client(second.exchanges);
+    const firstResult = await buildGitHubSnapshot(first.request, firstClient.client, { allowConfirmedAbsence: true });
+    const secondResult = await buildGitHubSnapshot(second.request, secondClient.client, { allowConfirmedAbsence: true });
+
+    expect(firstResult.kind).toBe("built");
+    expect(secondResult.kind).toBe("built");
+    if (firstResult.kind !== "built" || secondResult.kind !== "built") return;
+    expect(firstResult.diagnostics).toEqual([]);
+    expect(firstResult.input.ownershipRequirements).toEqual([
+      { id: "codeowners.1", owners: ["@org/reviewers", "@org/security"], requiredCount: 1 },
+      { id: "codeowners.2", owners: ["@org/reviewers"], requiredCount: 1 },
+    ]);
+    expect(canonicalJson(firstResult.input)).toBe(canonicalJson(secondResult.input));
+    const receipt = evaluateContribution(firstResult.input, "2026-08-13T00:00:00.000Z");
+    expect(receipt.final.status).toBe("ready_for_review");
+    expect(receipt.requirements).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "ownership.codeowners.1", result: "passed", observed: { requiredCount: 1, approvedCount: 1 } }),
+      expect.objectContaining({ id: "ownership.codeowners.2", result: "passed", observed: { requiredCount: 1, approvedCount: 1 } }),
+    ]));
+    expect(firstClient.transport.remainingResponses()).toBe(0);
+    expect(secondClient.transport.remainingResponses()).toBe(0);
+  });
+
+  it("keeps unsupported CODEOWNERS syntax diagnostic and policy-ambiguous", async () => {
+    const recorded = await fixture("codeowners-unsupported.json");
+    const { client: github, transport } = client(recorded.exchanges);
+    const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
+
+    expect(result.kind).toBe("built");
+    if (result.kind !== "built") return;
+    const diagnostics = result.diagnostics.filter((diagnostic) => diagnostic.id === "GITHUB_API_UNSUPPORTED");
+    expect(diagnostics).toHaveLength(4);
+    expect(diagnostics.map((diagnostic) => diagnostic.message)).toEqual(expect.arrayContaining([
+      expect.stringContaining("CODEOWNERS line 2 uses syntax outside"),
+      expect.stringContaining("CODEOWNERS line 3 uses syntax outside"),
+      expect.stringContaining("CODEOWNERS line 4 uses syntax outside"),
+      expect.stringContaining("CODEOWNERS line 5 is invalid"),
+    ]));
+    expect(diagnostics.every((diagnostic) => diagnostic.remediation.length > 0 && diagnostic.observation === "ownership")).toBe(true);
+    expect(result.input.observations.ownership).toMatchObject({ complete: false, permissionState: "unknown" });
+    expect(evaluateContribution(result.input, "2026-08-13T00:00:00.000Z").final.status).toBe("policy_ambiguous");
+    expect(transport.remainingResponses()).toBe(0);
+  });
+
+  it("does not turn a CODEOWNERS permission denial into empty ownership", async () => {
+    const recorded = await fixture("codeowners-permission-boundary.json");
+    const { client: github, transport } = client(recorded.exchanges);
+    const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
+
+    expect(result.kind).toBe("built");
+    if (result.kind !== "built") return;
+    expect(result.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({ id: "GITHUB_PERMISSION_INSUFFICIENT", observation: "ownership" })]));
+    expect(result.input.policySources.some((source) => source.kind === "codeowners")).toBe(false);
+    expect(result.input.ownershipRequirements).toEqual([]);
+    expect(result.input.observations.ownership).toMatchObject({ complete: false, permissionState: "unknown" });
+    expect(result.capability.observations).toContainEqual(expect.objectContaining({ endpoint: "contents/CODEOWNERS@base", state: "insufficient" }));
+    const receipt = evaluateContribution(result.input, "2026-08-13T00:00:00.000Z");
+    expect(receipt.final.status).toBe("evidence_missing");
+    expect(receipt.requirements).toEqual(expect.arrayContaining([expect.objectContaining({ id: "ownership.observation", result: "unknown" })]));
+    expect(transport.remainingResponses()).toBe(0);
+  });
+
+  it("does not treat incomplete changed paths as a proven CODEOWNERS non-match", async () => {
+    const recorded = await fixture("codeowners-incomplete-changed-paths.json");
+    const { client: github, transport } = client(recorded.exchanges);
+    const result = await buildGitHubSnapshot(recorded.request, github, { allowConfirmedAbsence: true });
+
+    expect(result.kind).toBe("built");
+    if (result.kind !== "built") return;
+    expect(result.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({ id: "GITHUB_PERMISSION_INSUFFICIENT", observation: "changedPaths" })]));
+    expect(result.input.observations.changedPaths).toMatchObject({ complete: false, permissionState: "insufficient" });
+    expect(result.input.observations.ownership).toMatchObject({ complete: false, permissionState: "unknown" });
+    expect(result.input.policySources.some((source) => source.kind === "codeowners")).toBe(true);
+    expect(result.input.ownershipRequirements).toEqual([]);
+    const receipt = evaluateContribution(result.input, "2026-08-13T00:00:00.000Z");
+    expect(receipt.final.status).toBe("evidence_missing");
+    expect(receipt.requirements).toEqual(expect.arrayContaining([expect.objectContaining({ id: "ownership.observation", result: "unknown" })]));
+    expect(receipt.requirements.some((requirement) => requirement.id === "ownership.no_match")).toBe(false);
+    expect(transport.remainingResponses()).toBe(0);
+  });
+
   it("keeps the API fixture manifest bijective with owned JSON fixtures", async () => {
     const manifest = JSON.parse(await readFile(resolve("fixtures/api/manifest.json"), "utf8")) as FixtureManifest;
     const files = (await readdir(resolve("fixtures/api"))).filter((file) => file.endsWith(".json") && file !== "manifest.json").map((file) => `fixtures/api/${file}`).sort();
@@ -291,7 +403,8 @@ describe("authenticated GitHub adapter fixtures", () => {
           expect(Object.values(result.input.observations).flatMap((value) => Array.isArray(value) ? value : [value]).every((meta) => meta.complete && meta.permissionState === "sufficient")).toBe(item.expected.complete);
           expect(result.input.policySources.every((source) => /^sha256:[0-9a-f]{64}$/.test(source.digest))).toBe(true);
           const observationMetas = Object.values(result.input.observations).flatMap((value) => Array.isArray(value) ? value : [value]);
-          expect(observationMetas.every((meta) => /^sha256:[0-9a-f]{64}$/.test(meta.normalizedDigest ?? ""))).toBe(true);
+          expect(observationMetas.filter((meta) => meta.complete).every((meta) => /^sha256:[0-9a-f]{64}$/.test(meta.normalizedDigest ?? ""))).toBe(true);
+          expect(observationMetas.filter((meta) => !meta.complete).every((meta) => meta.normalizedDigest === undefined)).toBe(true);
           expect(result.metrics.caps).toEqual(item.expected.caps ?? []);
           const report = redactForReport({ input: result.input, diagnostics: result.diagnostics, metrics: result.metrics, capability: result.capability });
           assertRedacted(report);
