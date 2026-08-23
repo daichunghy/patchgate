@@ -136,7 +136,11 @@ deleted after their content reached `main`; the stale pre-publication
 remain. Dependabot PRs #11 (`@types/node` 26), #13 (`vitest` 4) and #14
 (`@vitest/coverage-v8` 4) were merged on 2026-08-22 after local
 re-verification; PR #12 (`typescript` 7) stays open because `@vercel/ncc`
-cannot bundle under TS 7. The pre-release
+cannot bundle under TS 7. Dependabot Actions PRs #38 (`actions/setup-node` 7)
+and #39 (`actions/checkout` 7) were merged on 2026-08-23 after green CI, and
+the split CodeQL 4.37.7 PRs #35/#37 were superseded by a combined init+analyze
+bump; the `create-check-run` default flip also shipped in that PR. Every merge
+used the recorded admin-bypass pattern and is a maintainer decision. The pre-release
 [`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
 was tagged at `main@edab0ec` on 2026-08-22 after a live maintainer smoke
 ([daichunghy/patchgate-beta-smoke](https://github.com/daichunghy/patchgate-beta-smoke))
