@@ -15,9 +15,10 @@ after the documented gates have been reviewed.
 In **Shadow Mode**, PatchGate observes only (`fail-on: never`). It evaluates
 the PR, writes the `ContributionReceipt`, and can post a Check Run without
 blocking merge. Pin
-[`v0.1.0-beta.2`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.2)
-for this pre-release; `v0.1.0-beta.1` is superseded because Action inputs were
-unreadable on real runners. This is not production and not a `v0.1` claim.
+[`v0.1.0-beta.4`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.4)
+for this pre-release and pin commit
+`d8c67a848a95d456707e6c580a43e4e56e6071a0`. This is not production and not a
+`v0.1` claim.
 
 The Action reads GitHub metadata through the API. Do **not** check out
 pull-request code in this workflow. `github.token` cannot be granted the
@@ -57,9 +58,9 @@ jobs:
       # branch-protection snapshots fail closed (correct). A PAT/App token
       # with administration:read is required for a complete native-control
       # snapshot. beta.2 posts a Check Run for successful evaluations;
-      # snapshot-rejection Check Runs landed after that tag (see main).
+      # snapshot-rejection Check Runs are included in beta.4.
       - name: Run PatchGate Shadow Gate
-        uses: daichunghy/patchgate@v0.1.0-beta.2
+        uses: daichunghy/patchgate@d8c67a848a95d456707e6c580a43e4e56e6071a0
         with:
           fail-on: never
           create-check-run: true
@@ -75,7 +76,7 @@ workflow. It is still not production or a `v0.1` claim.
 
 ```yaml
       - name: Run PatchGate Enforcing Gate
-        uses: daichunghy/patchgate@v0.1.0-beta.2
+        uses: daichunghy/patchgate@d8c67a848a95d456707e6c580a43e4e56e6071a0
         with:
           fail-on: blocked
           create-check-run: true
