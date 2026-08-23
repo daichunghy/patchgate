@@ -53,8 +53,8 @@ function renderRootHelp(): string {
     "                   evidence_missing | policy_ambiguous",
     "                   blocked fails blocked/evidence_missing/policy_ambiguous;",
     "                   evidence_missing matches only that status",
-    "  --report <path>  Write the evaluate receipt JSON (evaluate only)",
-    "  --output <path>  Write github snapshot or support-bundle JSON",
+    "  --report <path>  Write the evaluate receipt JSON (evaluate; --output is an alias)",
+    "  --output <path>  Write github snapshot, support-bundle, or evaluate receipt JSON",
     "",
     "Examples:",
     "  patchgate preflight --base .",
@@ -184,6 +184,17 @@ function parseFailOnArgument(): ActionInputs["failOn"] {
   return raw as ActionInputs["failOn"];
 }
 
+// --report remains the documented evaluate flag; --output is the cross-command
+// write-path alias. Different values fail closed instead of picking a winner.
+function parseEvaluateReportPath(): string | undefined {
+  const report = argument("--report");
+  const output = argument("--output");
+  if (report !== undefined && output !== undefined && report !== output) {
+    throw new CliDiagnosticError("REPORT_OUTPUT_CONFLICT", "--report and --output must not name different receipt paths for evaluate.");
+  }
+  return report ?? output;
+}
+
 async function githubSnapshotCommand(): Promise<void> {
   const failOn = parseFailOnArgument();
   const fixturePath = argument("--mock-fixture");
@@ -307,7 +318,7 @@ async function main(): Promise<void> {
       return;
     }
     if (command === "evaluate") {
-      process.stdout.write("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json>] [--fail-on <never|blocked|human_review_required|evidence_missing|policy_ambiguous>]\n");
+      process.stdout.write("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json> | --output <receipt.json>] [--fail-on <never|blocked|human_review_required|evidence_missing|policy_ambiguous>]\n");
       return;
     }
     process.stdout.write(renderRootHelp() + "\n");
@@ -356,13 +367,13 @@ async function main(): Promise<void> {
     return;
   }
   const eventPath = argument("--event");
-  const reportPath = argument("--report");
   if (command !== "evaluate" || eventPath === undefined) {
-    console.error("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json>] [--fail-on <never|blocked|human_review_required|evidence_missing|policy_ambiguous>]\nRun 'patchgate --help' to see all available commands.");
+    console.error("Usage: patchgate evaluate --event <normalized-snapshot.json> [--report <receipt.json> | --output <receipt.json>] [--fail-on <never|blocked|human_review_required|evidence_missing|policy_ambiguous>]\nRun 'patchgate --help' to see all available commands.");
     process.exitCode = 2;
     return;
   }
   const failOn = parseFailOnArgument();
+  const reportPath = parseEvaluateReportPath();
   const input = parseEvaluationInputJson(await readFile(eventPath, "utf8"));
   const receipt = evaluateContribution(input, new Date().toISOString());
   const output = `${JSON.stringify(receipt, null, 2)}\n`;

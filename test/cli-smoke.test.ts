@@ -203,6 +203,28 @@ describe("CLI process smoke contract", () => {
     expect(runCli(writeInput(withInput(base, { revisions: { ...base.revisions, testedSha: "foreign-sha" } })))).toMatchObject({ exit: 2 });
   }, CLI_PROCESS_TEST_TIMEOUT);
 
+  it("accepts --output as an alias for --report on evaluate and fails closed on conflicts", async () => {
+    const base = await fixture();
+    const directory = mkdtempSync("/tmp/patchgate-cli-report-alias-");
+    tempDirectories.push(directory);
+    const eventPath = writeInput(withInput(base, { linkedIssues: [] }));
+    const outputPath = join(directory, "receipt.json");
+    const viaOutput = runCommand(["evaluate", "--event", eventPath, "--output", outputPath]);
+    expect(viaOutput.exit).toBe(1);
+    expect(viaOutput.stdout).toBe("");
+    const receipt = JSON.parse(readFileSync(outputPath, "utf8")) as { final?: { status?: string } };
+    expect(receipt.final?.status).toBe("blocked");
+    const viaBothSamePath = runCommand(["evaluate", "--event", eventPath, "--report", outputPath, "--output", outputPath]);
+    expect(viaBothSamePath.exit).toBe(1);
+    const viaReport = runCommand(["evaluate", "--event", eventPath, "--report", join(directory, "receipt-report.json")]);
+    expect(viaReport.exit).toBe(1);
+    const viaReportReceipt = JSON.parse(readFileSync(join(directory, "receipt-report.json"), "utf8")) as { final?: { status?: string } };
+    expect(viaReportReceipt.final?.status).toBe("blocked");
+    const conflict = runCommand(["evaluate", "--event", eventPath, "--report", join(directory, "a.json"), "--output", join(directory, "b.json")]);
+    expect(conflict.exit).toBe(2);
+    expect(conflict.stderr).toContain("REPORT_OUTPUT_CONFLICT");
+  }, CLI_PROCESS_TEST_TIMEOUT);
+
   it("replays the authenticated GitHub snapshot fixture without network access", () => {
     const outputDirectory = mkdtempSync("/tmp/patchgate-github-cli-");
     tempDirectories.push(outputDirectory);
