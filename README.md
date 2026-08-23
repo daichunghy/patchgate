@@ -23,6 +23,10 @@ and consumers should pin the immutable commit shown on that release page for
 **shadow** evaluation only. This is not production, not a `v0.1` claim, and
 not evidence of external pilots or adoption.
 
+> If PatchGate saved you one wasted review,
+> [star it](https://github.com/daichunghy/patchgate/stargazers). That is the
+> only growth signal this repo tracks.
+
 ## Try it locally
 
 The fastest first-run path is a direct GitHub install on Node 20+ — `npx`
@@ -284,3 +288,15 @@ gate remains unsatisfied; it is not proof that a human has reviewed the code.
 PatchGate must not claim a cryptographic signature, tamper-proof receipt,
 compliance certification, or proof that the code is correct until the exact
 mechanism and verification path exist and are tested.
+
+## Who this is for
+
+- Maintainers of public repositories who spend review time on pull requests
+  that arrive without the policy, evidence, or ownership signals the repo
+  requires.
+- Teams whose coding agents open pull requests faster than humans can triage.
+- Not a fit if you want authorship detection, correctness scoring, or blocking
+  without configuring a GitHub rule to honor the status check.
+
+If PatchGate saved you review time on one pull request, star the repository. It
+helps other maintainers find the gate.
