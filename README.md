@@ -27,6 +27,9 @@ not evidence of external adoption.
 The four related repositories and the shared evidence rules are recorded in
 [the repository portfolio audit](docs/reviews/2026-08-24-repository-portfolio-audit.md).
 
+The shortest path to a user result is [one non-blocking first-use check](docs/first-use.md).
+The workspace tracks this alongside the [continuous adoption loop](docs/adoption-loop.md).
+
 ## Try it locally
 
 The fastest first-run path is a direct GitHub install on Node 20+ — `npx`

@@ -1,0 +1,53 @@
+name: First-use feedback
+description: Report what happened when you tried the first PatchGate check
+labels: ["pilot"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for trying PatchGate. Please do not include tokens, private repository data, or unredacted pull-request contents.
+  - type: input
+    id: version
+    attributes:
+      label: PatchGate version or commit
+      placeholder: v0.1.0-beta.5 or full SHA
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: First-use result
+      options:
+        - worked
+        - worked with workaround
+        - did not reach first result
+    validations:
+      required: true
+  - type: input
+    id: time-to-result
+    attributes:
+      label: Time to first result
+      placeholder: e.g. 12 minutes
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Repository shape and workflow
+      description: Public repository type, Action mode, and relevant non-sensitive setup details.
+    validations:
+      required: true
+  - type: textarea
+    id: friction
+    attributes:
+      label: First friction or useful result
+      description: What happened, what you expected, and what should change.
+    validations:
+      required: true
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Evidence consent
+      options:
+        - label: I consent to a redacted summary of this feedback being used in project evidence.
+          required: false
