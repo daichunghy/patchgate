@@ -33,6 +33,11 @@ the committed bundle. They do not constitute a native GitHub consumer run,
 external pilot, Marketplace publication or proof of release readiness. The
 current G6 exit evidence remains pending where the roadmap requires clean-room
 consumer, compatibility, support/provenance and shadow-installation evidence.
+The validator reads existing Git refs only; it never fetches, follows a branch,
+or substitutes a metadata SHA when a release tag is unavailable. CI must retain
+the tags before running `npm run verify`. If a tag lookup fails, record an audit
+note that tag verification was unavailable and rerun after restoring the tag
+fetch; do not infer release identity from the working tree.
 
 ## Release prerequisites
 
@@ -70,7 +75,10 @@ working tree with uncommitted changes or a bundle rebuilt from a different
 revision.
 
 ```bash
-git fetch --tags origin
+if ! git fetch --tags origin; then
+  echo "AUDIT NOTE: release-tag verification unavailable; do not claim tag identity" >&2
+  exit 1
+fi
 test -z "$(git status --porcelain)"
 candidate_sha="$(git rev-parse HEAD)"
 test "$(git cat-file -t "$candidate_sha")" = commit
