@@ -218,6 +218,17 @@ tests.
 
 Small samples use raw counts and context, not universal percentages.
 
+## Cross-repository status checkpoint — 2026-08-24
+
+PatchGate is now tracked alongside three separate maintainer repositories in a
+shared workspace: `contribkit`, OpenSheet-AI, and `quant-research`. The live
+portfolio check found no verified external user, downstream repository, or
+pilot for any of the four. GitHub stars, self-authored issues, releases, npm
+downloads, and scheduled maintenance remain supporting signals, not adoption.
+The [portfolio audit](reviews/2026-08-24-repository-portfolio-audit.md) records
+the exact snapshot and the next evidence required. This keeps G2/G4/G7 open;
+it does not create a release or user-value claim.
+
 ## Product measures
 
 | Measure | Definition |

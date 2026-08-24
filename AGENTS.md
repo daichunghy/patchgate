@@ -156,6 +156,12 @@ The current milestone audit is [the 2026-08-20 G4/G0 continuation audit](docs/re
 npm run verify
 ```
 
+## Shared repository workflow
+
+The Desktop workspace contains four separate public repositories: [PatchGate](https://github.com/daichunghy/patchgate), [contribkit](https://github.com/daichunghy/contribkit), [OpenSheet-AI](https://github.com/daichunghy/opensheet-ai), and [quant-research](https://github.com/daichunghy/quant-research). They are not a monorepo or a combined adoption claim. The live status, evidence limits, and cross-repository working rules are maintained in the [repository portfolio audit](docs/reviews/2026-08-24-repository-portfolio-audit.md).
+
+When working across them, keep each repository's own `AGENTS.md`, constitution, tests, release boundary, and Git history authoritative. Check live GitHub and package-registry signals before writing a status update. Count outside walkthroughs, downstream installs, outside issues, outside pull requests, and consented pilots as usage evidence; count self-authored activity and bot activity as maintenance evidence only.
+
 Agents must not describe the repository as released, externally piloted,
 live-integrated, merge-blocking, or eligible/selected for Codex for Open Source
 unless the corresponding evidence has been added and independently checked.

@@ -2,7 +2,7 @@
   "name": "patchgate",
   "version": "0.1.0-dev",
   "private": true,
-  "description": "Deterministic GitHub pull-request review-readiness evaluator",
+  "description": "Checks GitHub pull requests for required issue links, CI evidence, code owners, and human approval before maintainer review",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
