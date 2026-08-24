@@ -6,6 +6,16 @@ decision without changing merge eligibility.
 
 ## Shadow setup
 
+For a local policy-only first result from this repository, run:
+
+```bash
+npm ci
+npm run first-use
+```
+
+This checks the trusted local `main` Git ref. It does not claim authenticated
+GitHub access or replace the Action shadow setup below.
+
 1. Open the [Action usage guide](github-action-usage.md) and create the
    workflow on the repository's default branch.
 2. Use `v0.1.0-beta.5`, keep `fail-on: never`, and set

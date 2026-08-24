@@ -39,6 +39,7 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm run verify",
     "build": "tsc -p tsconfig.json",
+    "first-use": "npm run build && node dist/src/cli.js preflight --repo . --base main",
     "bundle:action": "ncc build src/action/index.ts -o dist/action --minify --transpile-only",
     "audit": "npm audit --audit-level=high",
     "typecheck": "tsc -p tsconfig.json --noEmit",
