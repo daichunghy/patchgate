@@ -10,3 +10,4 @@ coverage/
 *.log
 scratch.*
 .mimosa/
+docs/superpowers/
