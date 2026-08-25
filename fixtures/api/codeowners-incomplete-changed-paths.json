@@ -1,0 +1,556 @@
+{
+  "caseId": "github-codeowners-incomplete-changed-paths",
+  "description": "CODEOWNERS: keeps incomplete changed-path retrieval from becoming a proven non-match.",
+  "request": {
+    "owner": "example",
+    "name": "service",
+    "pullNumber": 7,
+    "eventKind": "pull_request",
+    "targetKind": "head",
+    "allowConfirmedAbsence": true
+  },
+  "exchanges": [
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service"
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": 1,
+          "name": "service",
+          "full_name": "example/service"
+        },
+        "bytes": 65
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service"
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": 1,
+          "name": "service",
+          "full_name": "example/service"
+        },
+        "bytes": 65
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/pulls/7"
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": 70,
+          "number": 7,
+          "base": {
+            "ref": "main",
+            "sha": "base-sha",
+            "repo": {
+              "id": 1,
+              "full_name": "example/service"
+            }
+          },
+          "head": {
+            "ref": "feature",
+            "sha": "head-sha",
+            "repo": {
+              "id": 2,
+              "full_name": "fork/service"
+            }
+          },
+          "merge_commit_sha": null,
+          "user": {
+            "id": 99,
+            "login": "author",
+            "type": "User"
+          }
+        },
+        "bytes": 330
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/pulls/7"
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": 70,
+          "number": 7,
+          "base": {
+            "ref": "main",
+            "sha": "base-sha",
+            "repo": {
+              "id": 1,
+              "full_name": "example/service"
+            }
+          },
+          "head": {
+            "ref": "feature",
+            "sha": "head-sha",
+            "repo": {
+              "id": 2,
+              "full_name": "fork/service"
+            }
+          },
+          "merge_commit_sha": null,
+          "user": {
+            "id": 99,
+            "login": "author",
+            "type": "User"
+          }
+        },
+        "bytes": 330
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/contents/patchgate.yml",
+        "query": {
+          "ref": "base-sha"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "type": "file",
+          "encoding": "base64",
+          "size": 362,
+          "name": "patchgate.yml",
+          "path": "patchgate.yml",
+          "content": "dmVyc2lvbjogMQppc3N1ZV9saW5rYWdlOgogIHJlcXVpcmVkOiB0cnVlCnJlcXVpcmVkX2NoZWNrczoKICAtIGlkOiB1bml0CiAgICBuYW1lOiB1bml0CiAgICB0YXJnZXQ6IGhlYWQKICAgIGFjY2VwdGFibGVfY29uY2x1c2lvbnM6IFtzdWNjZXNzXQogICAgZXhwZWN0ZWRfc291cmNlOgogICAgICBraW5kOiBnaXRodWJfYWN0aW9uc193b3JrZmxvdwogICAgICBhcHBfaWQ6IDE1MzY4CiAgICAgIHdvcmtmbG93X2lkOiAxMjMKICAgICAgd29ya2Zsb3dfcGF0aDogLmdpdGh1Yi93b3JrZmxvd3MvY2kueW1sCiAgICAgIGV2ZW50OiBwdWxsX3JlcXVlc3QKb3duZXJzaGlwOgogIHJlcXVpcmVfY29kZV9vd25lcl9hcHByb3ZhbDogdHJ1ZQo=",
+          "sha": "blob-sha"
+        },
+        "bytes": 606
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/contents/patchgate.yml",
+        "query": {
+          "ref": "base-sha"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "type": "file",
+          "encoding": "base64",
+          "size": 362,
+          "name": "patchgate.yml",
+          "path": "patchgate.yml",
+          "content": "dmVyc2lvbjogMQppc3N1ZV9saW5rYWdlOgogIHJlcXVpcmVkOiB0cnVlCnJlcXVpcmVkX2NoZWNrczoKICAtIGlkOiB1bml0CiAgICBuYW1lOiB1bml0CiAgICB0YXJnZXQ6IGhlYWQKICAgIGFjY2VwdGFibGVfY29uY2x1c2lvbnM6IFtzdWNjZXNzXQogICAgZXhwZWN0ZWRfc291cmNlOgogICAgICBraW5kOiBnaXRodWJfYWN0aW9uc193b3JrZmxvdwogICAgICBhcHBfaWQ6IDE1MzY4CiAgICAgIHdvcmtmbG93X2lkOiAxMjMKICAgICAgd29ya2Zsb3dfcGF0aDogLmdpdGh1Yi93b3JrZmxvd3MvY2kueW1sCiAgICAgIGV2ZW50OiBwdWxsX3JlcXVlc3QKb3duZXJzaGlwOgogIHJlcXVpcmVfY29kZV9vd25lcl9hcHByb3ZhbDogdHJ1ZQo=",
+          "sha": "blob-sha"
+        },
+        "bytes": 606
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/pulls/7/files",
+        "query": {
+          "per_page": 100
+        }
+      },
+      "response": {
+        "status": 403,
+        "headers": {},
+        "body": {
+          "message": "Forbidden"
+        },
+        "bytes": 23
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/pulls/7/files",
+        "query": {
+          "per_page": 100
+        }
+      },
+      "response": {
+        "status": 403,
+        "headers": {},
+        "body": {
+          "message": "Forbidden"
+        },
+        "bytes": 23
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/contents/.github/CODEOWNERS",
+        "query": {
+          "ref": "base-sha"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "type": "file",
+          "encoding": "base64",
+          "size": 22,
+          "name": "CODEOWNERS",
+          "path": ".github/CODEOWNERS",
+          "content": "c3JjLyoqIEBvcmcvcmV2aWV3ZXJzCg==",
+          "sha": "codeowners-blob-sha"
+        },
+        "bytes": 166
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/contents/.github/CODEOWNERS",
+        "query": {
+          "ref": "base-sha"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "type": "file",
+          "encoding": "base64",
+          "size": 22,
+          "name": "CODEOWNERS",
+          "path": ".github/CODEOWNERS",
+          "content": "c3JjLyoqIEBvcmcvcmV2aWV3ZXJzCg==",
+          "sha": "codeowners-blob-sha"
+        },
+        "bytes": 166
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "path": "/graphql",
+        "operation": "pullRequestClosingIssues",
+        "variables": {
+          "owner": "example",
+          "name": "service",
+          "number": 7,
+          "first": 100,
+          "after": null
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "data": {
+            "repository": {
+              "pullRequest": {
+                "closingIssuesReferences": {
+                  "nodes": [
+                    {
+                      "issue": {
+                        "id": "issue-12",
+                        "repository": {
+                          "nameWithOwner": "example/service",
+                          "id": "issue-repo"
+                        },
+                        "number": 12
+                      }
+                    }
+                  ],
+                  "pageInfo": {
+                    "hasNextPage": false,
+                    "endCursor": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bytes": 260
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "path": "/graphql",
+        "operation": "pullRequestClosingIssues",
+        "variables": {
+          "owner": "example",
+          "name": "service",
+          "number": 7,
+          "first": 100,
+          "after": null
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "data": {
+            "repository": {
+              "pullRequest": {
+                "closingIssuesReferences": {
+                  "nodes": [
+                    {
+                      "issue": {
+                        "id": "issue-12",
+                        "repository": {
+                          "nameWithOwner": "example/service",
+                          "id": "issue-repo"
+                        },
+                        "number": 12
+                      }
+                    }
+                  ],
+                  "pageInfo": {
+                    "hasNextPage": false,
+                    "endCursor": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bytes": 260
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/commits/head-sha/check-runs",
+        "query": {
+          "per_page": 100,
+          "filter": "all"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "total_count": 1,
+          "check_runs": [
+            {
+              "id": 50,
+              "name": "unit",
+              "status": "completed",
+              "conclusion": "success",
+              "head_sha": "head-sha",
+              "app": {
+                "id": 15368,
+                "slug": "github-actions"
+              },
+              "check_suite": {
+                "id": 77
+              }
+            }
+          ]
+        },
+        "bytes": 250
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/commits/head-sha/check-runs",
+        "query": {
+          "per_page": 100,
+          "filter": "all"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "total_count": 1,
+          "check_runs": [
+            {
+              "id": 50,
+              "name": "unit",
+              "status": "completed",
+              "conclusion": "success",
+              "head_sha": "head-sha",
+              "app": {
+                "id": 15368,
+                "slug": "github-actions"
+              },
+              "check_suite": {
+                "id": 77
+              }
+            }
+          ]
+        },
+        "bytes": 250
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/actions/runs",
+        "query": {
+          "head_sha": "head-sha",
+          "per_page": 100
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "total_count": 1,
+          "workflow_runs": [
+            {
+              "id": 101,
+              "run_attempt": 1,
+              "head_sha": "head-sha",
+              "event": "pull_request",
+              "workflow_id": 123,
+              "path": ".github/workflows/ci.yml",
+              "check_suite_id": 77,
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        "bytes": 250
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/actions/runs",
+        "query": {
+          "head_sha": "head-sha",
+          "per_page": 100
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "total_count": 1,
+          "workflow_runs": [
+            {
+              "id": 101,
+              "run_attempt": 1,
+              "head_sha": "head-sha",
+              "event": "pull_request",
+              "workflow_id": 123,
+              "path": ".github/workflows/ci.yml",
+              "check_suite_id": 77,
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        "bytes": 250
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/pulls/7/reviews",
+        "query": {
+          "per_page": 100
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": [],
+        "bytes": 2
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/pulls/7/reviews",
+        "query": {
+          "per_page": 100
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": [],
+        "bytes": 2
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/rulesets",
+        "query": {
+          "includes_parents": true,
+          "per_page": 100
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": [],
+        "bytes": 2
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/rulesets",
+        "query": {
+          "includes_parents": true,
+          "per_page": 100
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": [],
+        "bytes": 2
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/branches/main/protection"
+      },
+      "response": {
+        "status": 404,
+        "headers": {},
+        "body": {
+          "message": "Not Found"
+        },
+        "bytes": 24
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/repos/example/service/branches/main/protection"
+      },
+      "response": {
+        "status": 404,
+        "headers": {},
+        "body": {
+          "message": "Not Found"
+        },
+        "bytes": 24
+      }
+    }
+  ]
+}

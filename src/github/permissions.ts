@@ -63,25 +63,25 @@ export async function qualifyReviews(client: GitHubClient, reviews: readonly Rev
     const bindings: QualificationPrincipal[] = [];
     const teamIds: number[] = [];
     const teams: string[] = [];
-    let qualified = permission.state === "sufficient";
-    let complete = permission.state !== "unknown";
-    let permissionState: PermissionState = permission.state;
+    let hasSufficientPrincipal = principals.length === 0 && permission.state === "sufficient";
+    let hasUnknownPrincipal = false;
     for (const principal of principals) {
       const team = configuredTeamPrincipal(principal);
       if (team !== undefined) {
         const membership = await teamMembership(client, team.org, team.slug, review.login, phase);
         teamStates.push(membership.state);
         if (membership.principal !== undefined) { bindings.push(membership.principal); teamIds.push(membership.principal.immutableId); teams.push(`@${team.org}/${team.slug}`); }
-        if (membership.state !== "sufficient") { complete = false; permissionState = membership.state; }
-        qualified = qualified && membership.state === "sufficient" && permission.state === "sufficient";
+        if (membership.state === "sufficient" && permission.state === "sufficient") hasSufficientPrincipal = true;
+        if (membership.state !== "sufficient") hasUnknownPrincipal = true;
       } else if (configuredUserPrincipal(principal, review.login)) {
         const binding: QualificationPrincipal = { configuredPrincipal: principal, kind: "user", immutableId: permission.id ?? review.actorId, membershipState: permission.state === "sufficient" ? "active" : "unknown" };
         bindings.push(binding);
-        qualified = qualified && permission.state === "sufficient";
+        if (permission.state === "sufficient") hasSufficientPrincipal = true;
       }
     }
-    if (principals.length > 0 && bindings.length === 0) qualified = false;
-    if (permission.state === "unknown") complete = false;
+    const qualified = permission.state === "sufficient" && hasSufficientPrincipal;
+    const complete = permission.state !== "unknown" && (qualified || !hasUnknownPrincipal);
+    const permissionState: PermissionState = qualified ? "sufficient" : permission.state === "unknown" || hasUnknownPrincipal ? "unknown" : "insufficient";
     output.push({ ...review, qualified, teams: [...new Set(teams)], teamIds: [...new Set(teamIds)], qualification: { ...review.qualification, complete, permissionState, principalBindings: bindings } });
   }
   const aggregate = (states: readonly PermissionState[], identity: string, revision?: string): ObservationMeta => {
