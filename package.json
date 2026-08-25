@@ -2,7 +2,7 @@
   "name": "patchgate",
   "version": "0.1.0-dev",
   "private": true,
-  "description": "Deterministic GitHub pull-request review-readiness evaluator",
+  "description": "Checks GitHub pull requests for required issue links, CI evidence, code owners, and human approval before maintainer review",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -39,6 +39,7 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm run verify",
     "build": "tsc -p tsconfig.json",
+    "first-use": "npm run build && node dist/src/cli.js preflight --repo . --base main",
     "bundle:action": "ncc build src/action/index.ts -o dist/action --minify --transpile-only",
     "audit": "npm audit --audit-level=high",
     "typecheck": "tsc -p tsconfig.json --noEmit",
