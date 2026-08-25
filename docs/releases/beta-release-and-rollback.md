@@ -20,8 +20,9 @@ Before publishing a beta, the maintainer must have independently recorded:
   no-go decision;
 - support, security-reporting, compatibility and unsupported-behavior wording.
 
-The current repository has public pre-release `v0.1.0-beta.5` and a private
-development package. The two external shadow installations and production
+The current repository has public pre-release
+[`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5)
+and a private development package. The two external shadow installations and production
 gates remain open.
 
 ## Release procedure

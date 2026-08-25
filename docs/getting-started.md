@@ -1,7 +1,8 @@
 # Getting started
 
 PatchGate is a public pre-release. The npm package is unpublished
-(`private: true`, `0.1.0-dev`). The current Action release is `v0.1.0-beta.5`,
+(`private: true`, `0.1.0-dev`). The current Action release is
+[`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5),
 which is for shadow evaluation only — not production, not a `v0.1` claim, and
 not evidence of external pilots. Pin commit
 the immutable commit SHA shown on its release page.
