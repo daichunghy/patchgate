@@ -139,6 +139,9 @@ describe("GitHub Action runner unit tests", () => {
       const markdown = formatMarkdownSummary(mockReceipt);
       expect(markdown).toContain("### ✅ PatchGate Review Gate: `READY_FOR_REVIEW`");
       expect(markdown).toContain("`patchgate/core` PR #42");
+      expect(markdown).toContain("**Tested SHA:** `abcdef0123456789abcdef0123456789abcdef01`");
+      expect(markdown).toContain("**PR Head SHA:** `abcdef0123456789abcdef0123456789abcdef01`");
+      expect(markdown).toContain("✅ `testedSha` equals `headSha`");
       expect(markdown).toContain("| `policy.base_revision` | ✅ Passed | `block` | Keep policy bound to base SHA. |");
     });
   });
@@ -226,9 +229,9 @@ describe("GitHub Action runner unit tests", () => {
 
     it("updates an existing check run instead of creating a duplicate", async () => {
       const { upsertCheckRun } = await import("../src/action/index.js");
-      const calls: Array<{ url: string; method: string }> = [];
+      const calls: Array<{ url: string; method: string; body?: string | undefined }> = [];
       const fetchMock: typeof fetch = async (input, init) => {
-        calls.push({ url: String(input), method: init?.method ?? "GET" });
+        calls.push({ url: String(input), method: init?.method ?? "GET", body: typeof init?.body === "string" ? init.body : undefined });
         if (init?.method === "GET") return new Response(JSON.stringify({ check_runs: [{ id: 42, name: "PatchGate Review Gate", head_sha: "head-sha" }] }), { status: 200 });
         return new Response("{}", { status: 200 });
       };
@@ -240,10 +243,39 @@ describe("GitHub Action runner unit tests", () => {
         status: "ready_for_review",
         summaryMarkdown: "summary",
         token: "test-token",
-        receipt: { receiptDigest: "sha256:receipt", decisionInputDigest: "sha256:input", evaluatedAt: "2026-08-20T00:00:00Z" },
+        receipt: {
+          receiptDigest: "sha256:receipt",
+          decisionInputDigest: "sha256:input",
+          evaluatedAt: "2026-08-20T00:00:00Z",
+          revisions: { baseSha: "base-sha", headSha: "head-sha", testedSha: "head-sha", targetKind: "head" },
+        },
       }, fetchMock);
       expect(calls.map((call) => call.method)).toEqual(["GET", "PATCH"]);
       expect(calls[1]?.url).toContain("/check-runs/42");
+      const body = JSON.parse(calls[1]?.body ?? "{}") as { head_sha?: string; output?: { text?: string } };
+      expect(body.head_sha).toBe("head-sha");
+      expect(body.output?.text).toContain("Tested SHA: `head-sha`");
+      expect(body.output?.text).toContain("PR head SHA: `head-sha`");
+    });
+
+    it("refuses to publish a Check Run with a mismatched receipt SHA", async () => {
+      const { upsertCheckRun } = await import("../src/action/index.js");
+      const fetchMock: typeof fetch = async () => new Response("{}", { status: 200 });
+      await expect(upsertCheckRun({
+        owner: "example",
+        name: "service",
+        headSha: "different-head-sha",
+        checkName: "PatchGate Review Gate",
+        status: "ready_for_review",
+        summaryMarkdown: "summary",
+        token: "test-token",
+        receipt: {
+          receiptDigest: "sha256:receipt",
+          decisionInputDigest: "sha256:input",
+          evaluatedAt: "2026-08-20T00:00:00Z",
+          revisions: { baseSha: "base-sha", headSha: "head-sha", testedSha: "head-sha", targetKind: "head" },
+        },
+      }, fetchMock)).rejects.toThrow("Check Run head SHA must equal the receipt tested SHA");
     });
 
     it("posts a neutral rejection check run with the diagnostic and remediation", async () => {

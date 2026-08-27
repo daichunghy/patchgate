@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Exact PR-head binding and tested-SHA visibility — 2026-08-27
+- The Action now binds its live API snapshot to the workflow event's exact
+  `pull_request.head.sha`; a changed live head is rejected with
+  `GITHUB_TARGET_CHANGED` before evaluation.
+- Check Run and step-summary output now shows full `testedSha`, `headSha`,
+  `baseSha`, target kind, and the head-binding state. Action outputs also expose
+  `target-kind`, `tested-sha`, and `head-sha` for downstream integrations.
+- The consumer guide documents why the check name remains stable and why a
+  pull-request comment from a QA tool is not automatically verified evidence.
+
 ### evaluate --output alias with fail-closed conflicts — 2026-08-23
 - `evaluate` accepts `--output` as an alias of `--report`, so the
   file-writing flag is uniform across commands. Passing both with different

@@ -10,6 +10,11 @@ export interface GitHubSnapshotRequest {
   owner: string;
   name: string;
   pullNumber?: number;
+  /**
+   * Optional event-bound assertion used by the Action. When present, the
+   * live pull-request head must still be this exact SHA before evaluation.
+   */
+  expectedHeadSha?: string;
   eventKind: "pull_request" | "merge_group";
   targetKind: "head" | "merge" | "merge_group";
 }
@@ -116,6 +121,9 @@ export async function resolvePullRequestIdentity(
   }
   const owner = normalizedName(request.owner, "repository owner");
   const name = normalizedName(request.name, "repository name");
+  const expectedHeadSha = request.expectedHeadSha === undefined
+    ? undefined
+    : safeAllowlistedString(request.expectedHeadSha, "expected pull-request head SHA", 200);
   if (!Number.isInteger(request.pullNumber) || request.pullNumber < 1) throw new GitHubAdapterError(makeDiagnostic("GITHUB_IDENTITY_MISMATCH", "Pull-request number must be a positive integer.", { snapshotEvaluable: false, exitCode: 2 }));
   const repoResponse = await client.request({ method: "GET", path: `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}` }, "repository identity", phase);
   if (repoResponse.status === 403 || repoResponse.status === 404) throw new GitHubAdapterError(makeDiagnostic(repoResponse.status === 403 ? "GITHUB_PERMISSION_INSUFFICIENT" : "GITHUB_RESOURCE_NOT_VISIBLE", "Repository identity is not visible to the configured credential.", { permissionState: repoResponse.status === 403 ? "insufficient" : "unknown", snapshotEvaluable: false, exitCode: 2 }));
@@ -127,6 +135,13 @@ export async function resolvePullRequestIdentity(
     throw new GitHubAdapterError(makeDiagnostic("GITHUB_IDENTITY_MISMATCH", "GitHub returned a repository or pull-request identity different from the trusted request.", { snapshotEvaluable: false, exitCode: 2 }));
   }
   if (pullRequest.base.repo.id !== repository.id || (pullRequest.base.repo.full_name !== undefined && pullRequest.base.repo.full_name.toLowerCase() !== repository.full_name.toLowerCase())) throw new GitHubAdapterError(makeDiagnostic("GITHUB_IDENTITY_MISMATCH", "The pull request base repository identity did not match the repository identity read from the API.", { snapshotEvaluable: false, exitCode: 2 }));
+  if (expectedHeadSha !== undefined && pullRequest.head.sha !== expectedHeadSha) {
+    throw new GitHubAdapterError(makeDiagnostic("GITHUB_TARGET_CHANGED", "The workflow event head SHA no longer matches the live pull-request head SHA.", {
+      remediation: "Discard this run and let the workflow rerun for the current pull-request head; do not evaluate or publish a result for a different revision.",
+      snapshotEvaluable: false,
+      exitCode: 2,
+    }));
+  }
   const mergeSha = typeof pullRequest.merge_commit_sha === "string" ? pullRequest.merge_commit_sha : undefined;
   const targetKind: "head" | "merge" = request.targetKind === "merge" ? "merge" : "head";
   if (targetKind === "merge" && mergeSha === undefined) throw new GitHubAdapterError(makeDiagnostic("GITHUB_API_UNSUPPORTED", "The pull request has no immutable merge SHA for the requested merge target.", { remediation: "Evaluate the head target or wait for GitHub to provide a merge commit SHA.", snapshotEvaluable: false, exitCode: 2 }));

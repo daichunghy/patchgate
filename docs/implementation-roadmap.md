@@ -167,6 +167,22 @@ The authoritative local command is `npm run verify`. The latest project review
 and the live/public-state caveats are recorded in
 [the G4/G0 continuation audit](reviews/2026-08-20-g4-g0-audit.md).
 
+## External feedback checkpoint — 2026-08-27
+
+The first substantive external reply is recorded in [Discussion
+#29](https://github.com/daichunghy/patchgate/discussions/29). `rghetu283`
+recommended making the tested commit visible in check output and ensuring that
+the result is tied to the actual pull-request head. The follow-up implementation
+now checks the workflow event head against the live API head, publishes the
+full commit binding in the Check Run summary and exposes the same values as
+Action outputs. The detailed evidence record is
+[tested-SHA feedback follow-up](reviews/tested-sha-feedback-2026-08-27.md).
+
+This is technical feedback incorporated into the product. It is not a pilot,
+external installation, downstream usage or adoption claim. G4 remains open
+until a consenting consumer repository runs the Action and the observed result
+is reviewed.
+
 ## Project-wide review checkpoint — 2026-08-13
 
 The next local build added a redacted `support-bundle` CLI, API fixture byte
