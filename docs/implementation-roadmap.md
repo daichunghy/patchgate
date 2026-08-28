@@ -29,8 +29,8 @@ authority.
 
 | Surface | Highest proven level | Evidence | Open dependency |
 | --- | --- | --- | --- |
-| Contract/evaluator | static and fixture verified | 94 non-CLI tests across 10 files, deterministic fixtures, security coverage and receipt validation | external review and adoption |
-| Local preflight/onboarding | native user-flow verified | local-file/Git-ref preflight, validate, safe init, doctor, discovery and five CLI process tests | three task sessions and UR acceptance evidence |
+| Contract/evaluator | static and fixture verified | 112 non-CLI tests across 11 files, deterministic fixtures, security coverage and receipt validation | external review and adoption |
+| Local preflight/onboarding | native user-flow verified | local-file/Git-ref preflight, validate, safe init, doctor, discovery and six CLI process tests | three task sessions and UR acceptance evidence |
 | GitHub adapter | complete live snapshot on current PR head; result remains non-ready on real missing evidence | bounded adapter, base-policy path fallback, direct GraphQL Issue-node normalization, branch-protection and Rulesets subset contract, recorded fixtures, source/SHA binding, TOCTOU re-read and [current G3 live smoke record](reviews/2026-08-20-g3-live-smoke.md) | post-merge default-branch smoke, unsupported Ruleset semantics, merge-group contract and external consumer |
 | GitHub Action | static and clean-room verified public PR candidate | `action.yml`, committed ncc bundle, pinned workflows, idempotent check delivery, `verify:dist` and `test:consumer-fixture` | post-merge default-branch run, live consumer E2E, fork/merge-group E2E and two shadow installations |
 | User value | hypothesis | research and constitution | task sessions and pilots |
@@ -67,7 +67,7 @@ The first local onboarding vertical slice is implemented and verified:
   advisory-only;
 - committed fixture repositories cover missing policy, base-versus-working-tree
   policy, conflicting prose and unsupported guidance;
-- CLI smoke coverage now includes five process tests.
+- CLI smoke coverage now includes six process tests.
 
 This is `native_user_flow_verified` for local CLI behavior only. G2 is not
 complete until three task sessions and the remaining UR acceptance evidence
@@ -183,6 +183,44 @@ external installation, downstream usage or adoption claim. G4 remains open
 until a consenting consumer repository runs the Action and the observed result
 is reviewed.
 
+## Cross-repository first-use checkpoint — 2026-08-27
+
+The parent reran the first-use paths after two bounded agent waves and a third
+product wave. The evidence remains local or fixture-based:
+
+- PatchGate: trusted local-policy preflight passed with enforcement disabled;
+- contribkit: the real dirty checkout returned a truthful blocked receipt for
+  oversized diff/files and a CODEOWNERS human gate; its packed alpha also
+  passed the offline consumer smoke;
+- OpenSheet-AI: five local quickstart sessions passed, including inventory/
+  revenue and service-quality examples, JSON preview, text preview and XLSX
+  output; two ready-to-open demonstration workbooks were also exported,
+  rendered and read back;
+- quant-research: the complete TAM and service-quality workflow paths passed,
+  preserved rows/raw columns, explicitly reported that no statistical engine
+  was executed, and its packed alpha passed the offline consumer smoke.
+
+These checks improve the five-minute local path but do not establish external
+walkthroughs, native Excel/Google Sheets or statistical runtime use, pilots,
+package publication, adoption, or release authorization.
+
+## Agent-scaling checkpoint — 2026-08-27
+
+The repository now has a local operating layer for bounded agent-assisted
+work: an [agent verification map](agent-verification-map.md), an
+[evaluation protocol](agent-evaluation-protocol.md), a machine-readable
+ten-task seed corpus at `fixtures/agent-evals/manifest.json`, and an
+allowlisted `npm run agent-eval -- <task-id>` runner. The map is enforced as a
+repository contract through `check:agent-contract`, which is part of
+`npm run verify`.
+
+Four Wave A baseline tasks (`AG-01`, `AG-04`, `AG-08`, `AG-09`) passed in the
+current tree. This is local workflow evidence only. It does not prove that an
+agent can safely author every task, does not create external PR activity, and
+does not advance G4, G5, G6, G7 or G8. The next step is to run the remaining
+contract, evidence, adapter, Action and release task evaluations with parent
+verification after each boundary-sensitive change.
+
 ## Project-wide review checkpoint — 2026-08-13
 
 The next local build added a redacted `support-bundle` CLI, API fixture byte
@@ -274,17 +312,19 @@ requires privileged PR-code execution; or adoption claims require fabrication.
 
 ## Immediate sequence
 
-1. Run three consented G2 task sessions and record raw task time,
+1. Run the manifest-backed agent evaluations in bounded waves; record the
+   parent-verified diff and acceptance evidence for each task.
+2. Run three consented G2 task sessions and record raw task time,
    comprehension, remediation clarity and UR mapping.
-2. Re-run the authorized G3 live read-only smoke after the native-control PR is
+3. Re-run the authorized G3 live read-only smoke after the native-control PR is
    merged; retain only the agreed redacted evidence and actual non-ready causes.
-3. Reconcile the G0 publication surface: package privacy, security reporting,
+4. Reconcile the G0 publication surface: package privacy, security reporting,
    support links, maintainer ownership and release/rollback policy.
-4. Run two non-blocking G4 shadow installations in consenting consumer
+5. Run two non-blocking G4 shadow installations in consenting consumer
    repositories, including fork and merge-queue cases where supported.
-5. Review shadow distribution, unknown causes, false blocks and noise before
+6. Review shadow distribution, unknown causes, false blocks and noise before
    any required-check configuration.
-6. Only after explicit maintainer consent, begin G5 enforcement hardening and
+7. Only after explicit maintainer consent, begin G5 enforcement hardening and
    the public beta evidence work.
 
 ## Program boundary

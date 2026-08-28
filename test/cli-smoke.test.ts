@@ -24,6 +24,11 @@ function runCommand(args: string[], cwd?: string): { exit: number | null; stdout
   return { exit: result.status, stdout: result.stdout.trim(), stderr: result.stderr.trim() };
 }
 
+function runFirstUseHarness(args: string[]): { exit: number | null; stdout: string; stderr: string } {
+  const result = spawnSync(process.execPath, [resolve("scripts/first-use-preflight.mjs"), ...args], { encoding: "utf8" });
+  return { exit: result.status, stdout: result.stdout.trim(), stderr: result.stderr.trim() };
+}
+
 function writeInput(input: EvaluationInput): string {
   const directory = mkdtempSync("/tmp/patchgate-cli-smoke-");
   tempDirectories.push(directory);
@@ -174,6 +179,34 @@ describe("CLI process smoke contract", () => {
     expect(JSON.parse(nonJsDoctor.stdout).checks).toEqual(expect.arrayContaining([expect.objectContaining({ id: "package", status: "passed" })]));
     const headChangeIgnored = runCommand(["preflight", "--base", "HEAD", "--repo", gitDirectory, "--json"]);
     expect(JSON.parse(headChangeIgnored.stdout).policy).toEqual({ version: 1 });
+
+    const firstUseReady = runFirstUseHarness(["--repo", gitDirectory, "--base", "HEAD", "--json"]);
+    expect(firstUseReady.exit).toBe(0);
+    expect(JSON.parse(firstUseReady.stdout)).toMatchObject({
+      harness: "first-use-preflight",
+      status: "valid_local_policy",
+      outcome: "worked",
+      policy: "patchgate.yml",
+      enforcement: "not_enabled",
+      revision: expect.stringMatching(/^[0-9a-f]{40}$/),
+    });
+
+    const missingPolicyDirectory = mkdtempSync("/tmp/patchgate-first-use-missing-");
+    tempDirectories.push(missingPolicyDirectory);
+    writeFileSync(join(missingPolicyDirectory, "README.md"), "Contribution guidance only.\n", "utf8");
+    expect(spawnSync("git", ["-C", missingPolicyDirectory, "init", "-q", "-b", "main"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", missingPolicyDirectory, "config", "user.email", "test@example.invalid"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", missingPolicyDirectory, "config", "user.name", "PatchGate Test"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", missingPolicyDirectory, "add", "README.md"], { encoding: "utf8" }).status).toBe(0);
+    expect(spawnSync("git", ["-C", missingPolicyDirectory, "commit", "-q", "-m", "guidance-only"], { encoding: "utf8" }).status).toBe(0);
+    const firstUseMissing = runFirstUseHarness(["--repo", missingPolicyDirectory, "--base", "main", "--expect", "missing-policy", "--json"]);
+    expect(firstUseMissing.exit).toBe(0);
+    expect(JSON.parse(firstUseMissing.stdout)).toMatchObject({
+      harness: "first-use-preflight",
+      status: "missing_trusted_policy",
+      outcome: "did_not_reach_first_result",
+      cliExit: 2,
+    });
   }, CLI_PROCESS_TEST_TIMEOUT);
 
   it("maps valid and evaluable non-ready snapshots to exit 0/1", async () => {
