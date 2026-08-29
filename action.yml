@@ -38,6 +38,12 @@ outputs:
     description: 'SHA-256 canonical digest of the final evaluation receipt.'
   summary-markdown:
     description: 'Human-readable markdown summary of the evaluation findings.'
+  target-kind:
+    description: 'Evaluation target kind (head, merge, or merge_group).'
+  tested-sha:
+    description: 'Exact commit SHA evaluated and used as the Check Run head_sha.'
+  head-sha:
+    description: 'Exact pull-request head SHA recorded in the evaluation.'
 
 runs:
   using: 'node24'
