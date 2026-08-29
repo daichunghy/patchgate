@@ -63,10 +63,12 @@ Before publishing a new beta, the maintainer must record all of the following:
 8. Two consented non-blocking shadow installations, or an explicit documented
    no-go decision. A local fixture cannot substitute for this evidence.
 
-The current repository has public pre-release `v0.1.0-beta.5` and a private
-development package. The two external shadow installations and production
-gates remain open. Passing local commands is a packaging and regression
-precondition, not permission to publish or evidence of live GitHub behavior.
+The current repository has public pre-release
+[`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5)
+and a private development package. The two external shadow installations and
+production gates remain open. Passing local commands is a packaging and
+regression precondition, not permission to publish or evidence of live GitHub
+behavior.
 
 ## Validate a release commit
 

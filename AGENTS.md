@@ -91,7 +91,7 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 ## Current project status
 
 This section is the operating snapshot for the repository. It was revalidated
-on 2026-08-23 and must be kept separate from the constitutional definition of
+on 2026-08-28 and must be kept separate from the constitutional definition of
 done below. A local test, a recorded fixture, or a configured remote is not by
 itself evidence of live GitHub behavior, external adoption, or release
 readiness.
@@ -110,7 +110,9 @@ and follow-ups #15–#21, #23, #25 and #26 were merged on 2026-08-22, and #28,
 #36 and #40 were merged on 2026-08-23, each by the repository
 administrator after temporarily lifting `enforce_admins`; the setting was
 restored immediately after each merge, and every such merge is recorded as a
-maintainer decision rather than independent-review evidence. PR #40 closed
+maintainer decision rather than independent-review evidence. PRs #46, #47,
+#51, #53, #54 and #55 were merged on 2026-08-25 in the same recorded
+pattern, bringing `main` to `c9d11cb`. PR #40 closed
 audit item P1-8: `evaluate` accepts `--output` as an alias of `--report`,
 conflicting paths fail closed with `REPORT_OUTPUT_CONFLICT`, and the
 committed Action bundle was rebuilt to catch up with the `evaluator-core`
@@ -121,19 +123,27 @@ and CodeQL `32563526929` on `main@e4052f2`, earlier runs through
 [32559824706](https://github.com/daichunghy/patchgate/actions/runs/32559824706)
 on `main@c9f643e`, and the first public run
 [CI 32333914059](https://github.com/daichunghy/patchgate/actions/runs/32333914059).
-For the current public `main`, default-branch CI run
-[32616034636](https://github.com/daichunghy/patchgate/actions/runs/32616034636)
-completed successfully while CodeQL `32616034425` was still in progress when
-this snapshot was written.
+For the current public `main` at `c9d11cb`, default-branch
+[CI 32806576723](https://github.com/daichunghy/patchgate/actions/runs/32806576723)
+and CodeQL
+[32806576725](https://github.com/daichunghy/patchgate/actions/runs/32806576725)
+completed successfully on 2026-08-25.
 Live branch
 protection also requires one approving pull-request review, dismisses stale
 reviews, requires six CI contexts including `CI / Full Verify`, enforces
 linear history and conversation resolution, and disables force-pushes and
 branch deletion. The merged feature, documentation and release branches were
 deleted after their content reached `main`; the stale pre-publication
-`test/patchgate-shadow-smoke` draft branch and the open
-`dependabot/npm_and_yarn/typescript-7.0.2` branch (PR #12)
-remain. Dependabot PRs #11 (`@types/node` 26), #13 (`vitest` 4) and #14
+`test/patchgate-shadow-smoke` draft branch remains, and the open branches are
+`codex/tested-sha-interop` (PR #59), `feat/release-rollback-guide`
+(PR #52, opened 2026-08-23), the CodeQL 4.37.8 Dependabot branches
+(PRs #57 and #58, opened 2026-08-27), and
+`dependabot/npm_and_yarn/typescript-7.0.2` (PR #12). PR #59 binds the Action
+snapshot and check-run delivery to the exact `pull_request.head.sha` with
+fail-closed live-target mismatch handling; on 2026-08-28 every required
+context on it was green and it waited only on the one approving review that
+branch protection requires. Dependabot PRs #11 (`@types/node` 26), #13
+(`vitest` 4) and #14
 (`@vitest/coverage-v8` 4) were merged on 2026-08-22 after local
 re-verification; PR #12 (`typescript` 7) stays open because `@vercel/ncc`
 cannot bundle under TS 7. Dependabot Actions PRs #38 (`actions/setup-node` 7)
@@ -150,11 +160,17 @@ unusable on real runners
 [release record](docs/releases/2026-08-23-beta.5.md)); it is beta
 shadow-evidence scope only — not production, adoption or a `v0.1` claim.
 
-The current milestone audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The newest records are the [2026-08-22 multi-persona review round](docs/reviews/2026-08-22-multi-persona-review.md), the [2026-08-22 live consumer smoke findings](docs/reviews/2026-08-22-live-smoke-findings.md) and the [2026-08-22 Mimosa static-advisory adjudication](docs/reviews/2026-08-22-mimosa-static-advisory-adjudication.md) — re-run the sealed scan after any change to `src/github/client.ts` transport handling. The latest verification command to rerun after a change is:
+The current milestone audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The current cross-repository register is the [2026-08-28 repository portfolio audit](docs/reviews/2026-08-28-repository-portfolio-audit.md). The newest review records are the [2026-08-22 multi-persona review round](docs/reviews/2026-08-22-multi-persona-review.md), the [2026-08-22 live consumer smoke findings](docs/reviews/2026-08-22-live-smoke-findings.md) and the [2026-08-22 Mimosa static-advisory adjudication](docs/reviews/2026-08-22-mimosa-static-advisory-adjudication.md) — re-run the sealed scan after any change to `src/github/client.ts` transport handling. The latest verification command to rerun after a change is:
 
 ```bash
 npm run verify
 ```
+
+## Shared repository workflow
+
+The Desktop workspace contains five separate public repositories: [PatchGate](https://github.com/daichunghy/patchgate), [contribkit](https://github.com/daichunghy/contribkit), [OpenSheet-AI](https://github.com/daichunghy/opensheet-ai), [quant-research](https://github.com/daichunghy/quant-research), and [agentsmd](https://github.com/daichunghy/agentsmd). They are not a monorepo or a combined adoption claim. The live status, evidence limits, and cross-repository working rules are maintained in the [repository portfolio audit](docs/reviews/2026-08-28-repository-portfolio-audit.md).
+
+When working across them, keep each repository's own `AGENTS.md`, constitution, tests, release boundary, and Git history authoritative. Check live GitHub and package-registry signals before writing a status update. Count outside walkthroughs, downstream installs, outside issues, outside pull requests, and consented pilots as usage evidence; count self-authored activity and bot activity as maintenance evidence only.
 
 Agents must not describe the repository as released, externally piloted,
 live-integrated, merge-blocking, or eligible/selected for Codex for Open Source

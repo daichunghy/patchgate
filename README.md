@@ -5,28 +5,30 @@
 [![CI](https://github.com/daichunghy/patchgate/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/daichunghy/patchgate/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/daichunghy/patchgate/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/daichunghy/patchgate/actions/workflows/codeql.yml)
 
-PatchGate is an open-source review-readiness gate for GitHub pull requests.
-It answers a narrower question than code review or authorship analysis:
+PatchGate checks whether a GitHub pull request has the issue link, CI evidence,
+code owners, and human approval a repository requires before a maintainer
+reviews it.
 
-> Has this contribution supplied the policy, evidence, ownership, and human
-> boundaries that the repository requires before a maintainer spends review
-> time?
+That is the job. PatchGate does not review code, detect AI authorship, or decide
+whether a change should merge.
 
-The evaluator is deterministic and explainable. It does not determine who or
-what produced the code, whether the code is correct, safe, or merge-worthy, and
-it cannot force external automation to stop working.
+The evaluator is deterministic and produces a receipt that explains which
+requirements passed, which evidence is missing, and which human gate remains.
+It cannot force external automation to stop working.
 
-**Status:** public pre-release. The npm package remains unpublished (`private: true`,
-`0.1.0-dev`). The current Action release is
+**Status (2026-08-24):** public pre-release, 1 GitHub star, 0 forks, and no
+verified external users, downstream repositories, or pilots. The npm package
+remains unpublished (`private: true`, `0.1.0-dev`). The current Action release is
 [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5),
-and consumers should pin
-`34d998bbd59fa09dd9081e24f22abe812f97fbab` for **shadow** evaluation only.
-This is not production, not a `v0.1` claim, and not evidence of external
-pilots or adoption.
+and consumers should pin the immutable commit shown on that release page for
+**shadow** evaluation only. This is not production, not a `v0.1` claim, and
+not evidence of external adoption.
 
-> If PatchGate saved you one wasted review,
-> [star it](https://github.com/daichunghy/patchgate/stargazers). That is the
-> only growth signal this repo tracks.
+The four related repositories and the shared evidence rules are recorded in
+[the repository portfolio audit](docs/reviews/2026-08-24-repository-portfolio-audit.md).
+
+The shortest path to a user result is [one non-blocking first-use check](docs/first-use.md).
+The workspace tracks this alongside the [continuous adoption loop](docs/adoption-loop.md).
 
 ## Try it locally
 
@@ -301,3 +303,5 @@ mechanism and verification path exist and are tested.
 
 If PatchGate saved you review time on one pull request, star the repository. It
 helps other maintainers find the gate.
+
+Release history: [CHANGELOG.md](CHANGELOG.md).
