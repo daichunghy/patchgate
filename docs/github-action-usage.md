@@ -60,6 +60,8 @@ jobs:
       # with administration:read is required for a complete native-control
       # snapshot. beta.5 posts a Check Run for successful evaluations;
       # snapshot-rejection Check Runs are included in beta.5.
+      # Release identity before resolving the immutable commit:
+      # uses: daichunghy/patchgate@v0.1.0-beta.5
       - name: Run PatchGate Shadow Gate
         uses: daichunghy/patchgate@34d998bbd59fa09dd9081e24f22abe812f97fbab # v0.1.0-beta.5
         with:
