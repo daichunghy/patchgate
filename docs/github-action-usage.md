@@ -4,9 +4,10 @@ PatchGate contains a local/shadow GitHub Action candidate. It is not yet a
 released Marketplace action or a proven public `v0.1` distribution.
 
 For a real external shadow installation, use the [G4 shadow-installation
-runbook](pilots/g4-shadow-installation-runbook.md). For beta publication and
-rollback, use the [beta release runbook](releases/beta-release-and-rollback.md)
-after the documented gates have been reviewed.
+runbook](pilots/g4-shadow-installation-runbook.md). For release validation,
+upgrade, downgrade and rollback, use the [beta release and rollback
+guide](releases/beta-release-and-rollback.md) after the documented gates have
+been reviewed.
 
 ---
 
@@ -16,8 +17,8 @@ In **Shadow Mode**, PatchGate observes only (`fail-on: never`). It evaluates
 the PR, writes the `ContributionReceipt`, and can post a Check Run without
 blocking merge. Pin
 [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5)
-for this pre-release and pin commit
-the immutable commit SHA shown on that release page. This is not production and not a
+for discovery, but install the immutable source commit
+`34d998bbd59fa09dd9081e24f22abe812f97fbab`. This is not production and not a
 `v0.1` claim.
 
 The Action reads GitHub metadata through the API. Do **not** check out
@@ -59,8 +60,10 @@ jobs:
       # with administration:read is required for a complete native-control
       # snapshot. beta.5 posts a Check Run for successful evaluations;
       # snapshot-rejection Check Runs are included in beta.5.
+      # Release identity before resolving the immutable commit:
+      # uses: daichunghy/patchgate@v0.1.0-beta.5
       - name: Run PatchGate Shadow Gate
-        uses: daichunghy/patchgate@v0.1.0-beta.5
+        uses: daichunghy/patchgate@34d998bbd59fa09dd9081e24f22abe812f97fbab # v0.1.0-beta.5
         with:
           fail-on: never
           create-check-run: true
@@ -76,7 +79,7 @@ workflow. It is still not production or a `v0.1` claim.
 
 ```yaml
       - name: Run PatchGate Enforcing Gate
-        uses: daichunghy/patchgate@v0.1.0-beta.5
+        uses: daichunghy/patchgate@34d998bbd59fa09dd9081e24f22abe812f97fbab # v0.1.0-beta.5
         with:
           fail-on: blocked
           create-check-run: true
