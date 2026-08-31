@@ -224,6 +224,7 @@ The repository maintains a clean root directory structure (9 files max) with mod
 - [Community discussions](https://github.com/daichunghy/patchgate/discussions)
 - [Non-blocking pilot request](https://github.com/daichunghy/patchgate/issues/4)
 - [Independent review and pilot outreach drafts](docs/community/independent-review-and-pilot-outreach.md)
+- [Marketing message kit and claims guardrail](docs/community/marketing-message-kit.md)
 
 ### Contribution opportunities
 
