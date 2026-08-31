@@ -35,5 +35,10 @@ Use the [first-use feedback form](https://github.com/daichunghy/patchgate/issues
 for a redacted report. Do not include tokens, private repository data, or
 unredacted pull-request contents.
 
+If the first-use question is worth observing on a real public repository, use
+the [shadow pilot interest form](https://github.com/daichunghy/patchgate/issues/new?template=pilot-interest.yml)
+and read the [pilot intake guide](community/pilot-intake.md) before changing
+the workflow.
+
 This walkthrough proves a setup path. It does not prove that PatchGate is
 popular, production-ready, or useful for every repository shape.
