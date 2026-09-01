@@ -16,7 +16,7 @@ The evaluator is deterministic and produces a receipt that explains which
 requirements passed, which evidence is missing, and which human gate remains.
 It cannot force external automation to stop working.
 
-**Status (2026-08-24):** public pre-release, 1 GitHub star, 0 forks, and no
+**Status (2026-09-01):** public pre-release, 1 GitHub star, 0 forks, and no
 verified external users, downstream repositories, or pilots. The npm package
 remains unpublished (`private: true`, `0.1.0-dev`). The current Action release is
 [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5),
