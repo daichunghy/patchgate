@@ -57,8 +57,9 @@ jobs:
       # github.token cannot read Administration, so native Rulesets /
       # branch-protection snapshots fail closed (correct). A PAT/App token
       # with administration:read is required for a complete native-control
-      # snapshot. beta.5 posts a Check Run for successful evaluations;
-      # snapshot-rejection Check Runs are included in beta.5.
+      # snapshot. The public beta posts a Check Run for successful
+      # evaluations; snapshot-rejection Check Runs are included in the
+      # public beta.
       - name: Run PatchGate Shadow Gate
         uses: daichunghy/patchgate@v0.1.0-beta.5
         with:
