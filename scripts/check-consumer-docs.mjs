@@ -44,15 +44,16 @@ for (const relativePath of surfaces) {
 }
 
 const usage = readFileSync(join(root, "docs/github-action-usage.md"), "utf8");
-if (currentTag && !usage.includes(`uses: daichunghy/patchgate@${currentTag}`)) {
+const normalizedUsage = usage.replace(/\\s+/g, " ");
+if (currentTag && !normalizedUsage.includes(`uses: daichunghy/patchgate@${currentTag}`)) {
   failures.push(
     "docs/github-action-usage.md must pin the current public release in consumer examples",
   );
 }
-if (usage.includes("beta.2 posts a Check Run")) {
+if (normalizedUsage.includes("beta.2 posts a Check Run")) {
   failures.push("docs/github-action-usage.md contains the stale beta.2 Check Run claim");
 }
-if (!usage.includes("snapshot-rejection Check Runs are included in the public beta")) {
+if (!normalizedUsage.includes("snapshot-rejection Check Runs are included in the public beta")) {
   failures.push(
     "docs/github-action-usage.md must describe snapshot-rejection Check Run behavior without a release-specific claim",
   );
