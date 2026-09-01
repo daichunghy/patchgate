@@ -44,7 +44,7 @@ for (const relativePath of surfaces) {
 }
 
 const usage = readFileSync(join(root, "docs/github-action-usage.md"), "utf8");
-const normalizedUsage = usage.replace(/\\s+/g, " ");
+const normalizedUsage = usage.replace(/\s+/g, " ");
 if (currentTag && !normalizedUsage.includes(`uses: daichunghy/patchgate@${currentTag}`)) {
   failures.push(
     "docs/github-action-usage.md must pin the current public release in consumer examples",
