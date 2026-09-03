@@ -75,7 +75,7 @@
     "yaml": "^2.8.1"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.4.0",
     "@vercel/ncc": "^0.45.0",
     "@vitest/coverage-v8": "^4.1.11",
     "typescript": "^5.9.2",
