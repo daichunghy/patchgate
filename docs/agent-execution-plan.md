@@ -31,6 +31,25 @@ merge-blocking từ các bằng chứng trên. `human_review_required` vẫn ch�
 thái cho biết human gate được khai báo nhưng chưa thỏa, không phải bằng chứng
 con người đã review.
 
+## Agent-scaling checkpoint — 2026-08-27
+
+Phần local của quy trình agent đã được đưa vào repository contract:
+
+- [agent verification map](agent-verification-map.md) quy định authority order,
+  path ownership, verification ladder, PR invariants và bounded parallel work;
+- [agent evaluation protocol](agent-evaluation-protocol.md) quy định task
+  corpus, rubric, wave promotion và evidence record;
+- `fixtures/agent-evals/manifest.json` chứa mười task `AG-01` đến `AG-10`;
+- `npm run agent-eval -- <task-id>` chạy acceptance commands allowlisted;
+- `check:agent-contract` nằm trong `npm run verify`.
+
+Wave A baseline đã chạy trên current tree với `AG-01`, `AG-04`, `AG-08` và
+`AG-09`. Kết quả này chỉ là local workflow evidence. Không được dùng nó để
+claim agent authorship quality, external pull request, pilot, release hoặc
+auto-merge. Các task `AG-02`, `AG-03`, `AG-05`, `AG-06`, `AG-07` và `AG-10`
+phải tiếp tục qua parent verification do chạm evaluator, evidence, GitHub,
+Action, security hoặc release boundary.
+
 ## 1. Kết luận điều hành
 
 PatchGate nên tiếp tục theo định vị hiện tại: một **review-readiness gate có

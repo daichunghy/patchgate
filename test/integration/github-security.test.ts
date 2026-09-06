@@ -191,6 +191,14 @@ describe("GitHub adapter trust-boundary probes", () => {
     if (result.kind === "rejected") expect(result.diagnostic.id).toBe("GITHUB_TARGET_CHANGED");
   });
 
+  it("rejects a live head that no longer matches the workflow event head", async () => {
+    const fixture = JSON.parse(await readFile(resolve("fixtures/api/happy-path.json"), "utf8")) as { request: GitHubSnapshotRequest; exchanges: RecordedExchange[] };
+    const request = { ...fixture.request, expectedHeadSha: "event-head-sha" };
+    const result = await buildGitHubSnapshot(request, new GitHubClient(new RecordedGitHubTransport(fixture.exchanges)), { allowConfirmedAbsence: true });
+    expect(result.kind).toBe("rejected");
+    if (result.kind === "rejected") expect(result.diagnostic.id).toBe("GITHUB_TARGET_CHANGED");
+  });
+
   it("does not allow confirmed absence on an authenticated/live transport", async () => {
     const transport = new RecordedGitHubTransport([]);
     const client = new GitHubClient(transport, undefined, { token: "not-a-fixture-token" });

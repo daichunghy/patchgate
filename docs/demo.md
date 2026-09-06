@@ -1,5 +1,9 @@
 # PatchGate CLI — real captured walkthrough
 
+For a short recording or live maintainer walkthrough, use the
+[90-second demo script](community/maintainer-demo-script.md). The output below
+remains the source for the captured commands and results.
+
 Everything below is real output captured on 2026-08-22 from the CLI built at
 that day's `main`, run against this repository and its recorded fixtures. No
 output is staged or edited.

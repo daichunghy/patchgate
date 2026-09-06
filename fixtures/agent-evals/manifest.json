@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "purpose": "Bounded PatchGate agent-task evaluation corpus",
+  "evidenceBoundary": "local workflow evidence only",
+  "tasks": [
+    {
+      "id": "AG-01",
+      "title": "Schema and contract compatibility",
+      "wave": "A",
+      "risk": "medium",
+      "owner": "contract",
+      "paths": ["src/types.ts", "src/contract", "schemas", "test/schema.test.ts"],
+      "commands": ["npm run test:schema", "npm run typecheck"],
+      "humanReview": true,
+      "mustPreserve": ["trusted authority metadata", "schema compatibility"]
+    },
+    {
+      "id": "AG-02",
+      "title": "Deterministic evaluator behavior",
+      "wave": "B",
+      "risk": "high",
+      "owner": "evaluator",
+      "paths": ["src/evaluator-core.ts", "src/evaluator.ts", "src/contract/status-precedence.ts", "test/evaluator.test.ts", "test/determinism.test.ts"],
+      "commands": ["npm run test:determinism", "npm run test:fixtures"],
+      "humanReview": true,
+      "mustPreserve": ["status precedence", "reason IDs", "receipt digest"]
+    },
+    {
+      "id": "AG-03",
+      "title": "Commit-bound evidence verification",
+      "wave": "B",
+      "risk": "critical",
+      "owner": "security",
+      "paths": ["src/evidence", "src/contract/validation.ts", "fixtures/security", "test/security.test.ts"],
+      "commands": ["npm run test:security", "npm run test:determinism"],
+      "humanReview": true,
+      "mustPreserve": ["stale evidence rejection", "foreign source rejection", "fail-closed unknowns"]
+    },
+    {
+      "id": "AG-04",
+      "title": "CLI first-use and remediation",
+      "wave": "A",
+      "risk": "medium",
+      "owner": "onboarding",
+      "paths": ["src/cli.ts", "src/cli", "docs/getting-started.md", "test/cli-smoke.test.ts"],
+      "commands": ["npm run test:cli", "npm run first-use"],
+      "humanReview": true,
+      "mustPreserve": ["local_file and git_ref distinction", "text and JSON parity"]
+    },
+    {
+      "id": "AG-05",
+      "title": "Authenticated GitHub snapshot",
+      "wave": "C",
+      "risk": "critical",
+      "owner": "adapter",
+      "paths": ["src/github", "docs/github-adapter-contract.md", "test/integration", "fixtures/api"],
+      "commands": ["npm run test:github", "npm run test:security", "npm run verify:fixtures"],
+      "humanReview": true,
+      "mustPreserve": ["read-only metadata boundary", "request budgets", "TOCTOU re-read"]
+    },
+    {
+      "id": "AG-06",
+      "title": "Action output and Check Run binding",
+      "wave": "C",
+      "risk": "critical",
+      "owner": "action",
+      "paths": ["action.yml", "src/action", "test/action.test.ts", "scripts/test-consumer-fixture.mjs"],
+      "commands": ["npm run test:action", "npm run bundle:action", "npm run test:consumer-fixture", "npm run verify:dist"],
+      "humanReview": true,
+      "mustPreserve": ["exact testedSha", "head-target binding", "idempotent delivery"]
+    },
+    {
+      "id": "AG-07",
+      "title": "Privileged workflow safety",
+      "wave": "C",
+      "risk": "critical",
+      "owner": "security",
+      "paths": [".github/workflows", "scripts/lint.mjs", "scripts/check-workflow-events.mjs", "docs/threat-model.md"],
+      "commands": ["npm run lint", "npm run check:workflow-events", "npm run test:security"],
+      "humanReview": true,
+      "mustPreserve": ["no pull-request code execution in trusted lane", "minimal permissions"]
+    },
+    {
+      "id": "AG-08",
+      "title": "Regression fixture expansion",
+      "wave": "A",
+      "risk": "medium",
+      "owner": "test",
+      "paths": ["fixtures", "test/fixture.test.ts", "test/helpers.ts"],
+      "commands": ["npm run test:fixtures", "npm run check:fixture-budgets"],
+      "humanReview": true,
+      "mustPreserve": ["one-to-one fixture manifest mapping", "deterministic expected status"]
+    },
+    {
+      "id": "AG-09",
+      "title": "User-facing documentation accuracy",
+      "wave": "A",
+      "risk": "medium",
+      "owner": "maintainer",
+      "paths": ["README.md", "docs"],
+      "commands": ["npm run check:doc-links", "npm run check:consumer-docs", "npm run check:agent-contract"],
+      "humanReview": true,
+      "mustPreserve": ["release boundary", "adoption evidence boundary", "unsupported behavior"]
+    },
+    {
+      "id": "AG-10",
+      "title": "Release and generated-surface consistency",
+      "wave": "C",
+      "risk": "high",
+      "owner": "release",
+      "paths": ["package.json", "package-lock.json", "action.yml", "dist", "scripts/verify-dist.mjs", "scripts/check-release-candidate.mjs"],
+      "commands": ["npm run build", "npm run bundle:action", "npm run check:release-candidate", "npm run verify:dist"],
+      "humanReview": true,
+      "mustPreserve": ["private development package", "source-to-bundle freshness", "rollback documentation"]
+    }
+  ]
+}

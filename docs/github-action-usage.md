@@ -57,7 +57,8 @@ jobs:
       # github.token cannot read Administration, so native Rulesets /
       # branch-protection snapshots fail closed (correct). A PAT/App token
       # with administration:read is required for a complete native-control
-      # snapshot. beta.5 posts a Check Run for successful evaluations;
+      # snapshot. The Check Run output shows the full tested SHA and its
+      # binding to the PR head; a stale event is rejected before evaluation.
       # snapshot-rejection Check Runs are included in beta.5.
       - name: Run PatchGate Shadow Gate
         uses: daichunghy/patchgate@v0.1.0-beta.5
@@ -139,6 +140,31 @@ consumers should use the tagged Action above, not `uses: ./` after `npm ci`.
 | `receipt-digest` | SHA-256 canonical digest of the evaluation receipt |
 | `decision-input-digest` | SHA-256 canonical digest of the normalized input snapshot |
 | `summary-markdown` | Formatted Markdown summary suitable for step summaries or issue comments |
+| `target-kind` | Evaluation target kind (`head`, `merge`, or `merge_group`) |
+| `tested-sha` | Exact commit SHA evaluated and used as the Check Run `head_sha` |
+| `head-sha` | Exact pull-request head SHA recorded in the evaluation |
+
+### Commit-bound evidence and QAOnFire interoperability
+
+For `pull_request` and `pull_request_target`, the Action binds the live API
+snapshot to `github.event.pull_request.head.sha`. If the pull request advanced
+between event delivery and API collection, PatchGate returns a non-evaluable
+`GITHUB_TARGET_CHANGED` result and does not publish a green result for the
+newer revision. A successful Check Run uses the receipt's exact `testedSha` as
+its API `head_sha`, and the summary displays the full `testedSha` and `headSha`.
+
+Keep `check-name` stable. Do not append a SHA to it: the required-check identity
+is a repository configuration key, while the commit binding belongs in the
+Check Run `head_sha` and output.
+
+QAOnFire currently describes its GitHub App as posting a QA report as a pull-
+request comment. PatchGate treats that comment as context, not verified check
+evidence. The public GitHub App metadata currently lists App ID `3791637`,
+`pull_request` and `issue_comment` events, and no `checks:write` permission, so
+it cannot currently publish a Check Run for a required-check rule. To make a
+QAOnFire result satisfy that rule, the App would need to publish a Check Run
+with the actual target SHA and an identifiable source App; the repository could
+then configure that App explicitly in `patchgate.yml`.
 
 ---
 
