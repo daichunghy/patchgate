@@ -96,7 +96,7 @@ describe("GitHub Action runner unit tests", () => {
     it("formats markdown summary for ready_for_review receipt", () => {
       const mockReceipt: ContributionReceipt = {
         schemaVersion: "0.1",
-        evaluatorVersion: "0.1.0-dev",
+        evaluatorVersion: "0.1.0-beta.5",
         repository: { owner: "patchgate", name: "core", pullRequest: 42 },
         revisions: {
           baseSha: "0123456789abcdef0123456789abcdef01234567",

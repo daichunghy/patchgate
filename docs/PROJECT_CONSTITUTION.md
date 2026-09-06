@@ -150,8 +150,10 @@ Reviewability budget defaults to a warning. A repository may deliberately config
 
 Before code is written or a PR is opened:
 
-The npm name `patchgate` is already used by a different project. This CLI
-is unpublished (`private: true`). After `npm ci && npm run build` in a clone:
+The npm name `patchgate` is already used by a different project, so the
+maintainer-authorized package is the scoped prerelease
+`@daichunghy/patchgate` (dist-tag `beta`). After `npm ci && npm run build` in
+a clone:
 
 ```bash
 node dist/src/cli.js preflight --base origin/main

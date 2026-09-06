@@ -22,7 +22,7 @@ describe("runtime contract schemas", () => {
     const receipt = evaluate(input);
     expect(() => assertContributionReceipt(receipt)).not.toThrow();
     expect(receipt.evaluatedAt).toBe("2026-08-13T00:00:00Z");
-    expect(receipt.evaluatorVersion).toBe("0.1.0-dev");
+    expect(receipt.evaluatorVersion).toBe("0.1.0-beta.5");
   });
 
   it("rejects malformed and unversioned input before evaluation", () => {
@@ -100,7 +100,7 @@ describe("runtime contract schemas", () => {
     const receipt = evaluate(input);
     expect(input.schemaVersion).toBe("0.1");
     expect(receipt.schemaVersion).toBe("0.1");
-    expect(receipt.evaluatorVersion).toBe("0.1.0-dev");
+    expect(receipt.evaluatorVersion).toBe("0.1.0-beta.5");
     // A future evaluator bump stays valid against this schema; only the
     // receipt digest defends integrity.
     const bumped: typeof receipt = { ...receipt, evaluatorVersion: "0.1.0" };

@@ -165,8 +165,8 @@ for (const forbidden of ["contents", "pull-requests", "actions", "administration
   }
 }
 
-if (packageJson.private !== true || packageJson.version !== "0.1.0-dev") {
-  failures.push("release guide validator expects the package to remain private at 0.1.0-dev");
+if (packageJson.private === true || packageJson.name !== "@daichunghy/patchgate" || !/^0\.1\.0-beta\.\d+$/.test(packageJson.version)) {
+  failures.push("release guide validator expects the authorized scoped @daichunghy/patchgate 0.1.0 beta prerelease");
 }
 
 if (failures.length > 0) {

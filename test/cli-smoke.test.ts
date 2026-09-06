@@ -66,7 +66,7 @@ describe("CLI process smoke contract", () => {
 
     const rootVersion = runCommand(["--version"]);
     expect(rootVersion.exit).toBe(0);
-    expect(rootVersion.stdout).toContain("patchgate v0.1.0-dev");
+    expect(rootVersion.stdout).toContain("patchgate v0.1.0-beta.5");
 
     const preflightHelp = runCommand(["preflight", "--help"]);
     expect(preflightHelp.exit).toBe(0);

@@ -1,15 +1,16 @@
 # Getting started
 
-PatchGate is a public pre-release. The npm package is unpublished
-(`private: true`, `0.1.0-dev`). The current Action release is
+PatchGate is a public pre-release. The npm package is the scoped prerelease
+[`@daichunghy/patchgate@0.1.0-beta.5`](https://www.npmjs.com/package/%40daichunghy%2Fpatchgate)
+(dist-tag `beta`). The current Action release is
 [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5),
 which is for shadow evaluation only — not production, not a `v0.1` claim, and
 not evidence of external pilots. Pin commit
 the immutable commit SHA shown on its release page.
 
 This walkthrough uses a clone and a local build. Do not run `npx patchgate`:
-that npm name is a different project. The direct GitHub install is available
-for the beta release, while the CLI remains an unpublished npm package.
+that npm name is a different project. The direct GitHub install and the scoped
+npm prerelease are both available for the beta release.
 
 If you only want to see the decision contract first, run the
 [Case Lab](case-lab.md) with `npm ci && npm run case-lab`. It replays local

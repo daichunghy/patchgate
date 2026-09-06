@@ -9,8 +9,9 @@ const rollbackText = fs.readFileSync(path.join(root, "docs/releases/beta-release
 const checklistText = fs.readFileSync(path.join(root, "docs/release-candidate-checklist.md"), "utf8");
 const failures = [];
 
-if (packageJson.private !== true) failures.push("package.json must remain private until a maintainer authorizes a public release");
-if (typeof packageJson.version !== "string" || !packageJson.version.endsWith("-dev")) failures.push("the current package version must remain an explicit development version");
+if (packageJson.private === true) failures.push("package.json must publish the maintainer-authorized scoped prerelease; private:true blocks installation");
+if (packageJson.name !== "@daichunghy/patchgate") failures.push("the npm package name must stay scoped as @daichunghy/patchgate because the unscoped name belongs to another project");
+if (typeof packageJson.version !== "string" || !/^0\.1\.0-beta\.\d+$/.test(packageJson.version)) failures.push("the current package version must be an explicit 0.1.0 beta prerelease");
 if (!actionText.includes("main: 'dist/action/index.js'")) failures.push("root action.yml must point to the committed bundle");
 for (const requiredText of [
   "same immutable candidate",
@@ -51,4 +52,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`release candidate checks passed: ${packageJson.name}@${packageJson.version} remains an unpublished development package with a complete CLI/Action pack surface`);
+console.log(`release candidate checks passed: ${packageJson.name}@${packageJson.version} is the authorized scoped prerelease with a complete CLI/Action pack surface`);
