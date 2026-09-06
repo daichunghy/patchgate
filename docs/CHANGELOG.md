@@ -16,6 +16,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Feedback-driven ownership and SHA reporting — 2026-09-03
+- Local preflight now surfaces root Prow `OWNERS` and `OWNERS_ALIASES` files as
+  `needs_confirmation` discovery findings instead of silently presenting a
+  repository with no supported ownership source.
+- Action summaries and logs now show base, head, tested, and target-kind values
+  separately, with an explicit warning when the tested SHA differs from the PR
+  head.
+- Locked `fast-uri` to `3.1.7` so the high-severity audit finding reported on
+  Dependabot PRs #70–#72 is removed; PR #73 carries the same dependency fix.
+
+### First-use Case Lab and contribution paths — 2026-09-01
+- Added a three-minute README path that surfaces the first useful local result
+  before the longer architecture and release notes.
+- Added a replayable [Case Lab](case-lab.md) and `npm run case-lab` alias for
+  the 53-entry fixture compatibility manifest.
+- Added a contributor ladder with focused scenario, documentation, consumer,
+  and adapter-evidence work packets outside the trust boundary.
+- Added first-use labels and an adoption scorecard that separates external
+  receipts and repeat use from stars, downloads, releases, and bot activity.
 ### First-use probe and live-smoke entrypoint — 2026-08-27
 - Added a read-only first-use probe that distinguishes a valid trusted local
   policy from a missing `patchgate.yml` without treating discovery guidance as

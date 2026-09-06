@@ -50,6 +50,12 @@ GitHub control was bypassed.
 
 - Policy and CODEOWNERS are read at the PR base SHA, never from the proposed
   head.
+- A root `OWNERS` or `OWNERS_ALIASES` file is surfaced by local discovery as
+  `needs_confirmation`, not parsed as enforceable ownership. Prow repositories
+  may keep additional `OWNERS` files in subdirectories and use `/lgtm`,
+  `/approve`, or labels; this version does not treat those signals as
+  qualified GitHub approval evidence. Confirm the intended boundary in
+  `patchgate.yml` or a supported native GitHub control.
 - Head target evidence is bound to the PR head SHA. Merge target evidence is
   bound to the immutable merge SHA returned by GitHub.
 - Initial identity and decision-bearing observations are re-read during

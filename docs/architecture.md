@@ -115,6 +115,13 @@ authentication proof: a caller that fabricates a complete local snapshot can
 fabricate both claims. Authenticated GitHub retrieval remains a G3 adapter
 responsibility.
 
+Some repositories use Prow `OWNERS` files instead of `CODEOWNERS`. PatchGate
+surfaces root `OWNERS` and `OWNERS_ALIASES` files during local discovery so a
+maintainer can see that the ownership model is outside the supported parser.
+They remain discovery-only: Prow labels and `/lgtm` or `/approve` state do not
+become approval evidence until a versioned adapter contract can authenticate
+and verify them.
+
 ## Evidence strength
 
 An evidence item must carry:

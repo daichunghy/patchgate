@@ -134,6 +134,9 @@ describe("CLI process smoke contract", () => {
     const unsupportedFixture = runCommand(["preflight", "--base", resolve("fixtures/repositories/unsupported-guidance/patchgate.yml"), "--json"]);
     expect(unsupportedFixture.exit).toBe(0);
     expect(JSON.parse(unsupportedFixture.stdout).guidance).toEqual(expect.arrayContaining([expect.objectContaining({ diagnosticId: "DISCOVERY_UNSUPPORTED", classification: "unsupported" })]));
+    const prowOwnersFixture = runCommand(["preflight", "--base", resolve("fixtures/repositories/prow-owners/patchgate.yml"), "--json"]);
+    expect(prowOwnersFixture.exit).toBe(0);
+    expect(JSON.parse(prowOwnersFixture.stdout).guidance).toEqual(expect.arrayContaining([expect.objectContaining({ path: "OWNERS", classification: "needs_confirmation", diagnosticId: "DISCOVERY_NEEDS_CONFIRMATION", signals: ["prow_owners", "ownership"] })]));
     const doctor = runCommand(["doctor", "--base", resolve("fixtures/repositories/missing-policy"), "--json"]);
     expect(doctor.exit).toBe(1);
     expect(JSON.parse(doctor.stdout)).toMatchObject({ status: "attention", mode: "local" });

@@ -76,13 +76,39 @@ npm run test:github
 
 Do not start with the evaluator core (`src/evaluator-core.ts`, `src/contract/`, `schemas/`) or the GitHub adapter privileged lane (`src/github/`, Action privileged workflows). Those paths are the trust boundary.
 
-Current contribution issues, if they are still open:
+The safest contribution ladder is:
 
-- [Issue #5 — beta release and rollback documentation](https://github.com/daichunghy/patchgate/issues/5)
-- [Issue #6 — CODEOWNERS subset conformance fixtures](https://github.com/daichunghy/patchgate/issues/6)
-- [Issue #7 — clean consumer-repository Action fixture](https://github.com/daichunghy/patchgate/issues/7)
+```text
+run the Case Lab
+  -> report a confusing result
+  -> add a redacted governance scenario
+  -> improve remediation or documentation
+  -> contribute an adapter fixture
+  -> propose a trust-boundary change with maintainer review
+```
 
-Issue #6 is fixture coverage for the **documented** CODEOWNERS subset. Do not start matching `?` or other undocumented syntax without fixtures and an explicit contract change.
+Good-first work should normally be one of these focused packets:
+
+- **Scenario and fixture:** add one real governance edge case and its expected
+  receipt to [the Case Lab](../docs/case-lab.md).
+- **First-use documentation:** improve a command, error explanation, or
+  captured output without changing the evaluator contract.
+- **Consumer workflow:** improve the clean consumer-repository fixture or its
+  documentation while preserving the no-PR-checkout privileged lane.
+- **Adapter evidence:** extend a recorded GitHub fixture only when the source,
+  SHA binding, permissions, and redaction rules are documented.
+
+Every packet must state the user problem, allowed files, expected output, and
+the exact verification command. Start a discussion or issue before any change
+that would alter a rule, schema, trust boundary, or Action permission.
+
+For currently available work, search the live issue list for `good first issue`
+or `help wanted` rather than relying on a numbered list that can become stale.
+If no suitable issue exists, open one with the same packet fields above.
+
+Fixture coverage must remain within the **documented** CODEOWNERS subset. Do
+not start matching `?` or other undocumented syntax without fixtures and an
+explicit contract change.
 
 ## 7. License
 
