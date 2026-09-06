@@ -57,8 +57,13 @@ decision for the maintainer.
 
 - No external user, downstream repository, outside issue, outside pull
   request, or consented pilot appeared in this pass.
-- The portfolio still has no published stable release; the npm publication
-  decision remains open and pending the maintainer's registry authentication.
+- The portfolio still has no published stable release. Later on the same day
+  the maintainer authorized npm publication of the prepared prereleases:
+  `contribkit@0.1.0-alpha.7`, `opensheet-ai@0.1.0-alpha.5`,
+  `@agentbiz/quant-research@0.1.0-alpha.6`, and the scoped
+  `@daichunghy/patchgate@0.1.0-beta.5` — all published to their documented
+  prerelease dist-tags. Prerelease publication is not a `v0.1` claim and does
+  not by itself constitute adoption evidence.
 - Repository status snapshots outside this record (per-repository `AGENTS.md`
   and status documents) were refreshed for patchgate in the same pass; the
   other repositories' status documents continue to state their own limits.

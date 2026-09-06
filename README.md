@@ -59,9 +59,11 @@ broader use.
 
 ## Current status
 
-**Status (2026-08-30):** public pre-release, 1 GitHub star, 0 forks, and no
-verified external users, downstream repositories, or pilots. The npm package
-remains unpublished (`private: true`, `0.1.0-dev`). The current Action release is
+**Status (2026-09-06):** public pre-release, 1 GitHub star, 0 forks, and no
+verified external users, downstream repositories, or pilots. The npm package is
+[`@daichunghy/patchgate@0.1.0-beta.5`](https://www.npmjs.com/package/%40daichunghy%2Fpatchgate)
+(prerelease, dist-tag `beta`; the unscoped `patchgate` name belongs to a
+different project). The current Action release is
 [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5),
 and consumers should pin the immutable commit shown on that release page for
 **shadow** evaluation only. This is not production, not a `v0.1` claim, and

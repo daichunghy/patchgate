@@ -5,7 +5,7 @@ attestation, compliance certificate, or proof that code is correct.
 
 The contract has three independent version namespaces: evaluation-input schema
 `0.1`, ContributionReceipt schema `0.1`, and evaluator/package version
-`0.1.0-dev`. Unversioned input and unsupported versions are rejected before the
+`0.1.0-beta.5`. Unversioned input and unsupported versions are rejected before the
 pure evaluator with stable diagnostic IDs and CLI exit `2`.
 
 ## Required fields
@@ -13,7 +13,7 @@ pure evaluator with stable diagnostic IDs and CLI exit `2`.
 ```json
 {
   "schemaVersion": "0.1",
-  "evaluatorVersion": "0.1.0-dev",
+  "evaluatorVersion": "0.1.0-beta.5",
   "repository": { "owner": "example", "name": "service", "pullRequest": 42 },
   "revisions": {
     "baseSha": "base-commit",
