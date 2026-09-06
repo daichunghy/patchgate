@@ -12,6 +12,9 @@
     "url": "https://github.com/daichunghy/patchgate/issues"
   },
   "homepage": "https://github.com/daichunghy/patchgate#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=20"
   },
