@@ -1,4 +1,4 @@
-# User adoption loop — 2026-08-24
+# User adoption loop — 2026-08-28
 
 The goal for this workspace is not to produce four busy repositories. It is to
 get real people to a first useful result, learn where the workflow fails, and
@@ -13,10 +13,10 @@ maintenance or discoverability signals, but they do not establish adoption.
 
 | Project | First useful result | Current blocker | Next evidence |
 | --- | --- | --- | --- |
-| [PatchGate](https://github.com/daichunghy/patchgate) | A maintainer installs the Action in non-blocking shadow mode and receives a useful check | Unpublished CLI, token/permission boundary, and no outside shadow install | One consented shadow run in a repository outside `daichunghy/*` |
-| [contribkit](https://github.com/daichunghy/contribkit) | An agent or human runs preflight on a real local change before opening a PR | Package/plugin discoverability and no outside consumer walkthrough | One outside repository completes `preflight` and reports the decision |
-| [OpenSheet-AI](https://github.com/daichunghy/opensheet-ai) | A typed intent becomes a validated plan, dry-run receipt, and new `.xlsx` file | The boundary is deliberately local/greenfield; no real operator workflow is verified | One researcher or operator completes a real spreadsheet task |
-| [quant-research](https://github.com/daichunghy/quant-research) | A declared instrument produces a codebook, recode output, coverage result, and analysis syntax | No real study workflow has been observed outside the maintainer workspace | One researcher uses an output in a real study and reports what was missing |
+| [PatchGate](https://github.com/daichunghy/patchgate) | A maintainer adds the pinned shadow workflow, opens one PR, and receives a useful non-blocking check | PR #59 is public and CI-green, but it is not merged and no outside shadow consent exists | One consented shadow run in a repository outside `daichunghy/*` |
+| [contribkit](https://github.com/daichunghy/contribkit) | An agent or human runs package-first `preflight` on a real local change before opening a PR | PR #33 is public and CI-green; npm alpha.7 still needs owner authentication/publication | One outside repository completes `preflight` and reports the decision |
+| [OpenSheet-AI](https://github.com/daichunghy/opensheet-ai) | A typed intent previews to a receipt, then writes a new `.xlsx` file | PR #17 is public and CI-green; npm alpha.5 still needs owner authentication/publication | One researcher or operator completes a real spreadsheet task |
+| [quant-research](https://github.com/daichunghy/quant-research) | A packaged workflow emits codebook, recode, coverage, measurement and syntax artifacts | PR #19 is public and CI-green; alpha.6 is prepared but npm publication is blocked by auth | One researcher uses an output in a real study and reports what was missing |
 
 ## Evidence to record
 
@@ -33,6 +33,28 @@ Every first-use report should record:
 
 The evidence record must distinguish `worked`, `worked_with_workaround`, and
 `did_not_reach_first_result`. Do not collapse a workaround into a success.
+
+## Fast-conversion sequence
+
+Use one measurable action per stage. Do not count a page view, star, download,
+self-authored issue, or CI run as adoption.
+
+1. **Activation, under five minutes:** the documented package or Action command
+   runs and produces the stated receipt, check, preview, workbook, or workflow
+   bundle. Record command, version, elapsed time, and first confusion.
+2. **Useful result:** the person can answer the product question without opening
+   internal source files. The README CTA must point directly to this result.
+3. **Feedback conversion:** offer one short issue form immediately after the
+   result. Ask what they expected, what blocked them, and whether they would
+   repeat the workflow. Never request private data or a positive quote.
+4. **Pilot conversion:** request explicit consent, an exact target repository
+   and PR, least-privilege permissions, and a rollback path. For PatchGate,
+   keep the first run shadow-only and non-blocking.
+
+The operating target is not a viral number. It is a shorter path from a public
+entry point to a verifiable first result, followed by a consented outside
+workflow. If activation is successful but feedback conversion is weak, improve
+the result and the form before adding features.
 
 ## Working cadence
 

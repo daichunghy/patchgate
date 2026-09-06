@@ -25,6 +25,48 @@ PatchGate turns those expectations into an explicit, versioned policy and a
 repeatable preflight. The evaluator is local and deterministic; the GitHub
 adapter is an explicit boundary with a documented permission model.
 
+## Try one real pull request in five minutes
+
+Add this temporary workflow to a test repository, open or update one pull
+request, and read the non-blocking PatchGate check. It does not change merge
+eligibility.
+
+```yaml
+name: PatchGate shadow check
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+
+jobs:
+  patchgate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: daichunghy/patchgate@34d998bbd59fa09dd9081e24f22abe812f97fbab
+        with:
+          fail-on: never
+          create-check-run: true
+```
+
+Remove the workflow after the trial, or follow the [shadow installation
+runbook](docs/pilots/g4-shadow-installation-runbook.md) before requesting any
+broader use.
+
+## Current status
+
+**Status (2026-08-30):** public pre-release, 1 GitHub star, 0 forks, and no
+verified external users, downstream repositories, or pilots. The npm package
+remains unpublished (`private: true`, `0.1.0-dev`). The current Action release is
+[`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5),
+and consumers should pin the immutable commit shown on that release page for
+**shadow** evaluation only. This is not production, not a `v0.1` claim, and
+not evidence of external adoption.
+
 ## Try it locally
 
 The fastest path runs against the repository's recorded fixture and needs no

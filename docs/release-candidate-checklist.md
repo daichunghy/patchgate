@@ -1,7 +1,7 @@
 # PatchGate release-candidate checklist
 
-**Current state:** unpublished development package; no public Action tag or
-`v0.1` release is claimed.
+**Current state:** the npm package remains unpublished and the repository has a
+public beta Action tag, `v0.1.0-beta.5`; no stable `v0.1` release is claimed.
 
 The publication and rollback procedure is documented separately in the [beta
 release and rollback runbook](releases/beta-release-and-rollback.md). This
@@ -26,7 +26,7 @@ The release-candidate check confirms that:
 
 Passing this command is a packaging precondition, not release authorization.
 
-## Before a public beta
+## Before a new public beta
 
 A maintainer must separately verify and record:
 
