@@ -60,7 +60,8 @@ jobs:
       # with administration:read is required for a complete native-control
       # snapshot. The Check Run output shows the full tested SHA and its
       # binding to the PR head; a stale event is rejected before evaluation.
-      # snapshot-rejection Check Runs are included in beta.5.
+      # The public beta posts a Check Run for successful evaluations;
+      # snapshot-rejection Check Runs are included in the public beta.
       # Release identity before resolving the immutable commit:
       # uses: daichunghy/patchgate@v0.1.0-beta.5
       - name: Run PatchGate Shadow Gate
