@@ -30,6 +30,38 @@ The four related repositories and the shared evidence rules are recorded in
 The shortest path to a user result is [one non-blocking first-use check](docs/first-use.md).
 The workspace tracks this alongside the [continuous adoption loop](docs/adoption-loop.md).
 
+## Try one real pull request in five minutes
+
+Add this temporary workflow to a test repository, open or update one pull
+request, and read the non-blocking PatchGate check. It does not change merge
+eligibility.
+
+```yaml
+name: PatchGate shadow check
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+
+jobs:
+  patchgate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: daichunghy/patchgate@34d998bbd59fa09dd9081e24f22abe812f97fbab
+        with:
+          fail-on: never
+          create-check-run: true
+```
+
+Remove the workflow after the trial, or follow the [shadow installation
+runbook](docs/pilots/g4-shadow-installation-runbook.md) before requesting any
+broader use.
+
 ## Try it locally
 
 The fastest first-run path is a direct GitHub install on Node 20+ — `npx`
@@ -243,10 +275,13 @@ The repository maintains a clean root directory structure (9 files max) with mod
 - [Redacted support bundle](docs/support-bundle.md)
 - [Project-wide review and next-build checkpoint](docs/reviews/2026-08-13-project-wide-review.md)
 - [Current G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md)
+- [Agent verification foundation](docs/reviews/2026-08-27-agent-verification-foundation.md)
 - [Implementation roadmap](docs/implementation-roadmap.md)
 - [User requirements](docs/product/user-requirements.md)
 - [User-needs and roadmap research](docs/research/2026-08-13-patchgate-user-needs-roadmap-review.md)
 - [Detailed execution plan for agents](docs/agent-execution-plan.md)
+- [Agent verification map](docs/agent-verification-map.md)
+- [Agent evaluation protocol](docs/agent-evaluation-protocol.md)
 - [Machine-readable agent work packages](docs/agent-work-packages.yml)
 - [Prompt 1 implementation review](docs/reviews/2026-08-13-prompt-01-review.md)
 - [Prompt 2 implementation report](docs/reviews/2026-08-13-prompt-02-implementation.md)

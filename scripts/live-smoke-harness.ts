@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { Ajv2020 } from "ajv/dist/2020.js";
 import { evaluateContribution } from "../src/evaluator.js";
 import { createFetchTransport, GitHubClient } from "../src/github/client.js";
@@ -143,8 +144,13 @@ async function runLiveSmoke(): Promise<void> {
   }
 }
 
+function wasExecutedDirectly(): boolean {
+  const entrypoint = process.argv[1];
+  return entrypoint !== undefined && import.meta.url === pathToFileURL(resolve(entrypoint)).href;
+}
+
 // Auto-run if executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (wasExecutedDirectly()) {
   runLiveSmoke().catch((err) => {
     console.error("Fatal error in live smoke harness:", err);
     process.exit(1);
