@@ -16,7 +16,7 @@ The evaluator is deterministic and produces a receipt that explains which
 requirements passed, which evidence is missing, and which human gate remains.
 It cannot force external automation to stop working.
 
-**Status (2026-08-24):** public pre-release, 1 GitHub star, 0 forks, and no
+**Status (2026-08-30):** public pre-release, 1 GitHub star, 0 forks, and no
 verified external users, downstream repositories, or pilots. The npm package
 remains unpublished (`private: true`, `0.1.0-dev`). The current Action release is
 [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5),
@@ -25,7 +25,7 @@ and consumers should pin the immutable commit shown on that release page for
 not evidence of external adoption.
 
 The four related repositories and the shared evidence rules are recorded in
-[the repository portfolio audit](docs/reviews/2026-08-24-repository-portfolio-audit.md).
+[the repository portfolio audit](docs/reviews/2026-08-28-repository-portfolio-audit.md).
 
 The shortest path to a user result is [one non-blocking first-use check](docs/first-use.md).
 The workspace tracks this alongside the [continuous adoption loop](docs/adoption-loop.md).
