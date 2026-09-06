@@ -98,7 +98,10 @@ snapshot` and `support-bundle` write files with `--output` only. Giving
 `evaluate` both flags with different paths exits 2 (`REPORT_OUTPUT_CONFLICT`).
 `--fail-on` defaults to `blocked`, matching the Action.
 
-Longer walkthrough: [Getting started](docs/getting-started.md).
+Longer walkthrough: [Getting started](docs/getting-started.md). The
+[Case Lab](docs/case-lab.md) contains ready, blocked, missing-evidence,
+human-gate, and policy-ambiguity scenarios that can be replayed from the
+fixture manifest with `npm run case-lab`.
 
 ## GitHub Action candidate
 

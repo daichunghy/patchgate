@@ -4,6 +4,13 @@ The first useful result is a non-blocking check on a real pull request. It
 should tell a maintainer what evidence is present and what still needs a human
 decision without changing merge eligibility.
 
+## See the result before connecting GitHub
+
+The [Case Lab](case-lab.md) is the fastest way to understand the product
+contract. Run `npm ci && npm run case-lab` to replay ready, blocked,
+missing-evidence, human-gate, and policy-ambiguity cases locally. This is a
+demonstration and compatibility check, not external adoption evidence.
+
 ## Shadow setup
 
 For a local policy-only first result from this repository, run:
@@ -54,6 +61,16 @@ Use the [first-use feedback form](https://github.com/daichunghy/patchgate/issues
 for a redacted report. Do not include tokens, private repository data, or
 unredacted pull-request contents.
 
+For comparable results, use these exact labels:
+
+- `worked` — the first result was reached without a workaround;
+- `worked_with_workaround` — a result was reached after an unexpected manual
+  step;
+- `did_not_reach_first_result` — setup or permissions prevented a result.
+
+The most useful signal is not a star or a download. It is an outside maintainer
+reaching a first receipt, understanding the remediation, and choosing whether
+to run PatchGate again on another pull request.
 If the first-use question is worth observing on a real public repository, use
 the [shadow pilot interest form](https://github.com/daichunghy/patchgate/issues/new?template=pilot-interest.yml)
 and read the [pilot intake guide](community/pilot-intake.md) before changing

@@ -304,6 +304,10 @@ export async function runAction(env: NodeJS.ProcessEnv = process.env): Promise<n
 
   console.log(`\n========================================`);
   console.log(`PatchGate Evaluation Result: ${receipt.final.status.toUpperCase()}`);
+  console.log(`Base SHA:              ${receipt.revisions.baseSha}`);
+  console.log(`Head SHA:              ${receipt.revisions.headSha}`);
+  console.log(`Tested SHA:            ${receipt.revisions.testedSha}`);
+  console.log(`Evidence Target:       ${receipt.revisions.targetKind}`);
   console.log(`Decision Input Digest: ${receipt.decisionInputDigest}`);
   console.log(`Receipt Digest:        ${receipt.receiptDigest}`);
   console.log(`========================================\n`);

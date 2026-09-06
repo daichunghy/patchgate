@@ -30,9 +30,15 @@ const guidancePaths = [
   "SECURITY.md",
   "README.md",
   ".github/pull_request_template.md",
+  "OWNERS",
+  "OWNERS_ALIASES",
 ];
 const MAX_GUIDANCE_BYTES = 256 * 1024;
 const execFileAsync = promisify(execFile);
+
+function isProwOwnershipPath(path: string): boolean {
+  return path === "OWNERS" || path === "OWNERS_ALIASES";
+}
 
 interface GuidanceContext {
   policy: PatchgatePolicy | undefined;
@@ -65,6 +71,18 @@ function classifyGuidance(path: string, text: string | undefined, context: Guida
       summary: "No discovery-only guidance file was found.",
       remediation: "No action is required; verify trusted structured policy separately.",
       signals: [],
+    };
+  }
+  if (isProwOwnershipPath(path)) {
+    return {
+      path,
+      present: true,
+      classification: "needs_confirmation",
+      authority: "discovery_only",
+      diagnosticId: "DISCOVERY_NEEDS_CONFIRMATION",
+      summary: "A Prow ownership file was discovered, but its reviewer and approval semantics are not parsed as enforceable ownership.",
+      remediation: "Confirm ownership in patchgate.yml or a native GitHub control; Prow labels and nested OWNERS files are not approval evidence in this version.",
+      signals: ["prow_owners", "ownership"],
     };
   }
   const unsupportedSignals: string[] = [];

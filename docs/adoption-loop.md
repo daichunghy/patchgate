@@ -1,8 +1,22 @@
-# User adoption loop — 2026-08-28
+# User adoption loop — 2026-09-01
 
 The goal for this workspace is not to produce four busy repositories. It is to
 get real people to a first useful result, learn where the workflow fails, and
 fix that failure without weakening the product boundaries.
+
+For PatchGate, the first-use journey is:
+
+```text
+install or clone
+  -> run preflight or Case Lab
+  -> receive one understandable result
+  -> apply the remediation
+  -> run again on another pull request
+```
+
+The Case Lab is a local activation aid. A real adoption signal starts only when
+an outside maintainer reaches a receipt in their own repository and gives
+consented feedback.
 
 ## What counts as progress
 
@@ -55,6 +69,24 @@ The operating target is not a viral number. It is a shorter path from a public
 entry point to a verifiable first result, followed by a consented outside
 workflow. If activation is successful but feedback conversion is weak, improve
 the result and the form before adding features.
+
+## Metrics that guide the next change
+
+Track these as a small weekly scorecard. Stars, releases, self-authored issues,
+CI runs, and npm downloads remain discoverability or maintenance signals; they
+are not adoption proof.
+
+| Metric | Definition | Decision it informs |
+| --- | --- | --- |
+| First receipt | An outside repository produces its first PatchGate receipt | Whether the onboarding path is understandable |
+| Time to first receipt | Elapsed time from the first documented command to the first usable result | Which setup step deserves removal or better output |
+| Remediation completion | The user fixes the reported issue and reaches the intended next state | Whether the result is actionable rather than merely diagnostic |
+| Repeat use | The same outside repository evaluates a second pull request | Whether PatchGate solves a recurring workflow problem |
+| First response time | Time until a human maintainer responds to an outside issue or PR | Whether the community feels attended to |
+| Scenario conversion | Outside feedback that becomes a redacted fixture or documentation change | Whether community input improves the product |
+
+Do not report any metric as public adoption until its repository, user context,
+consent, and evidence class are recorded.
 
 ## Working cadence
 

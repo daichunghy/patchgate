@@ -11,6 +11,10 @@ This walkthrough uses a clone and a local build. Do not run `npx patchgate`:
 that npm name is a different project. The direct GitHub install is available
 for the beta release, while the CLI remains an unpublished npm package.
 
+If you only want to see the decision contract first, run the
+[Case Lab](case-lab.md) with `npm ci && npm run case-lab`. It replays local
+fixtures and does not contact GitHub.
+
 ## 1. Clone and build
 
 Requires Node.js 20 or later.
