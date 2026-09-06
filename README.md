@@ -82,6 +82,14 @@ node dist/src/cli.js evaluate --event fixtures/pr-ready.json --report /tmp/patch
 
 To inspect the result:
 
+`validate` accepts `--base` as an alias of `--policy`. `evaluate` writes
+receipts with `--report` (or `--output`, the shared write-path alias); `github
+snapshot` and `support-bundle` write files with `--output` only. Giving
+`evaluate` both flags with different paths exits 2 (`REPORT_OUTPUT_CONFLICT`).
+`--fail-on` defaults to `blocked`, matching the Action.
+
+Longer walkthrough: [Getting started](docs/getting-started.md).
+
 ```bash
 node dist/src/cli.js explain /tmp/patchgate-receipt.json
 ```
@@ -118,6 +126,22 @@ cannot become enforcement by themselves.
 The repository contains a GitHub Action candidate for non-blocking shadow
 evaluation. Follow the [Action usage guide](docs/github-action-usage.md) before
 installing it in another repository.
+
+The tagged pre-release
+[`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5)
+is the current release; pin
+`34d998bbd59fa09dd9081e24f22abe812f97fbab` for shadow evaluation.
+Production consumers must still wait for a stable public release. Do not use
+the placeholder `patchgate/patchgate@v0.1.0-dev` as an installable public
+reference.
+
+For this checkout, the source-of-truth workflow is
+[`.github/workflows/patchgate-shadow.yml`](.github/workflows/patchgate-shadow.yml).
+It uses `pull_request_target`, checks out the trusted base revision, builds the
+Action bundle from that base, runs with `fail-on: never`, and updates one check
+run. A consented non-blocking shadow pilot may use an explicitly approved
+full-SHA pre-release commit by following the
+[G4 shadow-installation runbook](docs/pilots/g4-shadow-installation-runbook.md).
 
 The trusted metadata lane uses `pull_request_target` only to read base-revision
 policy and authenticated metadata. It never checks out or executes pull-request
