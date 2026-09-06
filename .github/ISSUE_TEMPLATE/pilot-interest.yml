@@ -1,0 +1,81 @@
+name: Shadow pilot interest
+description: Ask about a consent-first, non-blocking PatchGate observation
+title: "[Pilot] "
+labels: ["pilot", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form starts a conversation; it does not enroll a repository by itself.
+
+        The current public beta is shadow-only. It does not change merge rules,
+        request repository secrets, or check out pull-request code in the
+        privileged metadata lane. Please share only public repository details.
+        Do not include tokens, private repository data or unredacted pull-request
+        contents.
+  - type: input
+    id: repository
+    attributes:
+      label: Public repository URL
+      description: The repository where you would consider a non-blocking observation.
+      placeholder: https://github.com/owner/repository
+    validations:
+      required: true
+  - type: dropdown
+    id: repository-shape
+    attributes:
+      label: Repository shape
+      options:
+        - Solo-maintainer or small OSS repository
+        - Multi-owner repository
+        - Monorepo or multiple subsystems
+        - Other public repository shape
+    validations:
+      required: true
+  - type: dropdown
+    id: observation-scope
+    attributes:
+      label: Observation scope
+      description: Choose the smallest useful first run.
+      options:
+        - One pull request
+        - A short sample of pull requests
+        - I need help choosing a safe scope
+    validations:
+      required: true
+  - type: textarea
+    id: review-question
+    attributes:
+      label: Review-readiness question
+      description: What do you want to learn before spending maintainer review time?
+      placeholder: We want to know whether stale checks or missing ownership signals are visible early enough to help triage.
+    validations:
+      required: true
+  - type: textarea
+    id: workflow-shape
+    attributes:
+      label: Public workflow shape
+      description: Describe the relevant Actions trigger, branch protection or CODEOWNERS shape without private values.
+      placeholder: pull_request_target metadata workflow; required checks on main; CODEOWNERS covers src/**
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety boundaries
+      options:
+        - label: I understand that the first observation is non-blocking and does not change merge eligibility.
+          required: true
+        - label: I will not provide repository secrets or private pull-request content through this issue.
+          required: true
+        - label: I understand that the privileged metadata lane must not check out or execute pull-request code.
+          required: true
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Evidence and publication consent
+      options:
+        - label: I consent to a redacted record of the setup and result being kept in the project evidence log.
+          required: false
+        - label: I consent to a future public summary of the result, subject to a separate confirmation before publication.
+          required: false
