@@ -56,7 +56,9 @@ Before publishing a new beta, the maintainer must record all of the following:
 
 3. Public CI, CodeQL and Security Audit results for the candidate commit.
 4. The candidate's full 40-character commit SHA, release tag, bundle check and
-   lockfile digest in the release evidence record.
+   lockfile digest in the release evidence record. The release page, source
+   commit, `action.yml`, bundle and CLI artifacts must all point to
+   the same immutable candidate.
 5. A clean consumer installation using that full SHA, with `fail-on: never`.
 6. A rollback to a known-good full SHA, tested in the same consumer shape.
 7. Support, security-reporting, compatibility and unsupported-behavior wording.

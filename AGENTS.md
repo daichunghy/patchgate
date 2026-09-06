@@ -87,6 +87,8 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 3. **Core Engine**: Pure deterministic logic lives in [src/evaluator-core.ts](src/evaluator-core.ts) and [src/evidence/](src/evidence).
 4. **Adapter & Security**: GitHub integration logic lives in [src/github/](src/github) and follows [docs/threat-model.md](docs/threat-model.md).
 5. **Validation**: Run `npm run verify` before completing any change.
+6. **Agent verification**: Follow [docs/agent-verification-map.md](docs/agent-verification-map.md) for surface ownership, verification ladders, PR invariants, bounded parallel work, and evidence labels.
+7. **Agent evaluations**: Use [docs/agent-evaluation-protocol.md](docs/agent-evaluation-protocol.md) when measuring or scaling agent-assisted work; scores and agent summaries never replace parent verification.
 
 ## Current project status
 

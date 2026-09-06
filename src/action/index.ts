@@ -121,8 +121,14 @@ export function formatMarkdownSummary(receipt: ContributionReceipt): string {
   const icon = statusEmoji[receipt.final.status] ?? "ℹ️";
   const title = `### ${icon} PatchGate Review Gate: \`${receipt.final.status.toUpperCase()}\``;
 
-  const repoInfo = `**Repository:** \`${receipt.repository.owner}/${receipt.repository.name}\` PR #${receipt.repository.pullRequest}  
-**Target Commit:** \`${receipt.revisions.testedSha.slice(0, 7)}\` | **Base SHA:** \`${receipt.revisions.baseSha.slice(0, 7)}\`  
+  const repoInfo = `**Repository:** \`${receipt.repository.owner}/${receipt.repository.name}\` PR #${receipt.repository.pullRequest}<br>
+**Target Kind:** \`${receipt.revisions.targetKind}\`<br>
+**Tested SHA:** \`${markdownCell(receipt.revisions.testedSha)}\`<br>
+**PR Head SHA:** \`${markdownCell(receipt.revisions.headSha)}\`<br>
+**Base SHA:** \`${markdownCell(receipt.revisions.baseSha)}\`<br>
+**Commit Binding:** ${receipt.revisions.targetKind === "head"
+    ? receipt.revisions.testedSha === receipt.revisions.headSha ? "✅ `testedSha` equals `headSha`" : "❌ `testedSha` does not equal `headSha`"
+    : "ℹ️ tested revision is the declared merge target; PR head is recorded separately"}<br>
 **Policy Digest:** \`${receipt.policyDigest.slice(0, 18)}...\`  
 **Receipt Digest:** \`${receipt.receiptDigest.slice(0, 18)}...\``;
 
@@ -206,9 +212,10 @@ export async function runAction(env: NodeJS.ProcessEnv = process.env): Promise<n
   const pullNumber = eventPayload.pull_request?.number;
   const owner = eventPayload.repository?.owner?.login || eventPayload.repository?.owner?.name;
   const name = eventPayload.repository?.name;
+  const eventHeadSha = eventPayload.pull_request?.head?.sha;
 
-  if (pullNumber === undefined || owner === undefined || name === undefined) {
-    console.error("PatchGate Action: Pull request number or repository identity is missing from event payload.");
+  if (typeof pullNumber !== "number" || !Number.isInteger(pullNumber) || pullNumber < 1 || typeof owner !== "string" || owner.length === 0 || typeof name !== "string" || name.length === 0 || typeof eventHeadSha !== "string" || eventHeadSha.trim().length === 0) {
+    console.error("PatchGate Action: Pull request number, repository identity, or event head SHA is missing or invalid.");
     return 2;
   }
 
@@ -229,6 +236,7 @@ export async function runAction(env: NodeJS.ProcessEnv = process.env): Promise<n
     owner,
     name,
     pullNumber,
+    expectedHeadSha: eventHeadSha,
     eventKind: "pull_request",
     targetKind: "head",
   };
@@ -242,7 +250,7 @@ export async function runAction(env: NodeJS.ProcessEnv = process.env): Promise<n
     if (diagnostic.remediation) {
       console.error(`Remediation: ${diagnostic.remediation}`);
     }
-    const errorMarkdown = `### ❌ PatchGate Snapshot Rejected\n\n**Diagnostic:** \`${diagnostic.id}\`  \n**Message:** ${diagnostic.message}  \n**Remediation:** ${diagnostic.remediation ?? "None"}\n`;
+    const errorMarkdown = `### ❌ PatchGate Snapshot Rejected\n\n**Event PR Head SHA:** \`${markdownCell(eventHeadSha)}\`  \n**Diagnostic:** \`${diagnostic.id}\`  \n**Message:** ${diagnostic.message}  \n**Remediation:** ${diagnostic.remediation ?? "None"}\n`;
     setActionOutput("status", "evidence_missing", env);
     setActionOutput("summary-markdown", errorMarkdown, env);
     appendStepSummary(errorMarkdown, env);
@@ -288,6 +296,9 @@ export async function runAction(env: NodeJS.ProcessEnv = process.env): Promise<n
   setActionOutput("receipt-path", resolvedReportPath, env);
   setActionOutput("decision-input-digest", receipt.decisionInputDigest, env);
   setActionOutput("receipt-digest", receipt.receiptDigest, env);
+  setActionOutput("target-kind", receipt.revisions.targetKind, env);
+  setActionOutput("tested-sha", receipt.revisions.testedSha, env);
+  setActionOutput("head-sha", receipt.revisions.headSha, env);
   setActionOutput("summary-markdown", summaryMarkdown, env);
   appendStepSummary(summaryMarkdown, env);
 
@@ -325,7 +336,7 @@ export interface CheckRunParams {
   headSha: string;
   checkName: string;
   status: FinalStatus;
-  receipt: Pick<ContributionReceipt, "receiptDigest" | "decisionInputDigest" | "evaluatedAt">;
+  receipt: Pick<ContributionReceipt, "receiptDigest" | "decisionInputDigest" | "evaluatedAt" | "revisions">;
   summaryMarkdown: string;
   token: string;
 }
@@ -387,6 +398,12 @@ async function deliverCheckRun(params: { owner: string; name: string; headSha: s
 }
 
 export async function upsertCheckRun(params: CheckRunParams, fetchImpl: typeof fetch = fetch): Promise<void> {
+  if (params.headSha !== params.receipt.revisions.testedSha) {
+    throw new Error("PatchGate Action: Check Run head SHA must equal the receipt tested SHA.");
+  }
+  if (params.receipt.revisions.targetKind === "head" && params.receipt.revisions.testedSha !== params.receipt.revisions.headSha) {
+    throw new Error("PatchGate Action: A head-target Check Run requires tested SHA to equal the PR head SHA.");
+  }
   const conclusionMap: Record<FinalStatus, "success" | "failure" | "action_required" | "neutral"> = {
     ready_for_review: "success",
     blocked: "failure",
@@ -404,7 +421,7 @@ export async function upsertCheckRun(params: CheckRunParams, fetchImpl: typeof f
     output: {
       title: `PatchGate: ${params.status.toUpperCase().replace(/_/g, " ")}`,
       summary: params.summaryMarkdown,
-      text: `Receipt Digest: \`${params.receipt.receiptDigest}\`\nDecision Input Digest: \`${params.receipt.decisionInputDigest}\`\nEvaluated At: ${params.receipt.evaluatedAt}`,
+      text: `Target kind: ${params.receipt.revisions.targetKind}\nTested SHA: \`${params.receipt.revisions.testedSha}\`\nPR head SHA: \`${params.receipt.revisions.headSha}\`\nReceipt Digest: \`${params.receipt.receiptDigest}\`\nDecision Input Digest: \`${params.receipt.decisionInputDigest}\`\nEvaluated At: ${params.receipt.evaluatedAt}`,
     },
   };
   await deliverCheckRun(params, payload, fetchImpl);
@@ -430,7 +447,7 @@ export async function upsertRejectionCheckRun(params: RejectionCheckRunParams, f
     output: {
       title: "PatchGate: SNAPSHOT REJECTED",
       summary: params.summaryMarkdown,
-      text: `Diagnostic: ${params.diagnostic.id}\nRemediation: ${params.diagnostic.remediation ?? "None"}`,
+      text: `Target kind: head\nEvent PR head SHA: \`${params.headSha}\`\nDiagnostic: ${params.diagnostic.id}\nRemediation: ${params.diagnostic.remediation ?? "None"}`,
     },
   };
   await deliverCheckRun(params, payload, fetchImpl);
