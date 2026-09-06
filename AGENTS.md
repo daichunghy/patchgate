@@ -93,66 +93,49 @@ The repository enforces a clean root structure (maximum 9 files) with well-defin
 ## Current project status
 
 This section is the operating snapshot for the repository. It was revalidated
-on 2026-08-28 and must be kept separate from the constitutional definition of
+on 2026-09-06 and must be kept separate from the constitutional definition of
 done below. A local test, a recorded fixture, or a configured remote is not by
 itself evidence of live GitHub behavior, external adoption, or release
 readiness.
 
 | Area | Current evidence | Status and limit |
 | --- | --- | --- |
-| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, seven repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI runs | Foundation is present on public `main`; `main` requires six CI contexts and one approving review, `0.1.0-dev` remains an unpublished package, and beta.5 is the current public Action pre-release. There is no downstream usage; maintainer-bypass merges remain recorded as maintainer decisions rather than independent-review evidence |
-| G1 deterministic contract | TypeScript evaluator, schemas, receipt digests, recorded fixtures, security coverage, and deterministic tests | Locally verified; this does not prove a live GitHub integration |
-| G2 local preflight | `preflight`, `validate`, `init`, `doctor`, Git-ref loading, discovery classification, text/JSON parity, and six CLI process tests (the sixth covers the `evaluate --output` alias and its fail-closed conflict, PR #40) | Local user flow is verified; three consented usability sessions and UR acceptance evidence are still open |
-| G3 GitHub adapter | Recorded/mock authenticated snapshot flow, bounded requests, source and SHA binding, TOCTOU re-read, redaction, branch-protection and Rulesets subset contract, 25 integration tests and the latest recorded GET-only smoke for PR #9 head `5f9ccb5` | The tested head built a schema-valid live snapshot and receipt with final status `human_review_required`; missing approval/ownership/linkage evidence remains explicit; unsupported Ruleset semantics and merge-group membership remain fail-closed |
-| G4 Action | Root `action.yml`, `src/action/index.ts`, committed ncc bundle, pinned workflows, required CI/CodeQL merge-group triggers, clean-room bundle verification, idempotent check delivery including a neutral check run when the snapshot is rejected (PR #26), consumer fixture smoke and explicit non-ready merge-group handling are merged into `main` | Local consumer boundary is verified; no live external consumer E2E, production release or two consenting non-blocking shadow installations |
-| User value and release | Protocols, roadmap, public Discussions, pilot request, contribution issues, public Project #1, merged hardening work and the `v0.1.0-beta.5` pre-release with a recorded shadow-installation no-go decision exist | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, production release, or `v0.1` claim |
+| G0 public foundation | Public repository `https://github.com/daichunghy/patchgate`, Apache-2.0 license, Community Profile 100%, nine repository topics, Discussions, private vulnerability reporting, protected `main`, CI workflow, and successful public `main` CI runs | Foundation is present on public `main`; `main` requires six CI contexts and one approving review, `0.1.0-dev` remains an unpublished package, and beta.5 is the current public Action pre-release. There is no downstream usage; maintainer-bypass merges remain recorded as maintainer decisions rather than independent-review evidence |
+| G1 deterministic contract | TypeScript evaluator, schemas, receipt digests, recorded fixtures (including the replayable Case Lab manifest), security coverage, and deterministic tests | Locally verified; this does not prove a live GitHub integration |
+| G2 local preflight | `preflight`, `validate`, `init`, `doctor`, Git-ref loading, discovery classification (including Prow `OWNERS`/`OWNERS_ALIASES` as `needs_confirmation`, discovery-only, PR #75), text/JSON parity, CLI process smoke tests, the `evaluate --output` alias with fail-closed conflicts (PR #40), and the `npm run case-lab` replay path | Local user flow is verified; three consented usability sessions and UR acceptance evidence are still open |
+| G3 GitHub adapter | Recorded/mock authenticated snapshot flow, bounded requests, source and SHA binding to the exact `pull_request.head.sha` with fail-closed live-target mismatch handling (PR #59), TOCTOU re-read, redaction, branch-protection and Rulesets subset contract, 25 integration tests and the latest recorded GET-only smoke for PR #9 head `5f9ccb5` | The tested head built a schema-valid live snapshot and receipt with final status `human_review_required`; missing approval/ownership/linkage evidence remains explicit; unsupported Ruleset semantics and merge-group membership remain fail-closed |
+| G4 Action | Root `action.yml`, `src/action/index.ts`, committed ncc bundle, pinned workflows, required CI/CodeQL merge-group triggers, clean-room bundle verification, idempotent check delivery including a neutral check run when the snapshot is rejected (PR #26), consumer fixture smoke, explicit non-ready merge-group handling, and console/summary output of base, head, tested, and target-kind revisions (PR #75) | Local consumer boundary is verified; no live external consumer E2E, production release or two consenting non-blocking shadow installations |
+| User value and release | Protocols, roadmap, public Discussions, pilot request and intake path (PR #67), contribution issues, public Project #1, maintainer demo script (PR #68), evidence-safe marketing kit and social calendar (PRs #65/#66), the expanded beta rollback guide (PR #52), merged hardening work and the `v0.1.0-beta.5` pre-release with a recorded shadow-installation no-go decision exist | No completed G2 sessions, external replies or contributions, external shadow installations, enforcement pilots, production release, or `v0.1` claim |
 
-The public default branch is currently `main`; the current immutable Action commit is recorded on the beta.5 release page. [PR #9](https://github.com/daichunghy/patchgate/pull/9)
-and follow-ups #15–#21, #23, #25 and #26 were merged on 2026-08-22, and #28,
-#36 and #40 were merged on 2026-08-23, each by the repository
-administrator after temporarily lifting `enforce_admins`; the setting was
-restored immediately after each merge, and every such merge is recorded as a
-maintainer decision rather than independent-review evidence. PRs #46, #47,
-#51, #53, #54 and #55 were merged on 2026-08-25 in the same recorded
-pattern, bringing `main` to `c9d11cb`. PR #40 closed
-audit item P1-8: `evaluate` accepts `--output` as an alias of `--report`,
-conflicting paths fail closed with `REPORT_OUTPUT_CONFLICT`, and the
-committed Action bundle was rebuilt to catch up with the `evaluator-core`
-change that PR #36 had merged without a bundle recommit. Completed
-default-branch workflow runs include the recorded
-[CI 32563526945](https://github.com/daichunghy/patchgate/actions/runs/32563526945)
-and CodeQL `32563526929` on `main@e4052f2`, earlier runs through
-[32559824706](https://github.com/daichunghy/patchgate/actions/runs/32559824706)
-on `main@c9f643e`, and the first public run
-[CI 32333914059](https://github.com/daichunghy/patchgate/actions/runs/32333914059).
-For the current public `main` at `c9d11cb`, default-branch
-[CI 32806576723](https://github.com/daichunghy/patchgate/actions/runs/32806576723)
-and CodeQL
-[32806576725](https://github.com/daichunghy/patchgate/actions/runs/32806576725)
-completed successfully on 2026-08-25.
+The public default branch is currently `main`; the current immutable Action commit is recorded on the beta.5 release page. On 2026-09-06 a recorded
+[portfolio backlog merge campaign](docs/reviews/2026-09-06-portfolio-backlog-merge-campaign.md)
+merged 14 open pull requests into this repository — #52, #59, #61, #62, #63,
+#65, #66, #67, #68, #69, #70, #73, #74 and #75 — after resolving ten
+stale-conflicting branches by recorded merge commits, closing #71 and #72 as
+superseded, and deleting every merged head branch. Highlights: PR #59 binds
+the Action snapshot and check-run delivery to the exact
+`pull_request.head.sha` with fail-closed live-target mismatch handling; PR #69
+restructures the README for users and contributors; PR #75 surfaces root Prow
+`OWNERS`/`OWNERS_ALIASES` files as discovery-only `needs_confirmation`
+findings, logs base/head/tested/target revisions in the Action console, and
+adds the replayable [Case Lab](docs/case-lab.md); PR #61 groups CodeQL action
+updates so Dependabot #74 bumped both actions in one pull request. Every merge
+used the recorded admin-bypass pattern (`enforce_admins` lifted, merge, restore
+immediately) and is a maintainer decision rather than independent-review
+evidence. The only deliberately open pull request is
+`dependabot/npm_and_yarn/typescript-7.0.2` (PR #12), which stays open because
+`@vercel/ncc` cannot bundle under TS 7. Default-branch
+[CI run 34024768856](https://github.com/daichunghy/patchgate/actions/runs/34024768856)
+and CodeQL run 34024768771 completed successfully on `main@a52c21f` on
+2026-09-06.
 Live branch
 protection also requires one approving pull-request review, dismisses stale
 reviews, requires six CI contexts including `CI / Full Verify`, enforces
 linear history and conversation resolution, and disables force-pushes and
-branch deletion. The merged feature, documentation and release branches were
-deleted after their content reached `main`; the stale pre-publication
-`test/patchgate-shadow-smoke` draft branch remains, and the open branches are
-`codex/tested-sha-interop` (PR #59), `feat/release-rollback-guide`
-(PR #52, opened 2026-08-23), the CodeQL 4.37.8 Dependabot branches
-(PRs #57 and #58, opened 2026-08-27), and
-`dependabot/npm_and_yarn/typescript-7.0.2` (PR #12). PR #59 binds the Action
-snapshot and check-run delivery to the exact `pull_request.head.sha` with
-fail-closed live-target mismatch handling; on 2026-08-28 every required
-context on it was green and it waited only on the one approving review that
-branch protection requires. Dependabot PRs #11 (`@types/node` 26), #13
-(`vitest` 4) and #14
-(`@vitest/coverage-v8` 4) were merged on 2026-08-22 after local
-re-verification; PR #12 (`typescript` 7) stays open because `@vercel/ncc`
-cannot bundle under TS 7. Dependabot Actions PRs #38 (`actions/setup-node` 7)
-and #39 (`actions/checkout` 7) were merged on 2026-08-23 after green CI, and
-the split CodeQL 4.37.7 PRs #35/#37 were superseded by a combined init+analyze
-bump; the `create-check-run` default flip also shipped in that PR. Every merge
-used the recorded admin-bypass pattern and is a maintainer decision. The pre-release
+branch deletion. After the 2026-09-06 campaign every merged feature,
+documentation, release and Dependabot branch was deleted; the remaining
+branches are `main`, the stale pre-publication `test/patchgate-shadow-smoke`
+draft branch, and `dependabot/npm_and_yarn/typescript-7.0.2` (PR #12). The pre-release
 [`v0.1.0-beta.5`](https://github.com/daichunghy/patchgate/releases/tag/v0.1.0-beta.5)
 is the current public beta after a live maintainer smoke
 ([daichunghy/patchgate-beta-smoke](https://github.com/daichunghy/patchgate-beta-smoke))
@@ -162,7 +145,7 @@ unusable on real runners
 [release record](docs/releases/2026-08-23-beta.5.md)); it is beta
 shadow-evidence scope only — not production, adoption or a `v0.1` claim.
 
-The current milestone audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The current cross-repository register is the [2026-08-28 repository portfolio audit](docs/reviews/2026-08-28-repository-portfolio-audit.md). The newest review records are the [2026-08-22 multi-persona review round](docs/reviews/2026-08-22-multi-persona-review.md), the [2026-08-22 live consumer smoke findings](docs/reviews/2026-08-22-live-smoke-findings.md) and the [2026-08-22 Mimosa static-advisory adjudication](docs/reviews/2026-08-22-mimosa-static-advisory-adjudication.md) — re-run the sealed scan after any change to `src/github/client.ts` transport handling. The latest verification command to rerun after a change is:
+The current milestone audit is [the 2026-08-20 G4/G0 continuation audit](docs/reviews/2026-08-20-g4-g0-audit.md). The current cross-repository register is the [2026-08-28 repository portfolio audit](docs/reviews/2026-08-28-repository-portfolio-audit.md). The newest review records are the [2026-09-06 portfolio backlog merge campaign](docs/reviews/2026-09-06-portfolio-backlog-merge-campaign.md), the [2026-09-03 feedback-driven improvement record](docs/reviews/2026-09-03-feedback-improvements.md), the [2026-08-22 multi-persona review round](docs/reviews/2026-08-22-multi-persona-review.md), the [2026-08-22 live consumer smoke findings](docs/reviews/2026-08-22-live-smoke-findings.md) and the [2026-08-22 Mimosa static-advisory adjudication](docs/reviews/2026-08-22-mimosa-static-advisory-adjudication.md) — re-run the sealed scan after any change to `src/github/client.ts` transport handling. The latest verification command to rerun after a change is:
 
 ```bash
 npm run verify
